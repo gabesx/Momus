@@ -1,6 +1,7 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
+import Link from 'next/link';
 import type {
   AnalyticsFilterParams,
   AnalyticsSummaryResult,
@@ -98,7 +99,7 @@ export function DefectAnalyticsDashboard() {
     if (debounceRef.current) window.clearTimeout(debounceRef.current);
     debounceRef.current = window.setTimeout(() => {
       const qs = toQueryString(state);
-      window.history.pushState(null, '', `/analytics${qs}`);
+      window.history.pushState(null, '', qs ? `/${qs}` : '/');
       if (qs !== lastFetchedQs.current) {
         void fetchData(state);
       }
@@ -140,6 +141,12 @@ export function DefectAnalyticsDashboard() {
           <span className="bb-analytics-updated">
             Last Updated: {formatLastUpdated(data?.meta.last_updated ?? null)}
           </span>
+          <Link className="btn btn-outline" href="/bug-budget">
+            Bug Budget
+          </Link>
+          <Link className="btn btn-outline" href="/settings/atlassian#bug-budget">
+            Settings
+          </Link>
           <button type="button" className="btn btn-outline" onClick={onRefresh} disabled={loading}>
             Refresh
           </button>
