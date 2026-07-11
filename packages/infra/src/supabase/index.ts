@@ -6,3 +6,4 @@ export * from './bug-budget.repository';
 export * from './bug-budget-query';
 export * from './cache';
 export * from './config';
+export * from './system-user';
