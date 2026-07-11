@@ -13,7 +13,8 @@
   "dependencies": {
     "@momus/domain": "workspace:*",
     "@momus/infra": "workspace:*",
-    "@momus/shared": "workspace:*"
+    "@momus/shared": "workspace:*",
+    "inngest": "^4.12.1"
   },
   "devDependencies": {
     "typescript": "^5.8.2"

@@ -260,21 +260,21 @@ Resolve before Phase 2 implementation begins (PRD §16.3):
 
 **Objective:** End-to-end Jira sync with progress tracking and concurrency guards.
 
-- [ ] Jira REST v3 client: search/jql pagination, approximate-count, identity test (BB-SYNC-01)
+- [x] Jira REST v3 client: search/jql pagination, approximate-count, identity test (BB-SYNC-01)
 - [ ] Settings service: credential storage via Supabase Vault (DEV-9), masked token handling
-- [ ] Sync orchestrator (BB-SYNC-05):
+- [x] Sync orchestrator (BB-SYNC-05):
   - Upsert on `jira_key`
   - Per-page progress callback
   - Orphan cleanup (date-filter guard + cap guard per BB-EDGE-10)
   - Error collection without abort
   - 429 Retry-After handling (BB-EDGE-08)
-- [ ] Inngest functions:
+- [x] Inngest functions:
   - `bug-budget/sync` — main sync job (BB-SYNC-06)
   - Concurrency guard: reject 409 if active run (BB-SYNC-09)
   - Stuck-run sweeper: mark `running` > 2× timeout as `failed` (BB-NFR-05)
-- [ ] Sync run repository: CRUD + progress updates (percentage ≤ 95 until complete)
-- [ ] Cache flush on sync completion (BB-CACHE-01)
-- [ ] API routes (BB-API-06):
+- [x] Sync run repository: CRUD + progress updates (percentage ≤ 95 until complete)
+- [x] Cache flush on sync completion (BB-CACHE-01)
+- [x] API routes (BB-API-06):
   - `POST /settings/bug-budget/test-connection`
   - `POST /settings/bug-budget/get-issue-count`
   - `POST /settings/bug-budget/fetch-from-jira` (preview only)
@@ -292,14 +292,14 @@ Resolve before Phase 2 implementation begins (PRD §16.3):
 
 **Objective:** Dashboard and summary REST endpoints with filtering, pagination, caching.
 
-- [ ] Repository layer: typed Supabase queries for `bug_budget`
-- [ ] `GET /api/bug-budget/open-bug-summary` (BB-API-02)
-- [ ] `GET /api/bug-budget/open-defect-summary`
-- [ ] Dashboard data endpoint with filters (BB-API-03), stats (BB-API-04), pagination
-- [ ] `GET /bug-budget/export/csv` — streaming CSV with computed cost (fix D-1)
+- [x] Repository layer: typed Supabase queries for `bug_budget`
+- [x] `GET /api/bug-budget/open-bug-summary` (BB-API-02)
+- [x] `GET /api/bug-budget/open-defect-summary`
+- [x] Dashboard data endpoint with filters (BB-API-03), stats (BB-API-04), pagination
+- [x] `GET /bug-budget/export/csv` — streaming CSV with computed cost (fix D-1)
 - [ ] Cache layer: filter options (1800s), summaries (300s), version bump
-- [ ] Permission middleware (BB-PERM-01/02/03)
-- [ ] Standardized error responses (BB-API-01)
+- [x] Permission middleware (BB-PERM-01/02/03) — stub via `requirePermission`
+- [x] Standardized error responses (BB-API-01) — `{success, message}` helpers
 
 **Exit criteria:** Filter fixture A.3 passes; summary fixture A.2 passes; CSV headers aligned with computed cost.
 

@@ -4,9 +4,10 @@
 INSERT INTO public.bug_budget_config (key, value, description) VALUES
   ('priority_multipliers', '{"highest": 2, "high": 0.75, "medium": 0.5, "low": 0.25, "lowest": 0.1}', 'BB-CALC-01 priority multipliers'),
   ('severity_multipliers', '{"critical": 75, "major": 50, "moderate": 5, "minor": 2.5, "low": 1}', 'BB-CALC-01 severity multipliers'),
-  ('project_budgets', '{"SWAT": 100, "operation": 100, "Commercial": 100, "FINANCE": 100, "Core": 100, "Warehouse": 100, "Product": 100, "Shopex": 100}', 'BB-CALC-03 per-project budgets'),
-  ('project_mappings', '{"AO": "operation", "CSE": "Commercial", "FIN": "FINANCE", "GROWPAY": "Commercial", "OD": "operation", "OPK": "operation", "OPUS": "operation"}', 'Jira key to display name'),
-  ('excluded_projects', '["XTEAM", "SOD", "PW", "PC", "MM", "AL"]', 'Dashboard default exclusions (DEV-2)'),
+  ('project_budgets', '{}', 'Per-project budgets — filled by user from Jira projects'),
+  ('project_mappings', '{}', 'Jira key to display name — filled by user'),
+  ('excluded_projects', '[]', 'Dashboard exclusions — filled by user'),
+  ('sync_query', '{"jql":"","sync_type":"custom","batch_size":50,"max_total_issues":10000,"year":2026,"quarter":1,"month":1}', 'JQL Query Configuration (manual sync defaults)'),
   ('cache_ttl', '{"filter_options": 1800, "database_total": 300, "summary": 300}', 'BB-CACHE-01 TTLs in seconds');
 
 -- Default cron schedule row (inactive per PRD §4.4)
@@ -60,10 +61,14 @@ INSERT INTO public.indonesian_holidays (holiday_date, name, year) VALUES
 
 -- Default settings keys (values from env at runtime)
 INSERT INTO public.settings (key, value, type, "group", description) VALUES
-  ('jira_url', 'https://allofresh.atlassian.net', 'string', 'jira', 'Jira site URL'),
+  ('jira_url', '', 'string', 'jira', 'Jira site URL'),
   ('jira_username', '', 'string', 'jira', 'Jira account email'),
   ('jira_api_token', '', 'secret', 'jira', 'Jira API token (encrypted via Vault in production)'),
   ('jira_enabled', 'false', 'boolean', 'jira', 'Enable Jira sync'),
+  ('confluence_url', '', 'string', 'confluence', 'Confluence site URL'),
+  ('confluence_email', '', 'string', 'confluence', 'Confluence account email'),
+  ('confluence_space_keys', '', 'string', 'confluence', 'Comma-separated Confluence space keys'),
+  ('confluence_default_space', '', 'string', 'confluence', 'Default Confluence space key'),
   ('bug_budget_last_sync_user', '', 'string', 'bug_budget', 'Last sync triggered by'),
   ('bug_budget_last_sync_user_id', '', 'string', 'bug_budget', 'Last sync user id');
 
