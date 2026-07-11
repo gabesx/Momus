@@ -108,6 +108,8 @@ export class SyncRunRepository {
     id: number,
     result: Record<string, unknown>,
   ): Promise<void> {
+    const totalProcessed =
+      typeof result.total_processed === 'number' ? result.total_processed : undefined;
     const { error } = await this.db
       .from('bug_budget_sync_runs')
       .update({
@@ -116,6 +118,9 @@ export class SyncRunRepository {
         result,
         completed_at: new Date().toISOString(),
         error_message: null,
+        ...(totalProcessed != null
+          ? { processed: totalProcessed, total_issues: totalProcessed }
+          : {}),
       })
       .eq('id', id);
     if (error) throw new Error(`markCompleted failed: ${error.message}`);

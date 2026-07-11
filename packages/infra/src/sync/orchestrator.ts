@@ -12,6 +12,8 @@ export type SyncProgressEvent = {
   total_processed: number;
   is_last: boolean;
   max_total_issues: number;
+  /** Real expected total for UI (Jira approx count, capped by max_total_issues when set). */
+  expected_total: number;
 };
 
 export type SyncIssueError = {
@@ -28,6 +30,8 @@ export type SyncResult = {
   jql_used: string;
   /** Number deleted, or 'skipped' when cleanup was not run (date filter / truncated). */
   deleted_issues: number | 'skipped';
+  /** Expected total used for progress (approx Jira count, optionally capped). */
+  expected_total?: number;
 };
 
 export type SyncJiraPort = {
@@ -37,6 +41,8 @@ export type SyncJiraPort = {
     nextPageToken?: string;
   }): Promise<JiraSearchPage>;
   fetchAllKeys(jql: string, pageSize?: number): Promise<string[]>;
+  /** Optional: used for accurate progress denominator. */
+  approximateCount?(jql: string): Promise<number>;
 };
 
 export type SyncStorePort = {
@@ -178,6 +184,27 @@ export async function runBugBudgetSync(input: RunBugBudgetSyncInput): Promise<Sy
   const maxPages = maxTotalIssues > 0 ? Math.ceil(maxTotalIssues / 100) + 1 : 500;
   const transformOpts = resolveTransformOpts(input);
 
+  let approximate = 0;
+  if (input.jira.approximateCount) {
+    try {
+      approximate = await input.jira.approximateCount(jql);
+    } catch {
+      approximate = 0;
+    }
+  }
+  const expectedTotal = resolveSyncExpectedTotal(approximate, maxTotalIssues);
+
+  if (input.onProgress && expectedTotal > 0) {
+    await input.onProgress({
+      current_batch: 0,
+      issues_in_batch: 0,
+      total_processed: 0,
+      is_last: false,
+      max_total_issues: maxTotalIssues,
+      expected_total: expectedTotal,
+    });
+  }
+
   let accum: SyncAccumulators = {
     totalProcessed: 0,
     newIssues: 0,
@@ -215,6 +242,7 @@ export async function runBugBudgetSync(input: RunBugBudgetSyncInput): Promise<Sy
         total_processed: pageOut.totalProcessed,
         is_last: pageOut.isLast,
         max_total_issues: maxTotalIssues,
+        expected_total: expectedTotal,
       });
     }
 
@@ -237,6 +265,7 @@ export async function runBugBudgetSync(input: RunBugBudgetSyncInput): Promise<Sy
     errors: accum.errors,
     jql_used: jql,
     deleted_issues: deletedIssues,
+    expected_total: expectedTotal > 0 ? expectedTotal : accum.totalProcessed,
   };
 
   if (input.afterSuccess) {
@@ -246,10 +275,25 @@ export async function runBugBudgetSync(input: RunBugBudgetSyncInput): Promise<Sy
   return result;
 }
 
+/**
+ * Denominator for progress UI: Jira approximate match count, optionally capped
+ * by max_total_issues. Falls back to the configured cap when approx is unavailable.
+ */
+export function resolveSyncExpectedTotal(
+  approximateCount: number,
+  maxTotalIssues: number,
+): number {
+  const approx = Number.isFinite(approximateCount) ? Math.max(0, Math.floor(approximateCount)) : 0;
+  if (approx > 0 && maxTotalIssues > 0) return Math.min(approx, maxTotalIssues);
+  if (approx > 0) return approx;
+  if (maxTotalIssues > 0) return maxTotalIssues;
+  return 0;
+}
+
 /** Progress percentage for sync_runs: ≤95 until markCompleted sets 100. */
-export function syncProgressPercentage(processed: number, maxTotalIssues: number): number {
-  if (maxTotalIssues > 0) {
-    return Math.min(95, Math.floor((processed / maxTotalIssues) * 95));
+export function syncProgressPercentage(processed: number, expectedTotal: number): number {
+  if (expectedTotal > 0) {
+    return Math.min(95, Math.floor((processed / expectedTotal) * 95));
   }
   return Math.min(95, Math.floor(Math.log10(processed + 1) * 30));
 }
