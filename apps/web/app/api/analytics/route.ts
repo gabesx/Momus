@@ -31,9 +31,10 @@ export async function GET(request: Request) {
         .filter(Boolean)
         .sort()
         .at(-1) ?? null;
-    const scope_hint = params.year
-      ? `Showing data for year ${params.year}`
-      : 'Showing recent bug/defect data (default last 24 months)';
+    const scope_hint =
+      params.year && params.year !== 'all'
+        ? `Showing data for year ${params.year}`
+        : 'Showing recent bug/defect data (default last 24 months)';
     return jsonOk({
       summary,
       trends,
