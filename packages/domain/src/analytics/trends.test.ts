@@ -17,4 +17,14 @@ describe('computeMonthlyTrends', () => {
     expect(result.total).toEqual([1, 2, 1]);
     expect(result.resolution_rate).toEqual([100, 50, 100]);
   });
+
+  it('does not pad months past the last data month when now is later', () => {
+    const rows: AnalyticsIssueRow[] = [
+      { project: 'A', created_date: '2024-06-15T00:00:00+07:00', is_open: false, issue_type: 'Bug' },
+      { project: 'A', created_date: '2024-07-01T00:00:00+07:00', is_open: true, issue_type: 'Bug' },
+    ];
+    const result = computeMonthlyTrends(rows, '2026-07-11T00:00:00+07:00');
+    expect(result.labels).toEqual(['Jun 2024', 'Jul 2024']);
+    expect(result.total).toEqual([1, 1]);
+  });
 });

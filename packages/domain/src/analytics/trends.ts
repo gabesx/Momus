@@ -12,7 +12,10 @@ export function computeMonthlyTrends(rows: AnalyticsIssueRow[], nowIso: string):
   }
   const keys = [...new Set(withDate.map((r) => monthKeyFromIso(r.created_date!)))].sort();
   const start = keys[0];
-  const end = monthKeyFromIso(nowIso);
+  const nowKey = monthKeyFromIso(nowIso);
+  const lastData = keys[keys.length - 1]!;
+  // Do not pad empty months past the last data month (e.g. year=2024 should not extend to now).
+  const end = lastData < nowKey ? lastData : nowKey;
   const labels: string[] = [];
   const bugs: number[] = [];
   const defects: number[] = [];
