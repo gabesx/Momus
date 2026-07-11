@@ -6,8 +6,10 @@ import {
   type SummaryConfig,
   type SummaryIssueInput,
   applyFilters,
+  extractFilterOptions,
   parseBugBudgetFilters,
   type BugBudgetFilterParams,
+  type FilterOptions,
   type ParsedFilters,
 } from '@momus/domain';
 
@@ -85,9 +87,11 @@ export class BugBudgetQueryRepository {
     rows: BugBudgetListRow[];
     total: number;
     pageRows: BugBudgetListRow[];
+    filter_options: FilterOptions;
   }> {
     const parsed = parseBugBudgetFilters(params);
     const all = await this.listAllForFilters();
+    const filter_options = extractFilterOptions(all);
     const filtered = applyFilters(all, parsed);
 
     const sorted = [...filtered].sort((a, b) => {
@@ -102,7 +106,7 @@ export class BugBudgetQueryRepository {
     const start = (parsed.page - 1) * parsed.perPage;
     const pageRows = sorted.slice(start, start + parsed.perPage);
 
-    return { parsed, rows: sorted, total: sorted.length, pageRows };
+    return { parsed, rows: sorted, total: sorted.length, pageRows, filter_options };
   }
 
   async getById(id: number): Promise<BugBudgetListRow | null> {

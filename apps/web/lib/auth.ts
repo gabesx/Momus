@@ -1,5 +1,7 @@
+import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import { createServerClient } from '@momus/infra/supabase';
+import { SIGNED_OUT_COOKIE } from '@/lib/auth-constants';
 
 export type AuthUser = {
   id: number;
@@ -9,6 +11,8 @@ export type AuthUser = {
 };
 
 export type UserPermission = 'view_analytics' | 'access_settings' | 'manage_users';
+
+export { SIGNED_OUT_COOKIE } from '@/lib/auth-constants';
 
 async function resolveDevUser(): Promise<{ user: AuthUser } | { error: NextResponse }> {
   if (process.env.MOMUS_DEV_AUTH_BYPASS !== 'true' && process.env.NODE_ENV === 'production') {
@@ -53,11 +57,25 @@ async function resolveDevUser(): Promise<{ user: AuthUser } | { error: NextRespo
   };
 }
 
+/** Current session user, or 401 if signed out / missing auth. */
+export async function getSessionUser(): Promise<{ user: AuthUser } | { error: NextResponse }> {
+  const jar = await cookies();
+  if (jar.get(SIGNED_OUT_COOKIE)?.value === '1') {
+    return {
+      error: NextResponse.json(
+        { success: false, message: 'Authentication required' },
+        { status: 401 },
+      ),
+    };
+  }
+  return resolveDevUser();
+}
+
 /** BB-PERM-01 — require authenticated non-candidate user with a permission. */
 export async function requirePermission(
   permission: UserPermission,
 ): Promise<{ user: AuthUser } | { error: NextResponse }> {
-  const resolved = await resolveDevUser();
+  const resolved = await getSessionUser();
   if ('error' in resolved) return resolved;
 
   if (!resolved.user.permissions.includes(permission)) {

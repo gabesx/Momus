@@ -19,7 +19,7 @@ export async function GET(request: Request) {
     const params = bugBudgetParamsFromUrl(url);
     const db = createServerClient();
     const repo = new BugBudgetQueryRepository(db);
-    const { parsed, rows, total, pageRows } = await repo.findFiltered(params);
+    const { parsed, rows, total, pageRows, filter_options } = await repo.findFiltered(params);
     const stats = computeStats(rows, new Date().toISOString());
     const databaseTotal = await repo.countAll();
 
@@ -50,6 +50,7 @@ export async function GET(request: Request) {
       jira_browse_base: jiraBrowseBase,
       active_filter_count: parsed.predicates.length,
       database_total: databaseTotal,
+      filter_options,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to load bug budget data';
