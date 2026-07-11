@@ -72,6 +72,7 @@ jobs: retention-prune (daily)      web: settings POST routes
 - `user_id`: authenticated settings user from `requireAccessSettings`.
 - Pattern: load before → mutate → `try { audit.write(...) } catch { console.error('[audit]', ...) }` → unchanged success response.
 - Never persist raw Jira API token in `before_value` / `after_value`.
+- **Before snapshots** reuse existing loaders where possible: `loadSettingsConfig` (multipliers / project settings), `getSyncQuery`, `getOrCreateCronSchedule` / prior schedule row, `getJiraSettings` → `toPublicJiraConnection`, `getConfluenceSettings` → `toPublicConfluenceSettings`. Add thin getters only if a loader is missing for a slice.
 
 ## Errors
 
