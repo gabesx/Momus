@@ -7,16 +7,24 @@ import { buildOpenDefectSummary } from '@momus/domain';
 import { requireViewAnalytics } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
+function parseSummaryYear(yearParam: string | null): number | null | { error: string } {
+  if (!yearParam || yearParam === 'all') return null;
+  const year = Number(yearParam);
+  if (!Number.isInteger(year) || year < 2020 || year > 2030) {
+    return { error: 'year must be between 2020 and 2030' };
+  }
+  return year;
+}
+
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
 
   try {
     const yearParam = new URL(request.url).searchParams.get('year');
-    const year =
-      yearParam && yearParam !== 'all' ? Number(yearParam) : new Date().getFullYear();
-    if (!Number.isInteger(year) || year < 2020 || year > 2030) {
-      return jsonFail('year must be between 2020 and 2030', 422);
+    const year = parseSummaryYear(yearParam);
+    if (year && typeof year === 'object' && 'error' in year) {
+      return jsonFail(year.error, 422);
     }
 
     const db = createServerClient();
@@ -25,7 +33,7 @@ export async function GET(request: Request) {
     const rows = await repo.listSummaryInputs(year);
     const projects = buildOpenDefectSummary(rows, config, year);
 
-    return jsonOk({ projects, year });
+    return jsonOk({ projects, year: year ?? 'all' });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to build open defect summary';
     return jsonFail(message, 500);
