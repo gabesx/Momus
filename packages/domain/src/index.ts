@@ -5,6 +5,7 @@ export * from './budget/status';
 export * from './budget/summary';
 export * from './age/business-days';
 export * from './sync/ac-labels';
+export * from './sync/sync-run-retention';
 export * from './sync/transform';
 export * from './jql/builders';
 export * from './filters/parse';
