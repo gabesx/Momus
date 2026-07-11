@@ -13,3 +13,7 @@ export * from './filters/filter-options';
 export * from './filters/stat-card-patches';
 export * from './badges/colors';
 export * from './export/csv-export';
+export * from './analytics/types';
+export * from './analytics/filter';
+export * from './analytics/summary';
+export * from './analytics/trends';
