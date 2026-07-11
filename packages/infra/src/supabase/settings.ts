@@ -20,7 +20,7 @@ const MASKED_TOKEN = '****************';
 
 /**
  * Load Jira connection settings from public.settings (BB-DATA-05).
- * Source of truth is the database — not environment variables.
+ * API token is decrypted via Vault (DEV-9); never read plaintext from settings.value.
  */
 export async function getJiraSettings(): Promise<JiraSettings> {
   const supabase = createServerClient();
@@ -35,17 +35,21 @@ export async function getJiraSettings(): Promise<JiraSettings> {
 
   const map = new Map((data ?? []).map((row) => [row.key as string, row.value as string | null]));
 
+  const { data: token, error: tokenError } = await supabase.rpc('momus_get_jira_token');
+  if (tokenError) {
+    throw new Error(`Failed to load Jira API token: ${tokenError.message}`);
+  }
+
   return {
     url: map.get('jira_url') ?? '',
     username: map.get('jira_username') ?? '',
-    apiToken: map.get('jira_api_token') ?? '',
+    apiToken: typeof token === 'string' ? token : '',
     enabled: map.get('jira_enabled') === 'true',
   };
 }
 
 /**
- * Upsert Jira settings into public.settings. Token is stored as-is for now;
- * Vault encryption lands with DEV-9.
+ * Upsert Jira settings. Token is written via Vault (DEV-9); settings row stores secret UUID.
  */
 export async function saveJiraSettings(input: Partial<JiraSettings>): Promise<void> {
   const supabase = createServerClient();
@@ -57,9 +61,6 @@ export async function saveJiraSettings(input: Partial<JiraSettings>): Promise<vo
   if (input.username !== undefined) {
     rows.push({ key: 'jira_username', value: input.username, type: 'string', group: 'jira' });
   }
-  if (input.apiToken !== undefined) {
-    rows.push({ key: 'jira_api_token', value: input.apiToken, type: 'secret', group: 'jira' });
-  }
   if (input.enabled !== undefined) {
     rows.push({
       key: 'jira_enabled',
@@ -67,6 +68,15 @@ export async function saveJiraSettings(input: Partial<JiraSettings>): Promise<vo
       type: 'boolean',
       group: 'jira',
     });
+  }
+
+  if (input.apiToken !== undefined) {
+    const { error: tokenError } = await supabase.rpc('momus_set_jira_token', {
+      p_token: input.apiToken,
+    });
+    if (tokenError) {
+      throw new Error(`Failed to save Jira API token: ${tokenError.message}`);
+    }
   }
 
   for (const row of rows) {
