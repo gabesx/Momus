@@ -56,13 +56,18 @@ export function DefectAnalyticsDashboard() {
     lastFetchedQs.current = qs;
     setLoading(true);
     setError(null);
-    const res = await apiJson<AnalyticsResponse>(`/api/analytics${qs}`);
-    setLoading(false);
-    if (!res.success) {
-      setError(res.message ?? 'Failed to load analytics data');
-      return;
+    try {
+      const res = await apiJson<AnalyticsResponse>(`/api/analytics${qs}`);
+      if (!res.success) {
+        setError(res.message ?? 'Failed to load analytics data');
+        return;
+      }
+      setData(res);
+    } catch (err) {
+      setError(err instanceof Error ? err.message : 'Failed to load analytics data');
+    } finally {
+      setLoading(false);
     }
-    setData(res);
   }, []);
 
   useEffect(() => {
