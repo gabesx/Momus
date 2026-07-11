@@ -31,6 +31,137 @@ a {
   color: var(--bb-primary);
 }
 
+/* —— App chrome —— */
+.bb-app-header {
+  background: var(--bb-white);
+  border-bottom: 1px solid var(--bb-border);
+  position: sticky;
+  top: 0;
+  z-index: 40;
+}
+
+.bb-app-header__inner {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.65rem 1.5rem;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.bb-app-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--bb-dark);
+  text-decoration: none;
+  margin-right: 0.5rem;
+}
+
+.bb-app-brand:hover {
+  color: var(--bb-primary);
+}
+
+.bb-app-nav {
+  display: flex;
+  gap: 0.25rem;
+  flex: 1;
+  flex-wrap: wrap;
+}
+
+.bb-app-nav__link {
+  text-decoration: none;
+  color: var(--bb-secondary);
+  font-weight: 600;
+  font-size: 0.9rem;
+  padding: 0.4rem 0.75rem;
+  border-radius: 6px;
+}
+
+.bb-app-nav__link:hover {
+  background: var(--bb-light);
+  color: var(--bb-dark);
+}
+
+.bb-app-nav__link.is-active {
+  color: var(--bb-primary);
+  background: #e7f1ff;
+}
+
+.bb-app-header__actions {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-left: auto;
+}
+
+.bb-app-user {
+  font-size: 0.85rem;
+  max-width: 160px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bb-app-menu {
+  position: relative;
+}
+
+.bb-app-menu__panel {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.35rem);
+  min-width: 200px;
+  background: var(--bb-white);
+  border: 1px solid var(--bb-border);
+  border-radius: 8px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.1);
+  padding: 0.35rem;
+  z-index: 50;
+}
+
+.bb-app-menu__item {
+  display: block;
+  width: 100%;
+  text-align: left;
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0.55rem 0.75rem;
+  border-radius: 6px;
+  cursor: pointer;
+  color: var(--bb-dark);
+  text-decoration: none;
+  font: inherit;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.bb-app-menu__item:hover {
+  background: var(--bb-light);
+}
+
+.bb-app-menu__item--danger {
+  color: var(--bb-danger);
+  border-top: 1px solid var(--bb-border);
+  margin-top: 0.25rem;
+  border-radius: 0 0 6px 6px;
+}
+
+.bb-signed-out {
+  min-height: calc(100vh - 0px);
+  padding: 1.5rem;
+}
+
+@media (max-width: 800px) {
+  .bb-app-nav {
+    display: none;
+  }
+
+  .bb-app-user {
+    display: none;
+  }
+}
+
 .settings-page {
   max-width: 1200px;
   margin: 0 auto;

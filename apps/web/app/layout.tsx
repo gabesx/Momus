@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { MESSAGES } from '@momus/shared/messages';
+import { AppHeader } from '@/components/layout/app-header';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -10,7 +11,10 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
-      <body>{children}</body>
+      <body>
+        <AppHeader />
+        {children}
+      </body>
     </html>
   );
 }

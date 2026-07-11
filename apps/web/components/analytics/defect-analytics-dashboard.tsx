@@ -1,7 +1,6 @@
 'use client';
 
 import { useCallback, useEffect, useRef, useState } from 'react';
-import Link from 'next/link';
 import type {
   AnalyticsFilterParams,
   AnalyticsSummaryResult,
@@ -141,12 +140,6 @@ export function DefectAnalyticsDashboard() {
           <span className="bb-analytics-updated">
             Last Updated: {formatLastUpdated(data?.meta.last_updated ?? null)}
           </span>
-          <Link className="btn btn-outline" href="/bug-budget">
-            Bug Budget
-          </Link>
-          <Link className="btn btn-outline" href="/settings/atlassian#bug-budget">
-            Settings
-          </Link>
           <button type="button" className="btn btn-outline" onClick={onRefresh} disabled={loading}>
             Refresh
           </button>
