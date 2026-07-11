@@ -1,0 +1,26 @@
+:root {
+  --bb-primary: #0d6efd;
+  --bb-secondary: #6c757d;
+  --bb-success: #198754;
+  --bb-danger: #dc3545;
+  --bb-warning: #ffc107;
+  --bb-info: #0dcaf0;
+  --bb-dark: #212529;
+  --bb-light: #f8f9fa;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  font-family:
+    system-ui,
+    -apple-system,
+    'Segoe UI',
+    Roboto,
+    sans-serif;
+  background: var(--bb-light);
+  color: var(--bb-dark);
+}

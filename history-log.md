@@ -21,6 +21,27 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ## Changelog
 
+### 2026-07-11 — Remote Supabase Migrations Applied
+
+| Event | Details |
+|---|---|
+| **Target project** | `performance` (`puwugzzvxvatgjhpdagy`, ap-northeast-2, ACTIVE) |
+| **Migrations applied** | `momus_initial_schema`, `momus_rls_policies`, `momus_seed_data` |
+| **Adaptations** | Skipped `users`, `settings`, `audit_logs` (pre-existing). `requested_by` uses INTEGER FK to existing `users.id`. |
+| **Seed verified** | 6 config rows, 1 cron schedule, 12 Jira field mappings, 8 QA names, 6 holidays |
+| **Status** | 🟢 Remote database ready for Momus development |
+
+### 2026-07-11 — Phase 0 Foundation (Database + Framework)
+
+| Event | Details |
+|---|---|
+| **Monorepo scaffolded** | Turborepo + pnpm workspaces with `apps/web`, `packages/{shared,domain,infra,jobs}`. |
+| **Next.js 15 app** | App Router with `/`, `/bug-budget` placeholder, `/api/health` endpoint. Build verified green. |
+| **Supabase migrations** | 3 migrations: initial schema (11 tables), RLS policies, seed data (multipliers, mappings, holidays). |
+| **Docker** | `docker/docker-compose.yml` for web + Inngest dev; Supabase via CLI. |
+| **CI** | GitHub Actions workflow for typecheck + build. |
+| **Status** | 🟢 Phase 0 scaffold complete — run `supabase start` + `pnpm db:reset` locally to apply migrations. |
+
 ### 2026-07-11 — Project Initialization & Planning
 
 | Event | Details |
@@ -122,12 +143,17 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 | Feature | Phase | Date | PRD Refs |
 |---|---|---|---|
+| Turborepo monorepo scaffold | 0 | 2026-07-11 | plan.md §3 |
+| Next.js 15 web app (placeholder pages) | 0 | 2026-07-11 | BB-UI-02 scaffold |
+| Supabase schema migrations (11 tables) | 0 | 2026-07-11 | BB-DATA-01–05, DEV-1/3/4/5 |
+| RLS policies + permission helper | 0 | 2026-07-11 | BB-PERM-01 |
+| Seed data (multipliers, mappings, holidays) | 0 | 2026-07-11 | §4.5C, Appendix A prep |
+| Docker Compose (web + Inngest) | 0 | 2026-07-11 | plan.md §9 |
+| CI pipeline (GitHub Actions) | 0 | 2026-07-11 | plan.md Phase 0 |
 | PRD analysis | — | 2026-07-11 | Full document |
 | Implementation plan | — | 2026-07-11 | §15 traceability |
 | Development conventions | — | 2026-07-11 | — |
 | Cursor agent rules | — | 2026-07-11 | — |
-
-*No application code implemented yet.*
 
 ---
 
@@ -135,12 +161,15 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ### Phase 0 — Foundation
 
-- [ ] Initialize Turborepo monorepo (pnpm workspaces)
-- [ ] TypeScript, ESLint, Prettier, Husky configuration
-- [ ] Supabase migrations for all tables
-- [ ] Docker Compose local environment
-- [ ] CI pipeline (GitHub Actions)
-- [ ] Seed golden fixture data
+- [x] Initialize Turborepo monorepo (pnpm workspaces)
+- [x] Configure TypeScript strict mode, Prettier
+- [ ] Configure ESLint, Husky pre-commit
+- [x] Supabase migrations for all tables
+- [x] Docker Compose local environment
+- [x] CI pipeline (GitHub Actions)
+- [ ] Seed golden fixture data (Appendix A test rows)
+- [x] Apply migrations locally (`supabase start` + `db:reset`)
+- [x] Apply migrations to remote Supabase (`performance` project)
 
 ### Phase 1 — Domain Logic
 
@@ -216,7 +245,7 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 | ID | Name | Target | Status | Notes |
 |---|---|---|---|---|
-| M0 | Scaffold | Week 2 | ⬜ Not started | Monorepo + schema + Docker |
+| M0 | Scaffold | Week 2 | 🟡 In progress | Monorepo + schema done; local DB apply pending |
 | M1 | Domain Parity | Week 3 | ⬜ Not started | Appendix A fixtures green |
 | M2 | Sync Pipeline | Week 5 | ⬜ Not started | Jira sync end-to-end |
 | M3 | API Complete | Week 5 | ⬜ Not started | All §8 endpoints |
