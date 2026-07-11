@@ -25,6 +25,8 @@ export const schedulerTick = inngest.createFunction(
       const nowIso = now.toISOString();
       const due = await config.listDueCronSchedules(nowIso);
       const results: Array<Record<string, unknown>> = [];
+      const systemUser =
+        due.length > 0 ? await ensureAutomatedSystemUser(db) : null;
 
       for (const schedule of due) {
         try {
@@ -36,6 +38,10 @@ export const schedulerTick = inngest.createFunction(
               active_id: active.id,
             });
             continue;
+          }
+
+          if (!systemUser) {
+            throw new Error('automated system user unavailable');
           }
 
           const params = (schedule.command_params ?? {}) as {
@@ -51,7 +57,6 @@ export const schedulerTick = inngest.createFunction(
           const batchSize = params.batch_size ?? 50;
           const maxTotalIssues = params.max_total_issues ?? 0;
 
-          const systemUser = await ensureAutomatedSystemUser(db);
           const run = await runs.create({
             requestedBy: systemUser.id,
             syncType: 'custom',
@@ -103,7 +108,12 @@ export const schedulerTick = inngest.createFunction(
           });
         } catch (err) {
           const message = err instanceof Error ? err.message : String(err);
-          console.error('[scheduler-tick] schedule failed', schedule.id, message);
+          console.error(
+            '[scheduler-tick] schedule failed',
+            schedule.id,
+            schedule.name,
+            message,
+          );
           results.push({ id: schedule.id, status: 'error', message });
         }
       }
