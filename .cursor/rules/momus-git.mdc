@@ -1,0 +1,18 @@
+---
+description: Git workflow and commit message conventions
+alwaysApply: true
+---
+
+# Git Conventions
+
+Conventional Commits: `type(scope): description`
+
+Types: `feat`, `fix`, `test`, `refactor`, `chore`, `docs`
+
+```
+feat(domain): implement BB-CALC-01 cost calculator
+fix(export): align CSV headers and computed cost (D-1)
+```
+
+Branches: `feat/*`, `fix/*`, `chore/*` off `develop`.
+One concern per PR. Golden fixtures must not be weakened.

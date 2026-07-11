@@ -1,0 +1,29 @@
+---
+description: Momus project core standards — architecture, stack, and dependency rules
+alwaysApply: true
+---
+
+# Momus Core Standards
+
+Bug Budget module rebuild. PRD: `prd.md`. Plan: `plan.md`. Full conventions: `conventions.md`.
+
+**Stack:** TypeScript, Next.js 15, Supabase, Inngest, Turborepo, Vitest.
+
+## Architecture
+
+- `packages/domain` — pure business logic, NO framework/DB imports
+- `packages/infra` — Supabase, Jira, cache, crypto
+- `packages/jobs` — Inngest background jobs
+- `apps/web` — Next.js UI + API routes (Vercel)
+
+## Dependency Rule
+
+`domain` → only `shared`. Never import `infra`, `web`, or React from domain.
+
+## Key Constraints
+
+- Behavioral parity with legacy QARATMS (PRD v1.1)
+- `bug_budget` table contract must not drift (BB-DATA-07)
+- Jira integration is read-only
+- Timezone: Asia/Jakarta
+- Golden fixtures (Appendix A) are normative tests

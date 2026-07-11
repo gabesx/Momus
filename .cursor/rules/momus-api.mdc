@@ -1,0 +1,23 @@
+---
+description: API route design and error handling conventions
+globs: "apps/web/app/api/**"
+alwaysApply: false
+---
+
+# API Conventions
+
+- Thin route handlers: validate → call service → respond
+- Zod parse at route boundary; never pass raw request deeper
+- `requirePermission()` at entry (BB-PERM-01)
+- JQL passed to Jira only, never interpolated into SQL (max 2000 chars)
+
+## Error Responses (BB-API-01)
+
+- 422: `{ message, errors: { field: [msgs] } }`
+- 400/500: `{ success: false, message }`
+- 409: `{ success: false, message, syncRunId }` (BB-SYNC-09)
+- 403: sync-status ownership (BB-PERM-02)
+
+## Routes
+
+Register `/bug-budget/export/csv` BEFORE `/bug-budget/{id}` wildcard.

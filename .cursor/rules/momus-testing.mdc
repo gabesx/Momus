@@ -1,0 +1,13 @@
+---
+description: Testing requirements — TDD, golden fixtures, coverage
+globs: "**/*.{test,spec}.{ts,tsx}"
+alwaysApply: false
+---
+
+# Testing Standards
+
+- TDD for `packages/domain`: failing test → implement → pass → commit
+- Appendix A golden fixtures are normative (not optional)
+- Test names include PRD IDs: `'BB-CALC-01: cost 150 for Highest+Critical'`
+- Domain tests: no mocks. Integration tests: Supabase local.
+- Coverage: 100% domain, 80% infra/API

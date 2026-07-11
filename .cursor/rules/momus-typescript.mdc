@@ -1,0 +1,24 @@
+---
+description: TypeScript coding standards for Momus
+globs: "**/*.{ts,tsx}"
+alwaysApply: false
+---
+
+# TypeScript Standards
+
+- Strict mode; no `any` (use `unknown` + narrow)
+- `as const` objects instead of `enum` keyword
+- Explicit return types on exported domain/infra functions
+- Zod schemas for all API inputs and env vars
+- Named exports only (except Next.js pages/routes)
+- Path aliases: `@momus/domain`, `@momus/infra`, `@momus/shared`
+
+```typescript
+// DB snake_case → TS camelCase mapping in repositories only
+export interface BugBudgetRow {
+  jiraKey: string;
+  defectAgeDays: number | null;
+}
+```
+
+Reference PRD IDs in business logic comments: `// BB-CALC-01`

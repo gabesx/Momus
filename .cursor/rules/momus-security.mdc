@@ -1,0 +1,13 @@
+---
+description: Security best practices — secrets, auth, personal data
+alwaysApply: true
+---
+
+# Security
+
+- Jira token: Supabase Vault only; mask as `****************` in UI/API
+- Never log tokens or full `raw_jira_data`
+- All routes: authenticated, non-candidate user
+- CSRF on all POST endpoints
+- Personal data in assignee/reporter fields + raw_jira_data (BB-LIFE-04)
+- Inngest webhooks: verify signing key

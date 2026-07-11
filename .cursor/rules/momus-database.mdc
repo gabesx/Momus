@@ -1,0 +1,15 @@
+---
+description: Supabase database access patterns
+globs: "packages/infra/**"
+alwaysApply: false
+---
+
+# Database Patterns
+
+- All DB access via repositories in `packages/infra/supabase/`
+- Upsert key: `jira_key` (BB-DATA-01)
+- Migrations in `supabase/migrations/` — never modify applied migrations
+- Specify columns; no `SELECT *` in production
+- JSON columns: consistent `JSON.stringify` encoding
+
+No raw SQL in route handlers or domain layer.
