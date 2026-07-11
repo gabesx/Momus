@@ -1,35 +1,40 @@
 import Link from 'next/link';
 import { MESSAGES } from '@momus/shared/messages';
 
+const HUB_LINKS = [
+  {
+    href: '/analytics',
+    title: 'Defect Analytics',
+    description: 'Trends, summary metrics, and month-over-month comparisons',
+  },
+  {
+    href: '/bug-budget',
+    title: 'Bug Budget Dashboard',
+    description: 'Browse, filter, and export bug and defect issues',
+  },
+  {
+    href: '/settings/atlassian#bug-budget',
+    title: 'Atlassian Settings',
+    description: 'Jira connection, sync, and bug budget configuration',
+  },
+] as const;
+
 export default function HomePage() {
   return (
-    <main style={{ maxWidth: 960, margin: '0 auto', padding: '2rem' }}>
-      <header style={{ marginBottom: '2rem' }}>
-        <h1 style={{ color: 'var(--bb-primary)', margin: 0 }}>Bug Budget</h1>
-        <p style={{ color: 'var(--bb-secondary)', marginTop: '0.5rem' }}>{MESSAGES.M19}</p>
+    <main className="bb-hub">
+      <header className="bb-hub-header">
+        <h1>Momus</h1>
+        <p>{MESSAGES.M19}</p>
       </header>
 
-      <section
-        style={{
-          background: '#fff',
-          borderRadius: 8,
-          padding: '1.5rem',
-          border: '1px solid #dee2e6',
-        }}
-      >
-        <h2 style={{ marginTop: 0 }}>Momus</h2>
-        <ul>
-          <li>
-            <Link href="/bug-budget">Bug Budget Dashboard</Link>
-          </li>
-          <li>
-            <Link href="/settings/atlassian#bug-budget">Atlassian Settings</Link>
-          </li>
-          <li>
-            <Link href="/api/health">API Health Check</Link>
-          </li>
-        </ul>
-      </section>
+      <nav className="bb-hub-nav" aria-label="Momus modules">
+        {HUB_LINKS.map((link) => (
+          <Link key={link.href} href={link.href} className="bb-hub-card">
+            <h2>{link.title}</h2>
+            <p>{link.description}</p>
+          </Link>
+        ))}
+      </nav>
     </main>
   );
 }
