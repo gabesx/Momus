@@ -1,33 +1,34 @@
 # For detailed configuration reference documentation, visit:
 # https://supabase.com/docs/guides/local-development/cli/config
+# Local ports offset from default 5432x so Momus can run beside other projects (e.g. horus).
 project_id = "momus"
 
 [api]
 enabled = true
-port = 54321
+port = 54421
 schemas = ["public", "graphql_public"]
 extra_search_path = ["public", "extensions"]
 max_rows = 1000
 
 [db]
-port = 54322
-shadow_port = 54320
+port = 54422
+shadow_port = 54420
 major_version = 15
 
 [db.pooler]
 enabled = false
-port = 54329
+port = 54429
 pool_mode = "transaction"
 default_pool_size = 20
 max_client_conn = 100
 
 [studio]
 enabled = true
-port = 54323
+port = 54423
 
 [inbucket]
 enabled = true
-port = 54324
+port = 54424
 
 [storage]
 enabled = true
@@ -47,7 +48,7 @@ enable_confirmations = false
 [edge_runtime]
 enabled = true
 policy = "oneshot"
-inspector_port = 8083
+inspector_port = 8183
 
 [analytics]
 enabled = false
