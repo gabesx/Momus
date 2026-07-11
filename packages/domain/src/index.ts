@@ -9,5 +9,7 @@ export * from './sync/transform';
 export * from './jql/builders';
 export * from './filters/parse';
 export * from './filters/stats';
+export * from './filters/filter-options';
+export * from './filters/stat-card-patches';
 export * from './badges/colors';
 export * from './export/csv-export';
