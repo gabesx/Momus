@@ -1,0 +1,25 @@
+services:
+  web:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile.web
+    ports:
+      - '3000:3000'
+    env_file:
+      - ../.env.local
+    environment:
+      - TZ=Asia/Jakarta
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    depends_on: []
+
+  inngest-dev:
+    image: inngest/inngest:latest
+    ports:
+      - '8288:8288'
+    command: ['inngest', 'dev', '-u', 'http://host.docker.internal:3000/api/inngest']
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+
+# Database: use `pnpm db:start` (Supabase CLI) — not included here.
+# Supabase local runs on ports 54321 (API), 54322 (DB), 54323 (Studio).

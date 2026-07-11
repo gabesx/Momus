@@ -1,0 +1,23 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "lib": ["dom", "dom.iterable", "ES2022"],
+    "jsx": "preserve",
+    "plugins": [{ "name": "next" }],
+    "paths": {
+      "@/*": ["./*"],
+      "@momus/shared": ["../../packages/shared/src/index.ts"],
+      "@momus/shared/*": ["../../packages/shared/src/*"],
+      "@momus/infra": ["../../packages/infra/src/index.ts"],
+      "@momus/infra/*": ["../../packages/infra/src/*"],
+      "@momus/domain": ["../../packages/domain/src/index.ts"],
+      "@momus/domain/*": ["../../packages/domain/src/*"],
+      "@momus/jobs": ["../../packages/jobs/src/index.ts"],
+      "@momus/jobs/*": ["../../packages/jobs/src/*"]
+    },
+    "allowJs": true,
+    "incremental": true
+  },
+  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts"],
+  "exclude": ["node_modules"]
+}

@@ -21,6 +21,91 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ## Changelog
 
+### 2026-07-11 — Atlassian Settings UI
+
+| Event | Details |
+|---|---|
+| **Route** | `/settings/atlassian` with tabs Shared / Jira / Confluence / Bug Budget |
+| **Wired** | Shared credentials + Bug Budget (connection, JQL sync, multipliers, budgets, cron, activity) |
+| **Stubs** | Confluence form (not persisted); Jira extra fields (default project/cache) UI-only |
+| **APIs added** | `GET .../config`, `GET .../sync-activity` |
+
+### 2026-07-11 — Phase 3 API & Data Access (core)
+
+| Event | Details |
+|---|---|
+| **Auth** | `requirePermission` / `requireViewAnalytics` (BB-PERM-01 stub) |
+| **Query repo** | `BugBudgetQueryRepository` + `loadSummaryConfig` |
+| **Summaries** | `GET /api/bug-budget/open-bug-summary`, `open-defect-summary` (BB-API-05) |
+| **Dashboard** | `GET /api/bug-budget` — filters + stats + pagination (BB-API-03/04) |
+| **Detail** | `GET /api/bug-budget/[id]` |
+| **CSV** | `GET /api/bug-budget/export/csv` + `/bug-budget/export/csv` — D-1 fixed (19 aligned cols + computed cost) |
+| **Tests** | Domain 33 (incl. CSV); infra 17; typecheck green |
+| **Deferred** | Cache TTLs (BB-CACHE-01), SQL-side filtering for large datasets |
+
+### 2026-07-11 — Save-connection API
+
+| Event | Details |
+|---|---|
+| **Routes** | `GET\|POST /api/settings/bug-budget/save-connection` (+ alias `/connection`) |
+| **Behavior** | Persists `jira_url` / `jira_username` / `jira_api_token` / `jira_enabled`; masked token keeps stored secret (BB-NFR-04) |
+| **Tests** | `parseJiraConnectionBody` / `toPublicJiraConnection` (6 cases) |
+
+### 2026-07-11 — Phase 2 Sync Hardening (per-page + inline)
+
+| Event | Details |
+|---|---|
+| **Per-page Inngest steps** | `syncOnePage` / `runOrphanCleanup` extracted; job runs one durable step per Jira page |
+| **BB-SYNC-07** | Non-prod inline sync via `after()` when `INNGEST_EVENT_KEY` unset (`shouldRunInlineSync`) |
+| **Shared runner** | `executeBugBudgetSyncRun` used by Inngest + inline paths |
+| **Legacy alias** | `POST .../sync-with-database` → sync-with-progress |
+| **Tests** | 11 infra Vitest tests (orchestrator + inline policy) |
+| **E2E blocker** | Momus DB still has `jira_enabled=false` and empty username/token — live sync pending credentials |
+| **Status** | 🟡 Phase 2 code complete; sandbox E2E awaits Jira settings |
+
+### 2026-07-11 — Phase 2 Jira Client + Sync Wiring
+
+| Event | Details |
+|---|---|
+| **Jira client** | `@momus/infra` REST v3: search/jql, approximate-count, myself, 429 Retry-After (BB-SYNC-01) |
+| **Orchestrator** | `runBugBudgetSync` — upsert, progress, orphan cleanup guards (date filter + BB-EDGE-10 cap), per-issue errors (BB-SYNC-05); 6 Vitest tests |
+| **Repos** | `SyncRunRepository`, `BugBudgetRepository`, cache version bump, config (multipliers/projects/cron) |
+| **Inngest** | `bug-budget/sync` job + stuck-run sweeper cron; `/api/inngest` serve route (BB-SYNC-06, BB-NFR-05) |
+| **Settings API** | test-connection, get-issue-count, fetch-from-jira, sync-with-progress (409), sync-status, save-multipliers, save-project-settings, cron-schedule (BB-API-06) |
+| **Auth** | Dev stub via `MOMUS_DEV_AUTH_BYPASS` + seeded `admin@momus.local` (full auth Phase 3) |
+| **Deferred** | DEV-9 Vault encryption; per-page Inngest steps; BB-SCHED-01 tick (Phase 5) |
+| **Status** | 🟡 Phase 2 core wiring done; live Jira sandbox E2E still needed for exit criteria |
+
+### 2026-07-11 — Phase 1 Domain Logic Complete
+
+| Event | Details |
+|---|---|
+| **Package** | `@momus/domain` — cost, budget status, summary, age, transform, JQL, filters, stats, badges |
+| **Golden fixtures** | Appendix A.1 / A.2 / A.3 all green (30 Vitest tests) |
+| **OQ-1** | Default JQL uses rolling calendar year at runtime (`buildDefaultJql`) |
+| **Status** | 🟢 Phase 1 exit criteria met for domain package |
+
+### 2026-07-11 — Remote Supabase Migrations Applied
+
+| Event | Details |
+|---|---|
+| **Target project** | `performance` (`puwugzzvxvatgjhpdagy`, ap-northeast-2, ACTIVE) |
+| **Migrations applied** | `momus_initial_schema`, `momus_rls_policies`, `momus_seed_data` |
+| **Adaptations** | Skipped `users`, `settings`, `audit_logs` (pre-existing). `requested_by` uses INTEGER FK to existing `users.id`. |
+| **Seed verified** | 6 config rows, 1 cron schedule, 12 Jira field mappings, 8 QA names, 6 holidays |
+| **Status** | 🟢 Remote database ready for Momus development |
+
+### 2026-07-11 — Phase 0 Foundation (Database + Framework)
+
+| Event | Details |
+|---|---|
+| **Monorepo scaffolded** | Turborepo + pnpm workspaces with `apps/web`, `packages/{shared,domain,infra,jobs}`. |
+| **Next.js 15 app** | App Router with `/`, `/bug-budget` placeholder, `/api/health` endpoint. Build verified green. |
+| **Supabase migrations** | 3 migrations: initial schema (11 tables), RLS policies, seed data (multipliers, mappings, holidays). |
+| **Docker** | `docker/docker-compose.yml` for web + Inngest dev; Supabase via CLI. |
+| **CI** | GitHub Actions workflow for typecheck + build. |
+| **Status** | 🟢 Phase 0 scaffold complete — run `supabase start` + `pnpm db:reset` locally to apply migrations. |
+
 ### 2026-07-11 — Project Initialization & Planning
 
 | Event | Details |
@@ -122,12 +207,17 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 | Feature | Phase | Date | PRD Refs |
 |---|---|---|---|
+| Turborepo monorepo scaffold | 0 | 2026-07-11 | plan.md §3 |
+| Next.js 15 web app (placeholder pages) | 0 | 2026-07-11 | BB-UI-02 scaffold |
+| Supabase schema migrations (11 tables) | 0 | 2026-07-11 | BB-DATA-01–05, DEV-1/3/4/5 |
+| RLS policies + permission helper | 0 | 2026-07-11 | BB-PERM-01 |
+| Seed data (multipliers, mappings, holidays) | 0 | 2026-07-11 | §4.5C, Appendix A prep |
+| Docker Compose (web + Inngest) | 0 | 2026-07-11 | plan.md §9 |
+| CI pipeline (GitHub Actions) | 0 | 2026-07-11 | plan.md Phase 0 |
 | PRD analysis | — | 2026-07-11 | Full document |
 | Implementation plan | — | 2026-07-11 | §15 traceability |
 | Development conventions | — | 2026-07-11 | — |
 | Cursor agent rules | — | 2026-07-11 | — |
-
-*No application code implemented yet.*
 
 ---
 
@@ -135,12 +225,15 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ### Phase 0 — Foundation
 
-- [ ] Initialize Turborepo monorepo (pnpm workspaces)
-- [ ] TypeScript, ESLint, Prettier, Husky configuration
-- [ ] Supabase migrations for all tables
-- [ ] Docker Compose local environment
-- [ ] CI pipeline (GitHub Actions)
-- [ ] Seed golden fixture data
+- [x] Initialize Turborepo monorepo (pnpm workspaces)
+- [x] Configure TypeScript strict mode, Prettier
+- [ ] Configure ESLint, Husky pre-commit
+- [x] Supabase migrations for all tables
+- [x] Docker Compose local environment
+- [x] CI pipeline (GitHub Actions)
+- [ ] Seed golden fixture data (Appendix A test rows)
+- [x] Apply migrations locally (`supabase start` + `db:reset`)
+- [x] Apply migrations to remote Supabase (`performance` project)
 
 ### Phase 1 — Domain Logic
 
@@ -156,12 +249,14 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ### Phase 2 — Jira Integration & Sync
 
-- [ ] Jira REST v3 client (BB-SYNC-01)
-- [ ] Encrypted credential storage (DEV-9)
-- [ ] Sync orchestrator (BB-SYNC-05)
-- [ ] Inngest job functions (BB-SYNC-06)
-- [ ] Concurrency guard 409 (BB-SYNC-09)
-- [ ] Settings API routes (BB-API-06)
+- [x] Encrypted credential storage (DEV-9) — deferred; settings store plaintext + mask in UI
+- [x] Sync orchestrator (BB-SYNC-05) + Vitest
+- [x] Inngest job functions (BB-SYNC-06) + stuck-run sweeper (BB-NFR-05) + per-page steps
+- [x] Inline sync non-prod (BB-SYNC-07)
+- [x] Concurrency guard 409 (BB-SYNC-09)
+- [x] Settings API routes (BB-API-06 core)
+- [x] Sync-run / bug_budget repositories + cache version bump
+- [ ] Live Jira sandbox E2E (blocked: credentials not in `settings`)
 
 ### Phase 3 — API & Data Access
 
@@ -216,10 +311,10 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 | ID | Name | Target | Status | Notes |
 |---|---|---|---|---|
-| M0 | Scaffold | Week 2 | ⬜ Not started | Monorepo + schema + Docker |
-| M1 | Domain Parity | Week 3 | ⬜ Not started | Appendix A fixtures green |
-| M2 | Sync Pipeline | Week 5 | ⬜ Not started | Jira sync end-to-end |
-| M3 | API Complete | Week 5 | ⬜ Not started | All §8 endpoints |
+| M0 | Scaffold | Week 2 | ✅ Done | Monorepo + Momus Supabase project |
+| M1 | Domain Parity | Week 3 | ✅ Done | Appendix A fixtures green (30 tests) |
+| M2 | Sync Pipeline | Week 5 | 🟡 In progress | Jira client + orchestrator + Inngest + settings API wired |
+| M3 | API Complete | Week 5 | 🟡 In progress | Summaries + dashboard + CSV done; cache pending |
 | M4 | UI Parity | Week 7 | ⬜ Not started | QA visual review |
 | M5 | Ops Ready | Week 8 | ⬜ Not started | Scheduler + audit |
 | M6 | Migration Validated | Week 10 | ⬜ Not started | Parallel run clean |
