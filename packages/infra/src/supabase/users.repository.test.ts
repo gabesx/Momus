@@ -53,13 +53,26 @@ function makeUserRow(overrides: Partial<Record<string, unknown>> = {}) {
 function makeUsersTableMock(options: {
   existingByAuthUserId?: ReturnType<typeof makeUserRow> | null;
   insertResult?: ReturnType<typeof makeUserRow>;
+  insertError?: { code?: string; message?: string } | null;
+  /** After a failed insert race, subsequent auth_user_id lookups return this row. */
+  raceExistingByAuthUserId?: ReturnType<typeof makeUserRow> | null;
 }) {
+  let authLookupCount = 0;
   const selectChain = {
     eq: vi.fn().mockReturnThis(),
     order: vi.fn().mockReturnThis(),
-    maybeSingle: vi.fn().mockResolvedValue({
-      data: options.existingByAuthUserId ?? null,
-      error: null,
+    maybeSingle: vi.fn().mockImplementation(async () => {
+      authLookupCount += 1;
+      if (
+        authLookupCount > 1 &&
+        options.raceExistingByAuthUserId !== undefined
+      ) {
+        return { data: options.raceExistingByAuthUserId, error: null };
+      }
+      return {
+        data: options.existingByAuthUserId ?? null,
+        error: null,
+      };
     }),
     single: vi.fn().mockResolvedValue({
       data: options.insertResult ?? makeUserRow(),
@@ -72,8 +85,8 @@ function makeUsersTableMock(options: {
     insert: vi.fn().mockReturnValue({
       select: vi.fn().mockReturnValue({
         single: vi.fn().mockResolvedValue({
-          data: options.insertResult ?? makeUserRow(),
-          error: null,
+          data: options.insertError ? null : (options.insertResult ?? makeUserRow()),
+          error: options.insertError ?? null,
         }),
       }),
     }),
@@ -262,6 +275,42 @@ describe('UsersRepository', () => {
       expect(result.user.approval_status).toBe('pending');
       expect(result.user.permissions).toEqual([]);
     }
+  });
+
+  it('ensureUser returns existing user when insert races on auth_user_id', async () => {
+    const raced = makeUserRow({
+      id: 9,
+      auth_user_id: 'auth-race',
+      approval_status: 'pending',
+    });
+    const { db } = makeAllowlistDb({
+      domains: ['allofresh.id'],
+      users: makeUsersTableMock({
+        existingByAuthUserId: null,
+        insertError: { code: '23505', message: 'duplicate key value violates unique constraint' },
+        raceExistingByAuthUserId: raced,
+      }),
+    });
+
+    const repo = new UsersRepository(db);
+    const result = await repo.ensureUser({
+      authUserId: 'auth-race',
+      email: 'race@allofresh.id',
+      name: 'Race User',
+    });
+
+    expect(result).toEqual({
+      ok: true,
+      user: {
+        id: 9,
+        email: 'user@allofresh.id',
+        name: 'Test User',
+        is_candidate: false,
+        auth_user_id: 'auth-race',
+        approval_status: 'pending',
+        permissions: [],
+      },
+    });
   });
 
   it('approveUser throws when permissions are invalid', async () => {

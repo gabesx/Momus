@@ -1,4 +1,8 @@
-import { isEmailAllowlisted, type ApprovalStatus } from '@momus/domain';
+import {
+  isEmailAllowlisted,
+  normalizeEmail,
+  type ApprovalStatus,
+} from '@momus/domain';
 import type { SupabaseClient } from '@supabase/supabase-js';
 import { AuthAllowlistRepository } from './auth-allowlist.repository';
 
@@ -96,6 +100,18 @@ function isAuthUserConflict(error: { message?: string; status?: number }): boole
   );
 }
 
+function isUniqueViolation(error: {
+  code?: string;
+  message?: string;
+}): boolean {
+  const msg = (error.message ?? '').toLowerCase();
+  return (
+    error.code === '23505' ||
+    msg.includes('duplicate key') ||
+    msg.includes('unique constraint')
+  );
+}
+
 const USER_SELECT =
   'id, email, name, is_candidate, auth_user_id, approval_status, user_permissions(permission)';
 
@@ -129,7 +145,7 @@ export class UsersRepository {
       .from('users')
       .insert({
         auth_user_id: input.authUserId,
-        email: input.email,
+        email: normalizeEmail(input.email),
         name: input.name,
         is_candidate: false,
         approval_status: 'pending',
@@ -137,7 +153,14 @@ export class UsersRepository {
       .select(USER_SELECT)
       .single();
 
-    if (error) throw new Error(`ensureUser insert failed: ${error.message}`);
+    if (error) {
+      // Concurrent ensureUser: another request won the insert race.
+      if (isUniqueViolation(error)) {
+        const raced = await this.getUserByAuthUserId(input.authUserId);
+        if (raced) return { ok: true, user: raced };
+      }
+      throw new Error(`ensureUser insert failed: ${error.message}`);
+    }
 
     return { ok: true, user: mapUserRow(data as UserRow) };
   }
