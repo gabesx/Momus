@@ -1,5 +1,6 @@
 import { BugBudgetConfigRepository, createServerClient } from '@momus/infra';
 import { MESSAGES } from '@momus/shared';
+import { writeSettingsAudit } from '@/lib/audit';
 import { assertCsrf, requireAccessSettings } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
@@ -39,7 +40,9 @@ export async function POST(request: Request) {
     }
 
     const db = createServerClient();
-    const schedule = await new BugBudgetConfigRepository(db).saveCronSchedule({
+    const repo = new BugBudgetConfigRepository(db);
+    const before = await repo.getOrCreateCronSchedule();
+    const schedule = await repo.saveCronSchedule({
       is_active: Boolean(body.is_active),
       schedule_type: scheduleType as 'daily' | 'weekly' | 'monthly' | 'custom',
       interval_days: intervalDays,
@@ -49,6 +52,15 @@ export async function POST(request: Request) {
       jql: body.jql != null ? String(body.jql) : null,
       batch_size: body.batch_size != null ? Number(body.batch_size) : 50,
       max_total_issues: body.max_total_issues != null ? Number(body.max_total_issues) : 0,
+    });
+    await writeSettingsAudit({
+      db,
+      userId: auth.user.id,
+      action: 'update',
+      entityType: 'cron_schedules',
+      entityKey: 'bug_budget_sync',
+      beforeValue: before as unknown as Record<string, unknown>,
+      afterValue: schedule as unknown as Record<string, unknown>,
     });
 
     return jsonOk({ message: MESSAGES.M17, schedule });

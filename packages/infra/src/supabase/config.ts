@@ -1,3 +1,4 @@
+import { computeNextRunAt as computeNextRunAtDomain } from '@momus/domain';
 import type { SupabaseClient } from '@supabase/supabase-js';
 
 export type MultipliersPayload = {
@@ -154,7 +155,7 @@ export function parseMultipliers(body: Record<string, unknown>): MultipliersPayl
   };
 }
 
-/** Compute next_run_at in Asia/Jakarta from schedule fields (simplified). */
+/** Compute next_run_at in Asia/Jakarta from schedule fields. */
 export function computeNextRunAt(input: {
   schedule_type: string;
   interval_days: number;
@@ -163,36 +164,7 @@ export function computeNextRunAt(input: {
   day_of_month?: number | null;
   from?: Date;
 }): string {
-  const from = input.from ?? new Date();
-  const [hh, mm] = input.time.split(':').map(Number);
-  const next = new Date(from);
-  next.setSeconds(0, 0);
-  next.setHours(hh || 0, mm || 0, 0, 0);
-
-  if (next <= from) {
-    next.setDate(next.getDate() + 1);
-  }
-
-  if (input.schedule_type === 'custom') {
-    next.setDate(from.getDate() + Math.max(1, input.interval_days));
-    next.setHours(hh || 0, mm || 0, 0, 0);
-  } else if (input.schedule_type === 'weekly' && input.day_of_week) {
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const target = days.indexOf(input.day_of_week.toLowerCase());
-    if (target >= 0) {
-      while (next.getDay() !== target || next <= from) {
-        next.setDate(next.getDate() + 1);
-      }
-    }
-  } else if (input.schedule_type === 'monthly' && input.day_of_month) {
-    next.setDate(input.day_of_month);
-    if (next <= from) {
-      next.setMonth(next.getMonth() + 1);
-      next.setDate(input.day_of_month);
-    }
-  }
-
-  return next.toISOString();
+  return computeNextRunAtDomain({ ...input, from: input.from });
 }
 
 export class BugBudgetConfigRepository {
@@ -339,5 +311,33 @@ export class BugBudgetConfigRepository {
     const { data, error } = await this.db.from('bug_budget').select('project');
     if (error) throw new Error(`listDistinctProjects failed: ${error.message}`);
     return [...new Set((data ?? []).map((r) => r.project as string).filter(Boolean))];
+  }
+
+  async listDueCronSchedules(nowIso: string): Promise<CronScheduleRow[]> {
+    const { data, error } = await this.db
+      .from('cron_schedules')
+      .select('*')
+      .eq('is_active', true)
+      .eq('command', 'bug-budget:sync')
+      .lte('next_run_at', nowIso)
+      .order('next_run_at', { ascending: true });
+    if (error) throw new Error(`listDueCronSchedules failed: ${error.message}`);
+    return (data ?? []) as CronScheduleRow[];
+  }
+
+  async markCronTriggered(
+    id: number,
+    input: {
+      last_run_at: string;
+      last_run_status: string;
+      last_run_result: string;
+      next_run_at: string;
+    },
+  ): Promise<void> {
+    const { error } = await this.db
+      .from('cron_schedules')
+      .update({ ...input, updated_at: new Date().toISOString() })
+      .eq('id', id);
+    if (error) throw new Error(`markCronTriggered failed: ${error.message}`);
   }
 }

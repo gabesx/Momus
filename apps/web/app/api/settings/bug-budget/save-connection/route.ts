@@ -4,6 +4,7 @@ import {
   saveJiraSettings,
   toPublicJiraConnection,
 } from '@momus/infra';
+import { writeSettingsAudit } from '@/lib/audit';
 import { assertCsrf, requireAccessSettings } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
@@ -34,11 +35,21 @@ export async function POST(request: Request) {
   try {
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const stored = await getJiraSettings();
+    const beforePublic = toPublicJiraConnection(stored);
     const next = parseJiraConnectionBody(body, stored);
     await saveJiraSettings(next);
+    const afterPublic = toPublicJiraConnection(next);
+    await writeSettingsAudit({
+      userId: auth.user.id,
+      action: 'update',
+      entityType: 'settings',
+      entityKey: 'jira',
+      beforeValue: beforePublic as unknown as Record<string, unknown>,
+      afterValue: afterPublic as unknown as Record<string, unknown>,
+    });
     return jsonOk({
       message: 'Jira connection saved successfully!',
-      connection: toPublicJiraConnection(next),
+      connection: afterPublic,
     });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to save connection';

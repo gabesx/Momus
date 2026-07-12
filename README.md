@@ -40,10 +40,9 @@ Open:
 - App: http://localhost:3000
 - Bug Budget: http://localhost:3000/bug-budget
 - Health: http://localhost:3000/api/health
-- Local Supabase API: http://127.0.0.1:54421
-- Supabase Studio: http://localhost:54423
-
-Local Supabase ports are **5442x** (not the default 5432x) so Momus can run beside other projects such as `horus`.
+- Worker health: http://localhost:3000/api/health/worker
+- Supabase Studio: http://localhost:54323
+- Ops runbook: [docs/ops/runbook.md](docs/ops/runbook.md)
 
 ## Project Structure
 

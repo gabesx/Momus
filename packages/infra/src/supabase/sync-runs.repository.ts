@@ -1,4 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { selectSyncRunIdsToPrune, type SyncRunRetentionRow } from '@momus/domain';
 import type { SyncStatus } from '@momus/shared';
 
 export type SyncRunRow = {
@@ -160,5 +161,46 @@ export class SyncRunRepository {
       .limit(limit);
     if (error) throw new Error(`listRecent sync runs failed: ${error.message}`);
     return (data ?? []) as SyncRunRow[];
+  }
+
+  async listRetentionCandidates(): Promise<SyncRunRetentionRow[]> {
+    const { data, error } = await this.db
+      .from('bug_budget_sync_runs')
+      .select('id, created_at, status')
+      .order('created_at', { ascending: false });
+    if (error) throw new Error(`listRetentionCandidates failed: ${error.message}`);
+    return (data ?? []) as SyncRunRetentionRow[];
+  }
+
+  async deleteByIds(ids: number[], batchSize = 200): Promise<number> {
+    if (ids.length === 0) return 0;
+    let deleted = 0;
+    for (let i = 0; i < ids.length; i += batchSize) {
+      const chunk = ids.slice(i, i + batchSize);
+      const { data, error } = await this.db
+        .from('bug_budget_sync_runs')
+        .delete()
+        .in('id', chunk)
+        .select('id');
+      if (error) throw new Error(`deleteByIds failed: ${error.message}`);
+      deleted += data?.length ?? 0;
+    }
+    return deleted;
+  }
+
+  /** Apply BB-LIFE-02: keep newest 500 ∪ last 180d; never delete queued/running. */
+  async prunePerRetentionPolicy(now: Date = new Date()): Promise<{
+    deleted: number;
+    kept: number;
+    candidateCount: number;
+  }> {
+    const candidates = await this.listRetentionCandidates();
+    const toDelete = selectSyncRunIdsToPrune(candidates, now);
+    const deleted = await this.deleteByIds(toDelete);
+    return {
+      deleted,
+      kept: candidates.length - deleted,
+      candidateCount: candidates.length,
+    };
   }
 }
