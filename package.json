@@ -14,7 +14,9 @@
     "db:stop": "supabase stop",
     "db:reset": "supabase db reset",
     "db:migrate": "supabase migration up",
-    "db:types": "supabase gen types typescript --local > packages/shared/src/database.types.ts"
+    "db:types": "supabase gen types typescript --local > packages/shared/src/database.types.ts",
+    "mig:copy": "pnpm --filter @momus/migration copy",
+    "mig:reconcile": "pnpm --filter @momus/migration reconcile"
   },
   "devDependencies": {
     "@types/node": "^22.13.10",
