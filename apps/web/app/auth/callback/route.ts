@@ -5,21 +5,42 @@ import { NextResponse, type NextRequest } from 'next/server';
 
 import { getSupabasePublicEnv } from '@/lib/supabase/env';
 
+type CookieToSet = { name: string; value: string; options: CookieOptions };
+
+/** Same-origin relative path only; rejects protocol-relative and backslash tricks. */
 function safeRedirectPath(next: string | null): string {
   if (!next) return '/';
-  if (!next.startsWith('/') || next.startsWith('//')) return '/';
-  return next;
+  if (!next.startsWith('/') || next.startsWith('//') || next.includes('\\')) return '/';
+  try {
+    const resolved = new URL(next, 'http://momus.local');
+    if (resolved.origin !== 'http://momus.local') return '/';
+    return `${resolved.pathname}${resolved.search}${resolved.hash}` || '/';
+  } catch {
+    return '/';
+  }
+}
+
+function redirectWithCookies(
+  url: URL,
+  cookies: CookieToSet[],
+): NextResponse {
+  const response = NextResponse.redirect(url);
+  for (const { name, value, options } of cookies) {
+    response.cookies.set(name, value, options);
+  }
+  return response;
 }
 
 function redirectToSignIn(
   request: NextRequest,
   error: 'auth' | 'denied' | 'not_allowlisted',
+  cookies: CookieToSet[] = [],
 ): NextResponse {
   const url = request.nextUrl.clone();
   url.pathname = '/sign-in';
   url.search = '';
   url.searchParams.set('error', error);
-  return NextResponse.redirect(url);
+  return redirectWithCookies(url, cookies);
 }
 
 function authNameFromMetadata(meta: Record<string, unknown>): string | null {
@@ -40,7 +61,7 @@ export async function GET(request: NextRequest) {
   }
 
   const redirectPath = safeRedirectPath(next);
-  let response = NextResponse.redirect(new URL(redirectPath, request.url));
+  const cookiesToSet: CookieToSet[] = [];
 
   const { url, anonKey } = getSupabasePublicEnv();
   const supabase = createSupabaseServerClient(url, anonKey, {
@@ -48,9 +69,9 @@ export async function GET(request: NextRequest) {
       getAll() {
         return request.cookies.getAll();
       },
-      setAll(cookiesToSet: { name: string; value: string; options: CookieOptions }[]) {
-        cookiesToSet.forEach(({ name, value, options }) => {
-          response.cookies.set(name, value, options);
+      setAll(cookies: CookieToSet[]) {
+        cookies.forEach((cookie) => {
+          cookiesToSet.push(cookie);
         });
       },
     },
@@ -59,7 +80,7 @@ export async function GET(request: NextRequest) {
   const { error } = await supabase.auth.exchangeCodeForSession(code);
 
   if (error) {
-    return redirectToSignIn(request, 'auth');
+    return redirectToSignIn(request, 'auth', cookiesToSet);
   }
 
   const {
@@ -67,7 +88,7 @@ export async function GET(request: NextRequest) {
   } = await supabase.auth.getUser();
 
   if (!user?.email) {
-    return redirectToSignIn(request, 'auth');
+    return redirectToSignIn(request, 'auth', cookiesToSet);
   }
 
   try {
@@ -80,7 +101,7 @@ export async function GET(request: NextRequest) {
 
     if (!result.ok) {
       await supabase.auth.signOut();
-      return redirectToSignIn(request, 'not_allowlisted');
+      return redirectToSignIn(request, 'not_allowlisted', cookiesToSet);
     }
 
     const access = canAccessApp({
@@ -90,17 +111,19 @@ export async function GET(request: NextRequest) {
 
     if (access === 'denied') {
       await supabase.auth.signOut();
-      return redirectToSignIn(request, 'denied');
+      return redirectToSignIn(request, 'denied', cookiesToSet);
     }
 
     if (access === 'pending') {
-      response = NextResponse.redirect(new URL('/pending-approval', request.url));
-      return response;
+      return redirectWithCookies(
+        new URL('/pending-approval', request.url),
+        cookiesToSet,
+      );
     }
 
-    return response;
+    return redirectWithCookies(new URL(redirectPath, request.url), cookiesToSet);
   } catch {
     await supabase.auth.signOut();
-    return redirectToSignIn(request, 'auth');
+    return redirectToSignIn(request, 'auth', cookiesToSet);
   }
 }
