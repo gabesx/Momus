@@ -81,7 +81,13 @@ export function AppHeader() {
     router.refresh();
   };
 
-  if (pathname === '/sign-in') return null;
+  if (
+    pathname === '/sign-in' ||
+    pathname === '/pending-approval' ||
+    pathname.startsWith('/auth/')
+  ) {
+    return null;
+  }
 
   const links = NAV.filter(
     (item) => !item.requires || user?.permissions.includes(item.requires),

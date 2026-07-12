@@ -165,6 +165,27 @@ a {
   margin-top: 4rem;
 }
 
+.bb-sign-in__google {
+  width: 100%;
+}
+
+.bb-sign-in__divider {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin: 1.25rem 0;
+  color: var(--bb-secondary);
+  font-size: 0.875rem;
+}
+
+.bb-sign-in__divider::before,
+.bb-sign-in__divider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: var(--bb-border);
+}
+
 @media (max-width: 800px) {
   .bb-app-nav {
     display: none;
