@@ -36,14 +36,25 @@ file_size_limit = "50MiB"
 
 [auth]
 enabled = true
-site_url = "http://localhost:3000"
-additional_redirect_urls = ["http://localhost:3000"]
+# Production Site URL (Momus Vercel). Local callbacks are allowlisted below.
+site_url = "https://momus.vercel.app"
+additional_redirect_urls = [
+  "https://momus.vercel.app/auth/callback",
+  "https://*.vercel.app/auth/callback",
+  "http://127.0.0.1:3000/auth/callback",
+  "http://localhost:3000/auth/callback",
+]
 jwt_expiry = 3600
 enable_signup = true
 
 [auth.email]
 enable_signup = true
 enable_confirmations = false
+
+# Google OAuth2 is configured on the remote Momus project (Dashboard / last config push).
+# Do not store client secrets in this file.
+# Authorized redirect URI:
+#   https://sdzoovwjcjqjgfoqszpf.supabase.co/auth/v1/callback
 
 [edge_runtime]
 enabled = true
