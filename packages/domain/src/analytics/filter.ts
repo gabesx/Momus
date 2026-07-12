@@ -65,7 +65,7 @@ function jakartaDateKey(iso: string): string {
 export function applyAnalyticsFilters(
   rows: AnalyticsIssueRow[],
   params: AnalyticsFilterParams,
-  nowIso: string,
+  _nowIso: string,
 ): AnalyticsIssueRow[] {
   let out = rows;
   const year = params.year;
@@ -74,12 +74,6 @@ export function applyAnalyticsFilters(
     out = out.filter(
       (r) => r.created_year === y || (r.created_date && jakartaYearMonth(r.created_date).y === y),
     );
-  } else if (!params.date_from && !params.date_to) {
-    const start = new Date(defaultWindowStartIso(nowIso)).getTime();
-    out = out.filter((r) => {
-      if (!r.created_date) return false;
-      return new Date(r.created_date).getTime() >= start;
-    });
   }
   if (params.date_from) {
     const from = params.date_from.slice(0, 10);

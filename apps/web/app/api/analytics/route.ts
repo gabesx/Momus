@@ -38,7 +38,7 @@ export async function GET(request: Request) {
         ? `Showing data for year ${params.year}`
         : params.date_from || params.date_to
           ? 'Showing data for selected date range'
-          : 'Showing recent bug/defect data (default last 24 months)';
+          : 'Showing all years';
     return jsonOk({
       summary,
       trends,

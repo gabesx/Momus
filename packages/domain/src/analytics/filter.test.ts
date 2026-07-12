@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { applyAnalyticsFilters, defaultWindowStartIso } from './filter';
+import { applyAnalyticsFilters } from './filter';
 import type { AnalyticsIssueRow } from './types';
 
 const nowIso = '2026-07-11T12:00:00+07:00';
@@ -19,13 +19,11 @@ describe('applyAnalyticsFilters', () => {
     expect(result).toHaveLength(3);
   });
 
-  it('applies 24-month default window when year unset', () => {
-    const start = defaultWindowStartIso(nowIso);
-    expect(start).toBe('2024-08-01T00:00:00+07:00');
+  it('keeps all years when year and date range are unset', () => {
     const result = applyAnalyticsFilters(rows, {}, nowIso);
-    expect(result.every((r) => r.created_date)).toBe(true);
-    expect(result.some((r) => r.created_date?.startsWith('2020'))).toBe(false);
-    expect(result).toHaveLength(4);
+    expect(result.some((r) => r.created_date?.startsWith('2020'))).toBe(true);
+    // Rows without created_date are kept (no default date window).
+    expect(result).toHaveLength(rows.length);
   });
 
   it('filters bugs only via issue_type or final_issue_type', () => {

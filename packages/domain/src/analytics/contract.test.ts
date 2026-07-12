@@ -10,8 +10,28 @@ import {
 const nowIso = '2026-07-11T12:00:00+07:00';
 
 describe('analytics M1 contract', () => {
-  it('default window is 24 Jakarta months ending at now', () => {
+  it('defaultWindowStartIso still computes 24 Jakarta months (helper retained)', () => {
     expect(defaultWindowStartIso(nowIso)).toBe('2024-08-01T00:00:00+07:00');
+  });
+
+  it('default filter shows all years when year and date range are unset', () => {
+    const rows: AnalyticsIssueRow[] = [
+      {
+        project: 'A',
+        created_date: '2020-01-01T00:00:00+07:00',
+        created_year: 2020,
+        is_open: false,
+        issue_type: 'Bug',
+      },
+      {
+        project: 'A',
+        created_date: '2026-06-01T00:00:00+07:00',
+        created_year: 2026,
+        is_open: true,
+        issue_type: 'Bug',
+      },
+    ];
+    expect(applyAnalyticsFilters(rows, {}, nowIso)).toHaveLength(2);
   });
 
   it('prefers issue_type over final_issue_type when both are set', () => {
