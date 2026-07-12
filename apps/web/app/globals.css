@@ -846,6 +846,12 @@ button.linkish {
   grid-template-columns: repeat(4, minmax(0, 1fr));
   gap: 0.75rem 1rem;
   margin-bottom: 1rem;
+  background: var(--bb-surface);
+  border: 1px solid var(--bb-border);
+  border-radius: var(--bb-radius);
+  padding: 1rem;
+  box-shadow: var(--bb-shadow-sm);
+  backdrop-filter: blur(8px);
 }
 
 .bb-filters-body .field-span-2 {
