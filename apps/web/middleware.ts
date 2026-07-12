@@ -5,6 +5,7 @@ function isPublic(pathname: string): boolean {
   if (pathname === '/sign-in' || pathname.startsWith('/sign-in/')) return true;
   if (pathname === '/auth/callback' || pathname.startsWith('/auth/callback/')) return true;
   if (pathname === '/api/health' || pathname.startsWith('/api/health/')) return true;
+  if (pathname === '/api/inngest' || pathname.startsWith('/api/inngest/')) return true;
   if (pathname.startsWith('/_next')) return true;
   if (pathname === '/favicon.ico') return true;
   return false;

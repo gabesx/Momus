@@ -21,6 +21,16 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ## Changelog
 
+### 2026-07-12 — Supabase Auth (BB-PERM)
+
+| Event | Details |
+|---|---|
+| **Auth** | Supabase `@supabase/ssr` cookie sessions; `/sign-in` (password + magic link/OTP toggle) |
+| **Permissions** | `getSessionUser()` maps `auth_user_id` → `public.users` + `user_permissions` (BB-PERM-01/02/03) |
+| **Users admin** | `/settings/users` invite/edit via service role (`manage_users`) |
+| **Ops** | Bootstrap runbook: `docs/ops/supabase-auth-bootstrap.md` |
+| **Dev bypass** | `MOMUS_DEV_AUTH_BYPASS` local/Vitest only — not Vercel production |
+
 ### 2026-07-11 — Atlassian Settings UI
 
 | Event | Details |

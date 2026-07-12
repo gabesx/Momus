@@ -6,8 +6,6 @@ import { createSupabaseServerClient } from '@/lib/supabase/server';
 export type { AuthUser };
 export type UserPermission = 'view_analytics' | 'access_settings' | 'manage_users';
 
-export { SIGNED_OUT_COOKIE } from '@/lib/auth-constants';
-
 async function loadPermissions(userId: number | string): Promise<string[]> {
   const db = createServerClient();
   const { data: perms } = await db
