@@ -1,5 +1,9 @@
 import { describe, expect, it, vi } from 'vitest';
-import { runBugBudgetSync } from './orchestrator';
+import {
+  resolveSyncExpectedTotal,
+  runBugBudgetSync,
+  syncProgressPercentage,
+} from './orchestrator';
 import type { BugBudgetRow } from '@momus/domain';
 
 function issue(key: string): Record<string, unknown> {
@@ -228,5 +232,71 @@ describe('runBugBudgetSync (BB-SYNC-05)', () => {
     expect(out.totalProcessed).toBe(3);
     expect(out.newIssues).toBe(3);
     expect(out.isLast).toBe(true);
+  });
+});
+
+describe('resolveSyncExpectedTotal', () => {
+  it('uses Jira approx count when under the configured cap', () => {
+    expect(resolveSyncExpectedTotal(912, 10000)).toBe(912);
+  });
+
+  it('caps approx count by max_total_issues', () => {
+    expect(resolveSyncExpectedTotal(15000, 10000)).toBe(10000);
+  });
+
+  it('falls back to max_total_issues when approx is unavailable', () => {
+    expect(resolveSyncExpectedTotal(0, 10000)).toBe(10000);
+  });
+
+  it('returns 0 when neither approx nor cap is set', () => {
+    expect(resolveSyncExpectedTotal(0, 0)).toBe(0);
+  });
+});
+
+describe('syncProgressPercentage', () => {
+  it('scales against expected total and caps at 95', () => {
+    expect(syncProgressPercentage(456, 912)).toBe(47);
+    expect(syncProgressPercentage(912, 912)).toBe(95);
+  });
+});
+
+describe('runBugBudgetSync progress with approximateCount', () => {
+  it('reports expected_total from Jira approx count (not the raw cap)', async () => {
+    const searchPage = vi.fn().mockResolvedValue({
+      issues: [issue('A-1'), issue('A-2')],
+      isLast: true,
+    });
+    const approximateCount = vi.fn().mockResolvedValue(912);
+    const onProgress = vi.fn();
+
+    const result = await runBugBudgetSync({
+      jql: 'issuetype = Bug',
+      maxTotalIssues: 10000,
+      jira: { searchPage, fetchAllKeys: vi.fn(), approximateCount },
+      store: {
+        upsertMany: vi.fn(async (rows) => ({ newCount: rows.length, updatedCount: 0 })),
+        listKeys: vi.fn().mockResolvedValue([]),
+        deleteByKeys: vi.fn().mockResolvedValue(0),
+      },
+      onProgress,
+      nowIso: '2026-07-11T04:00:00.000Z',
+    });
+
+    expect(approximateCount).toHaveBeenCalledWith('issuetype = Bug');
+    expect(result.expected_total).toBe(912);
+    expect(onProgress).toHaveBeenCalledWith(
+      expect.objectContaining({
+        total_processed: 0,
+        expected_total: 912,
+        max_total_issues: 10000,
+      }),
+    );
+    expect(onProgress).toHaveBeenCalledWith(
+      expect.objectContaining({
+        total_processed: 2,
+        expected_total: 912,
+        is_last: true,
+      }),
+    );
   });
 });

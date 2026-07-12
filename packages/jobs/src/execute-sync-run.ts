@@ -11,6 +11,7 @@ import {
   runOrphanCleanup,
   syncMaxPages,
   syncOnePage,
+  resolveSyncExpectedTotal,
   syncProgressPercentage,
   type SyncAccumulators,
   type SyncResult,
@@ -122,11 +123,17 @@ async function executeInline(input: {
     jira,
     store,
     onProgress: async (p) => {
+      const expected =
+        p.expected_total > 0
+          ? p.expected_total
+          : p.max_total_issues > 0
+            ? p.max_total_issues
+            : 0;
       await input.runs.updateProgress(input.syncRunId, {
         processed: p.total_processed,
         currentBatch: p.current_batch,
-        percentage: syncProgressPercentage(p.total_processed, p.max_total_issues),
-        totalIssues: p.max_total_issues > 0 ? p.max_total_issues : undefined,
+        percentage: syncProgressPercentage(p.total_processed, expected),
+        totalIssues: expected > 0 ? expected : undefined,
       });
     },
     afterSuccess: async () => {
@@ -153,6 +160,32 @@ async function executePagedWithSteps(input: {
   const batchSize = Math.min(run.batch_size, 100);
   const maxPages = syncMaxPages(maxTotalIssues);
   const jql = run.jql.trim();
+
+  const expectedTotal = (await step.run('resolve-expected-total', async () => {
+    const jiraSettings = await getJiraSettings();
+    assertJiraEnabled(jiraSettings);
+    const jira = new JiraClient({
+      baseUrl: jiraSettings.url,
+      email: jiraSettings.username,
+      apiToken: jiraSettings.apiToken,
+    });
+    let approximate = 0;
+    try {
+      approximate = await jira.approximateCount(jql);
+    } catch {
+      approximate = 0;
+    }
+    const expected = resolveSyncExpectedTotal(approximate, maxTotalIssues);
+    if (expected > 0) {
+      await input.runs.updateProgress(syncRunId, {
+        processed: 0,
+        currentBatch: 0,
+        percentage: 0,
+        totalIssues: expected,
+      });
+    }
+    return expected;
+  })) as number;
 
   let accum: SyncAccumulators = {
     totalProcessed: 0,
@@ -189,8 +222,8 @@ async function executePagedWithSteps(input: {
       await input.runs.updateProgress(syncRunId, {
         processed: out.totalProcessed,
         currentBatch: page + 1,
-        percentage: syncProgressPercentage(out.totalProcessed, maxTotalIssues),
-        totalIssues: maxTotalIssues > 0 ? maxTotalIssues : undefined,
+        percentage: syncProgressPercentage(out.totalProcessed, expectedTotal),
+        totalIssues: expectedTotal > 0 ? expectedTotal : undefined,
       });
 
       return out;
@@ -249,5 +282,6 @@ async function executePagedWithSteps(input: {
     errors: accum.errors,
     jql_used: jql,
     deleted_issues: deletedIssues,
+    expected_total: expectedTotal > 0 ? expectedTotal : accum.totalProcessed,
   };
 }
