@@ -1,3 +1,4 @@
+import type { ApprovalStatus } from '@momus/domain';
 import {
   UserConflictError,
   UsersRepository,
@@ -7,13 +8,24 @@ import { NextResponse } from 'next/server';
 import { assertCsrf, requireManageUsers } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
-export async function GET() {
+const VALID_STATUSES = new Set<ApprovalStatus>(['pending', 'approved', 'rejected']);
+
+export async function GET(request: Request) {
   const auth = await requireManageUsers();
   if ('error' in auth) return auth.error;
 
+  const statusRaw = new URL(request.url).searchParams.get('status');
+  let filter: { status?: ApprovalStatus } | undefined;
+  if (statusRaw) {
+    if (!VALID_STATUSES.has(statusRaw as ApprovalStatus)) {
+      return jsonFail('status must be pending, approved, or rejected', 422);
+    }
+    filter = { status: statusRaw as ApprovalStatus };
+  }
+
   try {
     const repo = new UsersRepository(createServerClient());
-    const users = await repo.listUsers();
+    const users = await repo.listUsers(filter);
     return NextResponse.json({ success: true, users });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to list users';

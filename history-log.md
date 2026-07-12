@@ -21,6 +21,15 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ## Changelog
 
+### 2026-07-12 — Google OAuth2 + approval allowlist
+
+| Event | Details |
+|---|---|
+| **Auth** | Google OAuth2 + email/password self-signup; pending-approval gate |
+| **Allowlist** | Domain/email allowlist (`allofresh.id` seed); managed in Settings → Users |
+| **Ops** | Bootstrap runbook updated: `docs/ops/supabase-auth-bootstrap.md` |
+| **Migration** | `20260712120000_auth_approval_allowlist.sql` |
+
 ### 2026-07-12 — Supabase Auth (BB-PERM)
 
 | Event | Details |

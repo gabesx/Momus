@@ -2,27 +2,92 @@
 
 import { useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, Suspense, useState } from 'react';
+import { apiJson } from '@/lib/api-client';
 import { createSupabaseBrowserClient } from '@/lib/supabase/browser';
 
 function safeNext(next: string | null): string | null {
   if (!next) return null;
-  if (!next.startsWith('/') || next.startsWith('//')) return null;
-  return next;
+  if (!next.startsWith('/') || next.startsWith('//') || next.includes('\\')) return null;
+  try {
+    const resolved = new URL(next, 'http://momus.local');
+    if (resolved.origin !== 'http://momus.local') return null;
+    return `${resolved.pathname}${resolved.search}${resolved.hash}` || null;
+  } catch {
+    return null;
+  }
+}
+
+function authErrorMessage(error: string | null): string | null {
+  switch (error) {
+    case 'auth':
+      return 'Sign-in failed. Please try again.';
+    case 'denied':
+      return 'Your account access was denied. Contact an administrator.';
+    case 'not_allowlisted':
+      return 'Your email is not allowlisted. Contact an administrator to request access.';
+    default:
+      return null;
+  }
 }
 
 function SignInFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [mode, setMode] = useState<'password' | 'otp'>('password');
+  const [mode, setMode] = useState<'sign-in' | 'sign-up'>('sign-in');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [message, setMessage] = useState<string | null>(null);
   const [busy, setBusy] = useState(false);
 
-  const authError =
-    searchParams.get('error') === 'auth'
-      ? 'Sign-in failed. Please try again.'
-      : null;
+  const authError = authErrorMessage(searchParams.get('error'));
+  const next = safeNext(searchParams.get('next'));
+
+  const routeAfterEnsureUser = async () => {
+    const res = await apiJson<{ access?: 'ok' | 'pending' | 'denied' }>(
+      '/api/auth/ensure-user',
+      { method: 'POST' },
+    );
+
+    if (!res.success) {
+      setMessage(res.message ?? 'Could not complete sign-in.');
+      setBusy(false);
+      return;
+    }
+
+    setBusy(false);
+
+    if (res.access === 'pending') {
+      router.replace('/pending-approval');
+      router.refresh();
+      return;
+    }
+
+    if (res.access === 'denied') {
+      setMessage('Your account access was denied. Contact an administrator.');
+      await createSupabaseBrowserClient().auth.signOut();
+      return;
+    }
+
+    router.replace(next ?? '/');
+    router.refresh();
+  };
+
+  const onGoogleSignIn = async () => {
+    setBusy(true);
+    setMessage(null);
+
+    const supabase = createSupabaseBrowserClient();
+    const callbackUrl = new URL('/auth/callback', window.location.origin);
+    if (next) callbackUrl.searchParams.set('next', next);
+
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: callbackUrl.toString() },
+    });
+
+    setBusy(false);
+    if (error) setMessage(error.message);
+  };
 
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -31,31 +96,25 @@ function SignInFormInner() {
 
     const supabase = createSupabaseBrowserClient();
 
-    if (mode === 'password') {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      setBusy(false);
+    if (mode === 'sign-up') {
+      const { error } = await supabase.auth.signUp({ email, password });
       if (error) {
+        setBusy(false);
         setMessage(error.message);
         return;
       }
-      const next = safeNext(searchParams.get('next'));
-      router.replace(next ?? '/');
-      router.refresh();
+      await routeAfterEnsureUser();
       return;
     }
 
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: `${window.location.origin}/auth/callback`,
-      },
-    });
-    setBusy(false);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) {
+      setBusy(false);
       setMessage(error.message);
       return;
     }
-    setMessage('Check your email for a sign-in link.');
+
+    await routeAfterEnsureUser();
   };
 
   return (
@@ -69,16 +128,23 @@ function SignInFormInner() {
         <div className="settings-alert settings-alert--error">{authError}</div>
       ) : null}
       {message ? (
-        <div
-          className={`settings-alert ${
-            message.startsWith('Check your email')
-              ? 'settings-alert--info'
-              : 'settings-alert--error'
-          }`}
-        >
-          {message}
-        </div>
+        <div className="settings-alert settings-alert--error">{message}</div>
       ) : null}
+
+      <div className="btn-row">
+        <button
+          type="button"
+          className="btn btn-outline bb-sign-in__google"
+          disabled={busy}
+          onClick={() => void onGoogleSignIn()}
+        >
+          Continue with Google
+        </button>
+      </div>
+
+      <div className="bb-sign-in__divider" aria-hidden="true">
+        <span>or</span>
+      </div>
 
       <form onSubmit={(e) => void onSubmit(e)}>
         <label className="field">
@@ -93,58 +159,52 @@ function SignInFormInner() {
           />
         </label>
 
-        {mode === 'password' ? (
-          <label className="field">
-            <span>Password</span>
-            <input
-              type="password"
-              name="password"
-              autoComplete="current-password"
-              required
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </label>
-        ) : null}
+        <label className="field">
+          <span>Password</span>
+          <input
+            type="password"
+            name="password"
+            autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
+            required
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+          />
+        </label>
 
         <div className="btn-row">
           <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy
-              ? 'Please wait…'
-              : mode === 'password'
-                ? 'Sign in'
-                : 'Send magic link'}
+            {busy ? 'Please wait…' : mode === 'sign-up' ? 'Create account' : 'Sign in'}
           </button>
         </div>
       </form>
 
       <p className="muted" style={{ marginTop: '1rem' }}>
-        {mode === 'password' ? (
+        {mode === 'sign-in' ? (
           <>
-            Prefer a magic link?{' '}
+            Need an account?{' '}
             <button
               type="button"
               className="linkish"
               onClick={() => {
-                setMode('otp');
+                setMode('sign-up');
                 setMessage(null);
               }}
             >
-              Email me a sign-in link
+              Sign up with email
             </button>
           </>
         ) : (
           <>
-            Use password instead?{' '}
+            Already have an account?{' '}
             <button
               type="button"
               className="linkish"
               onClick={() => {
-                setMode('password');
+                setMode('sign-in');
                 setMessage(null);
               }}
             >
-              Sign in with password
+              Sign in
             </button>
           </>
         )}

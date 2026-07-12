@@ -20,11 +20,6 @@ const NAV = [
     match: (p: string) => p.startsWith('/tracker'),
   },
   {
-    href: '/leaderboard',
-    label: 'Leaderboard',
-    match: (p: string) => p.startsWith('/leaderboard'),
-  },
-  {
     href: '/bug-budget',
     label: 'Bug Budget',
     match: (p: string) => p.startsWith('/bug-budget'),
@@ -86,7 +81,13 @@ export function AppHeader() {
     router.refresh();
   };
 
-  if (pathname === '/sign-in') return null;
+  if (
+    pathname === '/sign-in' ||
+    pathname === '/pending-approval' ||
+    pathname.startsWith('/auth/')
+  ) {
+    return null;
+  }
 
   const links = NAV.filter(
     (item) => !item.requires || user?.permissions.includes(item.requires),

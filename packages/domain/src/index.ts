@@ -27,6 +27,8 @@ export * from './tracker/missing-fields';
 export * from './tracker/filter';
 export * from './tracker/patch';
 export * from './tracker/linked-test';
+export * from './auth/allowlist';
+export * from './auth/approval';
 export * from './leaderboard/types';
 export * from './leaderboard/period';
 export * from './leaderboard/compute';
