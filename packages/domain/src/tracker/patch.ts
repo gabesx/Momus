@@ -11,6 +11,10 @@ function isValidLinkedIssues(value: unknown): boolean {
   return false;
 }
 
+function isBlankString(value: string): boolean {
+  return value.trim() === '';
+}
+
 export function parseTrackerPatch(body: Record<string, unknown>): TrackerPatchResult {
   for (const key of Object.keys(body)) {
     if (!(TRACKER_EDITABLE_FIELDS as readonly string[]).includes(key)) {
@@ -34,6 +38,9 @@ export function parseTrackerPatch(body: Record<string, unknown>): TrackerPatchRe
 
     if (fieldValue !== null && typeof fieldValue !== 'string') {
       return { ok: false, message: `${key} must be a string or null` };
+    }
+    if (typeof fieldValue === 'string' && isBlankString(fieldValue)) {
+      return { ok: false, message: `${key} must not be blank` };
     }
     value[key] = fieldValue;
   }

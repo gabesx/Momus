@@ -52,4 +52,20 @@ describe('tracker M2', () => {
     expect(r.ok).toBe(true);
     if (r.ok) expect(r.value.parent).toBe('EPIC-1');
   });
+
+  it.each(['parent', 'severity_issue', 'service_feature'] as const)(
+    'parseTrackerPatch rejects blank %s',
+    (field) => {
+      for (const blank of ['', '   ', '\t\n']) {
+        const r = parseTrackerPatch({ [field]: blank });
+        expect(r.ok).toBe(false);
+        if (!r.ok) expect(r.message).toBe(`${field} must not be blank`);
+      }
+    },
+  );
+
+  it('parseTrackerPatch accepts null for string fields', () => {
+    const r = parseTrackerPatch({ parent: null, severity_issue: null, service_feature: null });
+    expect(r.ok).toBe(true);
+  });
 });
