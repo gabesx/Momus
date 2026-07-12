@@ -32,7 +32,7 @@ export function TrendChart({ trends, loading, onPeriodSelect }: Props) {
           {
             label: 'Bugs',
             data: trends.bugs,
-            borderColor: '#0d6efd',
+            borderColor: '#0d7377',
             backgroundColor: 'transparent',
             tension: 0.2,
             yAxisID: 'y',
@@ -40,7 +40,7 @@ export function TrendChart({ trends, loading, onPeriodSelect }: Props) {
           {
             label: 'Defects',
             data: trends.defects,
-            borderColor: '#dc3545',
+            borderColor: '#c94c4c',
             backgroundColor: 'transparent',
             tension: 0.2,
             yAxisID: 'y',
@@ -48,7 +48,7 @@ export function TrendChart({ trends, loading, onPeriodSelect }: Props) {
           {
             label: 'Total Issues',
             data: trends.total,
-            borderColor: '#20c997',
+            borderColor: '#2a9d6e',
             backgroundColor: 'transparent',
             tension: 0.2,
             yAxisID: 'y',
@@ -56,7 +56,7 @@ export function TrendChart({ trends, loading, onPeriodSelect }: Props) {
           {
             label: 'Resolution Rate (%)',
             data: trends.resolution_rate,
-            borderColor: '#6f42c1',
+            borderColor: '#3d8ea5',
             backgroundColor: 'transparent',
             borderDash: [6, 4],
             tension: 0.2,
