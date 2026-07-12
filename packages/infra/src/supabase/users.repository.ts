@@ -165,7 +165,7 @@ export class UsersRepository {
     return { ok: true, user: mapUserRow(data as UserRow) };
   }
 
-  async approveUser(id: number, permissions: string[]): Promise<UserRecord> {
+  async approveUser(id: number, permissions: unknown): Promise<UserRecord> {
     const existing = await this.getUserById(id);
     if (!existing) throw new UserNotFoundError(`User ${id} not found`);
 
