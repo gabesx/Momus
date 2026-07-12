@@ -84,6 +84,49 @@ function periodBannerSubtitle(meta: LeaderboardResult['meta'] | undefined): stri
 
 const TOP_N = 10;
 
+type DrillModalTab = 'matched' | 'incomplete' | 'all';
+
+function drillMatchedLabel(context: LeaderboardDrillContext, group: string | null): string {
+  switch (context) {
+    case 'issue_type':
+      if (group === 'Defect') return 'Defects';
+      if (group === 'Bug') return 'Bugs';
+      return 'By Issue Type';
+    case 'project':
+      return group ? `Project: ${group}` : 'By Project';
+    case 'accepted':
+      return 'Accepted';
+    case 'rejected':
+      return 'Rejected';
+    case 'incomplete':
+      return 'Incomplete';
+    case 'incomplete_field':
+      return group ? `Missing ${group}` : 'Incomplete';
+    case 'global':
+    default:
+      return 'All Reported';
+  }
+}
+
+function drillContextSubtitle(context: LeaderboardDrillContext, group: string | null): string {
+  switch (context) {
+    case 'issue_type':
+      return group ? ` · ${group} issues only` : '';
+    case 'project':
+      return group ? ` · project ${group}` : '';
+    case 'accepted':
+      return ' · accepted only';
+    case 'rejected':
+      return ' · rejected only';
+    case 'incomplete':
+      return ' · incomplete only';
+    case 'incomplete_field':
+      return group ? ` · missing ${group}` : ' · incomplete only';
+    default:
+      return '';
+  }
+}
+
 function RankExpandFooter({
   total,
   showAll,
@@ -335,7 +378,8 @@ export function LeaderboardDashboard() {
   const [drillReporter, setDrillReporter] = useState<string | null>(null);
   const [drillContext, setDrillContext] = useState<LeaderboardDrillContext>('global');
   const [drillGroup, setDrillGroup] = useState<string | null>(null);
-  const [drillModalTab, setDrillModalTab] = useState<'incomplete' | 'all'>('incomplete');
+  const [drillModalTab, setDrillModalTab] = useState<DrillModalTab>('all');
+  const [drillMatchedIssues, setDrillMatchedIssues] = useState<DrillIssue[]>([]);
   const [drillIncompleteIssues, setDrillIncompleteIssues] = useState<DrillIssue[]>([]);
   const [drillAllIssues, setDrillAllIssues] = useState<DrillIssue[]>([]);
   const [drillLoading, setDrillLoading] = useState(false);
@@ -343,10 +387,11 @@ export function LeaderboardDashboard() {
 
   const closeDrill = useCallback(() => {
     setDrillReporter(null);
+    setDrillMatchedIssues([]);
     setDrillIncompleteIssues([]);
     setDrillAllIssues([]);
     setDrillError(null);
-    setDrillModalTab('incomplete');
+    setDrillModalTab('all');
   }, []);
 
   const ready = useRef(false);
@@ -398,23 +443,31 @@ export function LeaderboardDashboard() {
     setDrillReporter(reporter);
     setDrillContext(context);
     setDrillGroup(group);
-    setDrillModalTab(context === 'global' ? 'all' : 'incomplete');
+    setDrillModalTab(context === 'global' ? 'all' : 'matched');
+    setDrillMatchedIssues([]);
     setDrillIncompleteIssues([]);
     setDrillAllIssues([]);
     setDrillError(null);
     setDrillLoading(true);
     try {
-      const incompleteContext: LeaderboardDrillContext =
-        context === 'incomplete_field' ? 'incomplete_field' : 'incomplete';
-      const incompleteGroup = context === 'incomplete_field' ? group : null;
-      const [incomplete, all] = await Promise.all([
-        fetchReporterIssues(reporter, incompleteContext, incompleteGroup),
-        fetchReporterIssues(reporter, 'global'),
+      const matchedPromise = fetchReporterIssues(reporter, context, group);
+      const allPromise =
+        context === 'global' ? matchedPromise : fetchReporterIssues(reporter, 'global');
+      const incompletePromise =
+        context === 'incomplete'
+          ? matchedPromise
+          : fetchReporterIssues(reporter, 'incomplete');
+      const [matched, all, incomplete] = await Promise.all([
+        matchedPromise,
+        allPromise,
+        incompletePromise,
       ]);
-      setDrillIncompleteIssues(incomplete);
+      setDrillMatchedIssues(matched);
       setDrillAllIssues(all);
+      setDrillIncompleteIssues(incomplete);
     } catch (err) {
       setDrillError(err instanceof Error ? err.message : 'Failed to load reporter issues');
+      setDrillMatchedIssues([]);
       setDrillIncompleteIssues([]);
       setDrillAllIssues([]);
     } finally {
@@ -744,9 +797,7 @@ export function LeaderboardDashboard() {
                 <h2>{drillReporter}</h2>
                 <p className="muted" style={{ margin: '0.25rem 0 0' }}>
                   Issues in the selected period
-                  {drillContext === 'incomplete_field' && drillGroup
-                    ? ` · missing ${drillGroup}`
-                    : ''}
+                  {drillContextSubtitle(drillContext, drillGroup)}
                 </p>
               </div>
               <button type="button" className="btn btn-outline" onClick={closeDrill}>
@@ -755,14 +806,26 @@ export function LeaderboardDashboard() {
             </div>
 
             <nav className="bb-lb-tabs bb-lb-drill-tabs" aria-label="Reporter issue views">
-              <button
-                type="button"
-                className={`bb-lb-tab${drillModalTab === 'incomplete' ? ' is-active' : ''}`}
-                onClick={() => setDrillModalTab('incomplete')}
-              >
-                Incomplete
-                <span className="bb-lb-tab__count">{drillIncompleteIssues.length}</span>
-              </button>
+              {drillContext !== 'global' ? (
+                <button
+                  type="button"
+                  className={`bb-lb-tab${drillModalTab === 'matched' ? ' is-active' : ''}`}
+                  onClick={() => setDrillModalTab('matched')}
+                >
+                  {drillMatchedLabel(drillContext, drillGroup)}
+                  <span className="bb-lb-tab__count">{drillMatchedIssues.length}</span>
+                </button>
+              ) : null}
+              {drillContext !== 'incomplete' ? (
+                <button
+                  type="button"
+                  className={`bb-lb-tab${drillModalTab === 'incomplete' ? ' is-active' : ''}`}
+                  onClick={() => setDrillModalTab('incomplete')}
+                >
+                  Incomplete
+                  <span className="bb-lb-tab__count">{drillIncompleteIssues.length}</span>
+                </button>
+              ) : null}
               <button
                 type="button"
                 className={`bb-lb-tab${drillModalTab === 'all' ? ' is-active' : ''}`}
@@ -784,15 +847,19 @@ export function LeaderboardDashboard() {
             {!drillLoading && !drillError
               ? (() => {
                   const activeIssues =
-                    drillModalTab === 'incomplete' ? drillIncompleteIssues : drillAllIssues;
+                    drillModalTab === 'matched'
+                      ? drillMatchedIssues
+                      : drillModalTab === 'incomplete'
+                        ? drillIncompleteIssues
+                        : drillAllIssues;
                   if (!activeIssues.length) {
-                    return (
-                      <p className="muted">
-                        {drillModalTab === 'incomplete'
+                    const emptyMsg =
+                      drillModalTab === 'matched'
+                        ? `No matching issues for this reporter in the selected period (${drillMatchedLabel(drillContext, drillGroup)}).`
+                        : drillModalTab === 'incomplete'
                           ? 'No incomplete issues for this reporter in the selected period.'
-                          : 'No reported issues for this reporter in the selected period.'}
-                      </p>
-                    );
+                          : 'No reported issues for this reporter in the selected period.';
+                    return <p className="muted">{emptyMsg}</p>;
                   }
                   return (
                     <div className="bb-table-wrap">
