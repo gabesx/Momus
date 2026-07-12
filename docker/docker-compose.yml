@@ -22,4 +22,5 @@ services:
       - 'host.docker.internal:host-gateway'
 
 # Database: use `pnpm db:start` (Supabase CLI) — not included here.
-# Supabase local runs on ports 54321 (API), 54322 (DB), 54323 (Studio).
+# Supabase local (Momus) runs on ports 54421 (API), 54422 (DB), 54423 (Studio)
+# so it does not clash with other local Supabase projects (default 5432x).
