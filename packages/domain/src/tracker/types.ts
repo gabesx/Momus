@@ -16,11 +16,15 @@ export type TrackerFilterParams = {
   tab?: TrackerTab | null;
   year?: string | number | null;
   project?: string | null;
+  /** Projects hidden from results (legacy Exclude Projects). */
+  exclude_projects?: string[] | null;
   issue_type?: 'bugs' | 'defects' | '' | null;
   q?: string | null; // search summary / jira_key
   missing_field?: string | null; // 'all' or a known missing-field key
   page?: number | null;
   page_size?: number | null;
+  /** Field keys excluded from incompleteness tracking (from Field Settings). */
+  excluded_fields?: string[] | null;
 };
 
 export type TrackerIssueRow = {
@@ -34,7 +38,15 @@ export type TrackerIssueRow = {
   service_feature?: string | null;
   ac_related_labels?: string[] | null;
   tester_assignee?: string | null;
+  owner?: string | null;
   has_linked_test_execution: boolean;
   created_year?: number | null;
   tracker_overrides?: TrackerOverrides | null;
+  reporter?: string | null;
+  creator?: string | null;
+  description?: string | null;
+  labels?: unknown;
+  created_date?: string | null;
+  end_date?: string | null;
+  status?: string | null;
 };

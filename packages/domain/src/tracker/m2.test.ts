@@ -26,13 +26,54 @@ describe('tracker M2', () => {
     expect(missing).not.toContain('service_feature');
   });
 
-  it('no_linked_test tab keeps only false/null flag', () => {
+  it('no_linked_test tab keeps only issues without a Test Execution link', () => {
     const rows = [
-      { ...base, jira_key: 'A', has_linked_test_execution: false },
-      { ...base, jira_key: 'B', has_linked_test_execution: true },
+      { ...base, jira_key: 'A', has_linked_test_execution: false, linked_issues: [{ key: 'X-1', type: 'Relates' }] },
+      {
+        ...base,
+        jira_key: 'B',
+        has_linked_test_execution: true,
+        linked_issues: [{ key: 'TE-1', type: 'Test Execution' }],
+      },
+      { ...base, jira_key: 'C', has_linked_test_execution: false, linked_issues: null },
     ];
     const out = applyTrackerFilters(rows, { tab: 'no_linked_test' });
+    expect(out.map((r) => r.jira_key)).toEqual(['A', 'C']);
+  });
+
+  it('no_linked_test prefers linked_issues type over stale flag', () => {
+    const rows = [
+      {
+        ...base,
+        jira_key: 'STALE',
+        has_linked_test_execution: true,
+        linked_issues: [{ key: 'X-1', type: 'Blocks' }],
+      },
+    ];
+    const out = applyTrackerFilters(rows, { tab: 'no_linked_test' });
+    expect(out.map((r) => r.jira_key)).toEqual(['STALE']);
+  });
+
+  it('exclude_projects removes selected projects', () => {
+    const rows = [
+      { ...base, jira_key: 'A', project: 'AL' },
+      { ...base, jira_key: 'B', project: 'PW' },
+      { ...base, jira_key: 'C', project: 'PC' },
+    ];
+    const out = applyTrackerFilters(rows, {
+      tab: 'all',
+      exclude_projects: ['PW', 'PC'],
+    });
     expect(out.map((r) => r.jira_key)).toEqual(['A']);
+  });
+
+  it('year=all keeps all years', () => {
+    const rows = [
+      { ...base, jira_key: 'A', created_year: 2025 },
+      { ...base, jira_key: 'B', created_year: 2026 },
+    ];
+    const out = applyTrackerFilters(rows, { tab: 'all', year: 'all' });
+    expect(out.map((r) => r.jira_key)).toEqual(['A', 'B']);
   });
 
   it('missing_fields tab uses isMissingFieldsRow', () => {
@@ -67,5 +108,33 @@ describe('tracker M2', () => {
   it('parseTrackerPatch accepts null for string fields', () => {
     const r = parseTrackerPatch({ parent: null, severity_issue: null, service_feature: null });
     expect(r.ok).toBe(true);
+  });
+});
+
+describe('getMissingDescriptionFields', () => {
+  it('flags all three when empty', async () => {
+    const { getMissingDescriptionFields } = await import('./missing-fields');
+    expect(getMissingDescriptionFields(null)).toEqual([
+      'Expected Result',
+      'Actual Result',
+      'Steps to Reproduce',
+    ]);
+  });
+
+  it('detects missing expected only', async () => {
+    const { getMissingDescriptionFields } = await import('./missing-fields');
+    const missing = getMissingDescriptionFields(
+      'Actual Result: Something happened\nSteps to Reproduce: Do this',
+    );
+    expect(missing).toEqual(['Expected Result']);
+  });
+
+  it('accepts table-style Expected headers', async () => {
+    const { getMissingDescriptionFields } = await import('./missing-fields');
+    const missing = getMissingDescriptionFields(
+      '| Expected | Actual | Evidence |\n| ok | broken | link |',
+    );
+    expect(missing).not.toContain('Expected Result');
+    expect(missing).not.toContain('Actual Result');
   });
 });

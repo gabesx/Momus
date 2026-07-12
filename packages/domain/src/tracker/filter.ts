@@ -1,13 +1,22 @@
 import { BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '../constants/defaults';
 import { getMissingFields, isMissingFieldsRow } from './missing-fields';
+import { hasLinkedTestExecutionFromLinkedIssues } from './linked-test';
 import type { TrackerFilterParams, TrackerIssueRow } from './types';
 
 function issueTypeOf(row: TrackerIssueRow): string {
   return row.issue_type ?? '';
 }
 
+/** True when linked_issues contains a "Test Execution" link type (or persisted flag). */
+export function hasTestExecutionLink(row: TrackerIssueRow): boolean {
+  if (Array.isArray(row.linked_issues)) {
+    return hasLinkedTestExecutionFromLinkedIssues(row.linked_issues);
+  }
+  return row.has_linked_test_execution === true;
+}
+
 function hasNoLinkedTest(row: TrackerIssueRow): boolean {
-  return row.has_linked_test_execution !== true;
+  return !hasTestExecutionLink(row);
 }
 
 export function applyTrackerFilters(
@@ -16,11 +25,12 @@ export function applyTrackerFilters(
 ): TrackerIssueRow[] {
   let out = rows;
   const tab = params.tab ?? 'all';
+  const excluded = params.excluded_fields ?? [];
 
   if (tab === 'no_linked_test') {
     out = out.filter(hasNoLinkedTest);
   } else if (tab === 'missing_fields') {
-    out = out.filter((row) => isMissingFieldsRow(row, []));
+    out = out.filter((row) => isMissingFieldsRow(row, excluded));
   }
 
   const year = params.year;
@@ -31,6 +41,12 @@ export function applyTrackerFilters(
 
   if (params.project) {
     out = out.filter((row) => row.project === params.project);
+  }
+
+  const excludedProjects = params.exclude_projects ?? [];
+  if (excludedProjects.length) {
+    const excluded = new Set(excludedProjects);
+    out = out.filter((row) => !excluded.has(row.project || '—'));
   }
 
   if (params.issue_type === 'bugs') {
@@ -51,8 +67,29 @@ export function applyTrackerFilters(
 
   const missingField = params.missing_field;
   if (missingField && missingField !== 'all') {
-    out = out.filter((row) => getMissingFields(row, []).includes(missingField));
+    if (excluded.includes(missingField)) return [];
+    out = out.filter((row) => getMissingFields(row, excluded).includes(missingField));
   }
 
   return out;
+}
+
+/** Project tallies for the current tab/filters, ignoring the project chip filter. */
+export function countTrackerProjects(
+  rows: TrackerIssueRow[],
+  params: TrackerFilterParams,
+): { project: string; count: number }[] {
+  const scoped = applyTrackerFilters(rows, {
+    ...params,
+    project: undefined,
+    // Keep exclude_projects so excluded projects disappear from the chip strip.
+  });
+  const map = new Map<string, number>();
+  for (const row of scoped) {
+    const key = row.project || '—';
+    map.set(key, (map.get(key) ?? 0) + 1);
+  }
+  return [...map.entries()]
+    .map(([project, count]) => ({ project, count }))
+    .sort((a, b) => b.count - a.count || a.project.localeCompare(b.project));
 }

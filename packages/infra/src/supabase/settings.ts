@@ -36,14 +36,18 @@ export async function getJiraSettings(): Promise<JiraSettings> {
   const map = new Map((data ?? []).map((row) => [row.key as string, row.value as string | null]));
 
   const { data: token, error: tokenError } = await supabase.rpc('momus_get_jira_token');
-  if (tokenError) {
-    throw new Error(`Failed to load Jira API token: ${tokenError.message}`);
+  let apiToken = '';
+  if (!tokenError && typeof token === 'string') {
+    apiToken = token;
+  } else {
+    // Fallback when Vault RPC is not yet migrated (local/dev or pending apply).
+    apiToken = map.get('jira_api_token') ?? '';
   }
 
   return {
     url: map.get('jira_url') ?? '',
     username: map.get('jira_username') ?? '',
-    apiToken: typeof token === 'string' ? token : '',
+    apiToken,
     enabled: map.get('jira_enabled') === 'true',
   };
 }
