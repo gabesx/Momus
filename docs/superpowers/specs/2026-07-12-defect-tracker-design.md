@@ -1,7 +1,7 @@
 # Defect Tracker (Momus) — Design
 
 **Date:** 2026-07-12  
-**Status:** Awaiting review  
+**Status:** Approved  
 **Approach:** Momus-native module beside existing Analytics + Bug Budget (same app shell, `bug_budget` SoT). Not a QARATMS port and not a UI redesign.  
 **Scope:** Full Tracker surfaces for cutover: filtered list, missing fields, no linked test execution, inline field write-backs with sync-safe overrides. Jira write API is out of scope.
 
