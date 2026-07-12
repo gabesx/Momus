@@ -195,12 +195,14 @@ export function BugBudgetDashboard() {
         open={bugSummaryOpen}
         onClose={() => setBugSummaryOpen(false)}
         initialYear={state.year ?? String(new Date().getFullYear())}
+        jiraBrowseBase={data?.jira_browse_base ?? ''}
       />
       <SummaryModal
         kind="defect"
         open={defectSummaryOpen}
         onClose={() => setDefectSummaryOpen(false)}
         initialYear={state.year ?? String(new Date().getFullYear())}
+        jiraBrowseBase={data?.jira_browse_base ?? ''}
       />
 
       {toast ? <div className="bb-toast">{toast}</div> : null}
