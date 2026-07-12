@@ -157,10 +157,6 @@ export function DefectTrackerDashboard() {
     replaceState({ ...state, page_size, page: 1 });
   };
 
-  const onRowUpdated = (row: TrackerIssueRow) => {
-    setRows((prev) => prev.map((r) => (r.jira_key === row.jira_key ? row : r)));
-  };
-
   const patchField = async (
     jiraKey: string,
     field: TrackerEditableField,
@@ -173,7 +169,7 @@ export function DefectTrackerDashboard() {
     if (!res.success) {
       return { ok: false, message: res.message ?? 'Failed to update issue' };
     }
-    onRowUpdated(res.row);
+    void fetchData(state);
     return { ok: true, row: res.row };
   };
 
