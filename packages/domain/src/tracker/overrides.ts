@@ -21,7 +21,7 @@ export function omitOverriddenFields<T extends Record<string, unknown>>(
   payload: T,
   overrides: TrackerOverrides | null | undefined,
 ): T {
-  if (!overrides || Object.keys(overrides).length === 0) return payload;
+  if (!overrides || Object.keys(overrides).length === 0) return { ...payload };
   const out = { ...payload };
   for (const key of TRACKER_EDITABLE_FIELDS) {
     if (overrides[key]) delete out[key];
