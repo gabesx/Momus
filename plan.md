@@ -403,7 +403,7 @@ Resolve before Phase 2 implementation begins (PRD §16.3):
 
 ## 7. Assumptions
 
-1. **Jira instance** remains Allofresh Cloud (`allofresh.atlassian.net`) with existing custom field IDs (configurable per DEV-5).
+1. **Jira instance** remains Company Domain Cloud (`xxxxxxx.atlassian.net`) with existing custom field IDs (configurable per DEV-5).
 2. **User authentication** is handled by the parent QARATMS platform; Momus receives authenticated sessions (JWT or shared auth middleware). Permission flags (`view_analytics`, `access_settings`, `manage_users`) are available via user profile or permissions table.
 3. **Timezone** is Asia/Jakarta for all date math (BB-EDGE-11).
 4. **Data volume** stays within BB-NFR-01 design capacity (50,000 issues).
