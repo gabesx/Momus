@@ -18,4 +18,6 @@ export * from './analytics/types';
 export * from './analytics/filter';
 export * from './analytics/summary';
 export * from './analytics/trends';
+export * from './analytics/period-detail';
+export * from './analytics/thresholds';
 export * from './schedule/next-run-at';

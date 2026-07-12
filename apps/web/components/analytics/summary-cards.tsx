@@ -1,6 +1,12 @@
 'use client';
 
-import type { AnalyticsSummaryResult } from '@momus/domain';
+import {
+  ANALYTICS_KPI_THRESHOLDS,
+  avgAgeTone,
+  openIssuesTone,
+  resolutionRateTone,
+  type AnalyticsSummaryResult,
+} from '@momus/domain';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
@@ -27,52 +33,11 @@ function formatMom(delta: number | null): string | null {
   return `${arrow} ${Math.abs(delta)}% vs previous month`;
 }
 
-type CardConfig = {
-  key: keyof AnalyticsSummaryResult['mom'];
-  label: string;
-  value: string;
-  variant: string;
-  sentiment: Sentiment;
-};
-
-function cardsFromSummary(summary: AnalyticsSummaryResult): CardConfig[] {
-  return [
-    {
-      key: 'total',
-      label: 'Total Issues',
-      value: String(summary.total),
-      variant: 'bb-analytics-metric-card--primary',
-      sentiment: 'higher-is-bad',
-    },
-    {
-      key: 'open',
-      label: 'Open Issues',
-      value: String(summary.open),
-      variant: 'bb-analytics-metric-card--danger',
-      sentiment: 'higher-is-bad',
-    },
-    {
-      key: 'resolved',
-      label: 'Resolved Issues',
-      value: String(summary.resolved),
-      variant: 'bb-analytics-metric-card--success',
-      sentiment: 'higher-is-good',
-    },
-    {
-      key: 'resolution_rate',
-      label: 'Resolution Rate',
-      value: `${summary.resolution_rate}%`,
-      variant: 'bb-analytics-metric-card--info',
-      sentiment: 'higher-is-good',
-    },
-    {
-      key: 'avg_age',
-      label: 'Avg Age (days)',
-      value: String(Math.round(summary.avg_age)),
-      variant: '',
-      sentiment: 'lower-is-good',
-    },
-  ];
+function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
+  if (tone === 'danger') return 'bb-analytics-metric-card--threshold-danger';
+  if (tone === 'warning') return 'bb-analytics-metric-card--threshold-warning';
+  if (tone === 'ok') return 'bb-analytics-metric-card--threshold-ok';
+  return '';
 }
 
 export function SummaryCards({ summary, loading }: Props) {
@@ -88,7 +53,60 @@ export function SummaryCards({ summary, loading }: Props) {
 
   if (!summary) return null;
 
-  const cards = cardsFromSummary(summary);
+  const cards = [
+    {
+      key: 'total' as const,
+      label: 'Total Issues',
+      value: String(summary.total),
+      variant: 'bb-analytics-metric-card--primary',
+      sentiment: 'higher-is-bad' as const,
+      threshold: '' as string,
+    },
+    {
+      key: 'open' as const,
+      label: 'Open Issues',
+      value: String(summary.open),
+      variant: 'bb-analytics-metric-card--danger',
+      sentiment: 'higher-is-bad' as const,
+      threshold: thresholdClass(openIssuesTone(summary.open)),
+      hint:
+        summary.open >= ANALYTICS_KPI_THRESHOLDS.open_warning
+          ? `≥ ${ANALYTICS_KPI_THRESHOLDS.open_warning} warning`
+          : undefined,
+    },
+    {
+      key: 'resolved' as const,
+      label: 'Resolved Issues',
+      value: String(summary.resolved),
+      variant: 'bb-analytics-metric-card--success',
+      sentiment: 'higher-is-good' as const,
+      threshold: '',
+    },
+    {
+      key: 'resolution_rate' as const,
+      label: 'Resolution Rate',
+      value: `${summary.resolution_rate}%`,
+      variant: 'bb-analytics-metric-card--info',
+      sentiment: 'higher-is-good' as const,
+      threshold: thresholdClass(resolutionRateTone(summary.resolution_rate)),
+      hint:
+        summary.resolution_rate < ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct
+          ? `< ${ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct}% healthy`
+          : undefined,
+    },
+    {
+      key: 'avg_age' as const,
+      label: 'Avg Age (days)',
+      value: String(Math.round(summary.avg_age)),
+      variant: '',
+      sentiment: 'lower-is-good' as const,
+      threshold: thresholdClass(avgAgeTone(summary.avg_age)),
+      hint:
+        summary.avg_age >= ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days
+          ? `≥ ${ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days}d warning`
+          : undefined,
+    },
+  ];
 
   return (
     <div className="bb-analytics-metrics">
@@ -98,11 +116,19 @@ export function SummaryCards({ summary, loading }: Props) {
         const trendClass = momText ? momClass(mom, card.sentiment) : '';
 
         return (
-          <div key={card.key} className={`bb-analytics-metric-card ${card.variant}`.trim()}>
+          <div
+            key={card.key}
+            className={`bb-analytics-metric-card ${card.variant} ${card.threshold}`.trim()}
+          >
             <div className="bb-analytics-metric-card__label">{card.label}</div>
             <div className="bb-analytics-metric-card__value">{card.value}</div>
             {momText ? (
               <div className={`bb-analytics-metric-card__trend ${trendClass}`.trim()}>{momText}</div>
+            ) : null}
+            {card.hint ? (
+              <div className="muted" style={{ fontSize: '0.75rem', marginTop: 4 }}>
+                {card.hint}
+              </div>
             ) : null}
           </div>
         );

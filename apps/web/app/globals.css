@@ -1236,6 +1236,41 @@ button.linkish {
   border-top-color: var(--bb-info);
 }
 
+.bb-analytics-metric-card--threshold-ok {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bb-success) 35%, transparent);
+}
+
+.bb-analytics-metric-card--threshold-warning {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bb-warning, #f0ad4e) 55%, transparent);
+}
+
+.bb-analytics-metric-card--threshold-danger {
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--bb-danger) 55%, transparent);
+}
+
+.bb-analytics-period-detail__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.bb-analytics-period-detail__header h2 {
+  margin: 0;
+}
+
+.bb-analytics-period-detail__grids {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+}
+
+.bb-analytics-matrix h4 {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
 .bb-analytics-metric-card__label {
   font-size: 0.75rem;
   color: var(--bb-secondary);
@@ -1311,6 +1346,10 @@ button.linkish {
 
   .bb-analytics-filter-grid {
     grid-template-columns: 1fr 1fr;
+  }
+
+  .bb-analytics-period-detail__grids {
+    grid-template-columns: 1fr;
   }
 
   .bb-detail-grid {
