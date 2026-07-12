@@ -1,5 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
 import {
+  buildTrackerPatchUpdate,
   mergeTrackerOverrides,
   type TrackerEditableField,
   type TrackerIssueRow,
@@ -54,9 +55,11 @@ export class TrackerRepository {
     const currentOverrides = (existing.tracker_overrides ?? {}) as TrackerOverrides;
     const nextOverrides = mergeTrackerOverrides(currentOverrides, patch, meta);
 
+    const columnPatch = buildTrackerPatchUpdate(patch);
+
     const { data: updated, error: updateError } = await this.db
       .from('bug_budget')
-      .update({ ...patch, tracker_overrides: nextOverrides })
+      .update({ ...columnPatch, tracker_overrides: nextOverrides })
       .eq('jira_key', jiraKey)
       .select(TRACKER_COLUMNS)
       .single();

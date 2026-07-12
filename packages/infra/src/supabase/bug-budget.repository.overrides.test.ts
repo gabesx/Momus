@@ -95,6 +95,21 @@ describe('bug-budget sync override omit', () => {
     expect(insert.tracker_overrides).toBeUndefined();
   });
 
+  it('strips has_linked_test_execution when linked_issues override present', () => {
+    const existing = { linked_issues: { at: 't', by: '1' } };
+    const insert = omitOverriddenFields(
+      toDbInsert(
+        sampleRow({
+          linked_issues: [{ key: 'TE-1', type: 'Test Execution' }],
+          has_linked_test_execution: true,
+        }),
+      ),
+      existing,
+    );
+    expect(insert.linked_issues).toBeUndefined();
+    expect(insert.has_linked_test_execution).toBeUndefined();
+  });
+
   it('toDbInsert does not include tracker_overrides', () => {
     const insert = toDbInsert(sampleRow());
     expect(insert).not.toHaveProperty('tracker_overrides');

@@ -26,5 +26,8 @@ export function omitOverriddenFields<T extends Record<string, unknown>>(
   for (const key of TRACKER_EDITABLE_FIELDS) {
     if (overrides[key]) delete out[key];
   }
+  if (overrides.linked_issues) {
+    delete out.has_linked_test_execution;
+  }
   return out;
 }

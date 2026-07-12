@@ -8,6 +8,7 @@ import {
   timeToResolutionHours,
 } from '../age/business-days';
 import { adfToPlainText, deriveAcRelatedLabels, findQaChecker } from './ac-labels';
+import { hasLinkedTestExecutionFromLinkedIssues } from '../tracker/linked-test';
 import { BUG_GROUP_TYPES, DEFAULT_QA_CHECKER_NAMES, DEFECT_GROUP_TYPES } from '../constants/defaults';
 
 export type JiraFieldMapping = Record<string, string>;
@@ -268,9 +269,7 @@ export function transformJiraIssue(issue: JiraIssue, options: TransformOptions):
     }
   }
 
-  const has_linked_test_execution = linked_issues.some((l) =>
-    /test execution/i.test(l.type),
-  );
+  const has_linked_test_execution = hasLinkedTestExecutionFromLinkedIssues(linked_issues);
 
   const timetracking = fields.timetracking as { timeSpentSeconds?: number } | undefined;
 

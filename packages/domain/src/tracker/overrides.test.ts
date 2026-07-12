@@ -52,6 +52,22 @@ describe('tracker overrides', () => {
     expect(out.status).toBe('Open');
   });
 
+  it('omitOverriddenFields strips has_linked_test_execution when linked_issues is overridden', () => {
+    const payload = {
+      jira_key: 'BUG-1',
+      linked_issues: [{ key: 'TE-1', type: 'Test Execution' }],
+      has_linked_test_execution: true,
+      status: 'Open',
+    };
+    const out = omitOverriddenFields(payload, {
+      linked_issues: { at: 't', by: '1' },
+    });
+    expect(out.linked_issues).toBeUndefined();
+    expect(out.has_linked_test_execution).toBeUndefined();
+    expect(out.jira_key).toBe('BUG-1');
+    expect(out.status).toBe('Open');
+  });
+
   it('omitOverriddenFields strips multiple overridden keys', () => {
     const payload = {
       jira_key: 'BUG-1',

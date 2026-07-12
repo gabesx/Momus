@@ -26,3 +26,4 @@ export * from './tracker/overrides';
 export * from './tracker/missing-fields';
 export * from './tracker/filter';
 export * from './tracker/patch';
+export * from './tracker/linked-test';

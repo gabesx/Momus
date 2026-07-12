@@ -1,3 +1,4 @@
+import { hasLinkedTestExecutionFromLinkedIssues } from './linked-test';
 import { TRACKER_EDITABLE_FIELDS, type TrackerEditableField } from './types';
 
 export type TrackerPatchResult =
@@ -46,4 +47,21 @@ export function parseTrackerPatch(body: Record<string, unknown>): TrackerPatchRe
   }
 
   return { ok: true, value };
+}
+
+export function buildTrackerPatchUpdate(
+  patch: Partial<Record<TrackerEditableField, unknown>>,
+): Record<string, unknown> {
+  const update: Record<string, unknown> = {};
+  for (const key of TRACKER_EDITABLE_FIELDS) {
+    if (Object.prototype.hasOwnProperty.call(patch, key)) {
+      update[key] = patch[key];
+    }
+  }
+  if (Object.prototype.hasOwnProperty.call(update, 'linked_issues')) {
+    update.has_linked_test_execution = hasLinkedTestExecutionFromLinkedIssues(
+      update.linked_issues,
+    );
+  }
+  return update;
 }
