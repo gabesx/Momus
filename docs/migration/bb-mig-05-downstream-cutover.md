@@ -19,18 +19,26 @@ Cut traffic and ownership to Momus in one coordinated release such that:
 
 ## Consumer disposition matrix (DATA-08)
 
-Fill **Disposition** and **Owner** before go-live. Cutover is blocked while any row is `TBD`.
+**Decided 2026-07-12** (Emile). Cutover blocked only while rebuilds below are incomplete (not while TBD).
 
-| Consumer | Access today | Critical columns | Disposition | Owner | Done |
+| Consumer | Access today | Disposition | Rebuild order | Owner | Done |
 |---|---|---|---|---|---|
-| **Bug Budget** (module) | Owner of table + sync | Full contract | **Momus (live)** | Momus | [x] |
-| **Defect Analytics** | `BugBudget::query()` aggs | `is_open`, `issue_type`, ages, labels, … | TBD: rebuild in Momus / move / retire | | [ ] |
-| **Defect Tracker** | Eloquent filters/counts | project, types, linked test, … | TBD: rebuild / move / retire | | [ ] |
-| **Defect Analytics Controller write-backs** | Writes `parent`, `linked_issues`, `severity_issue`, `service_feature` after Jira | same + `last_synced_at` | Must target Momus SoT if feature kept | | [ ] |
-| **Leaderboard** | `BugBudget::query()` | reporter, issue_type, dates, … | TBD: rebuild / move / retire | | [ ] |
-| **Performance** | `DB::table('bug_budget')` | reporter, issue_type, created_date, jira_key | TBD: rebuild / move / retire | | [ ] |
-| **Test Documentation** | Jira REST only — **not** a `bug_budget` consumer | — | **N/A — drop from §4.7 list** | — | [x] |
-| **`GET /api/bug-budget/stats` (OQ-4)** | No in-repo callers | — | **Drop** unless external client found | Momus | [ ] |
+| **Bug Budget** (module) | Owner of table + sync | **Momus (live)** | — | Momus | [x] |
+| **Defect Analytics** | `BugBudget::query()` aggs | **Rebuild in Momus** | **1st** | Momus | [ ] |
+| **Defect Analytics Controller write-backs** | Writes after Jira to `bug_budget` | **Rebuild with Analytics** (Momus SoT) | with #1 | Momus | [ ] |
+| **Defect Tracker** | Eloquent filters/counts | **Rebuild in Momus** (own module/menu) | **2nd** | Momus | [ ] |
+| **Leaderboard** | `BugBudget::query()` | **Rebuild in Momus** (new menu) | **3rd** | Momus | [ ] |
+| **Performance** | `DB::table('bug_budget')` | **Moved elsewhere** (already split to another project) — not a Momus Bug/Defect deliverable | — | Other project | [x] |
+| **Test Documentation** | Jira REST only | **N/A** — drop from §4.7 list | — | — | [x] |
+| **`GET /api/bug-budget/stats` (OQ-4)** | No in-repo callers | **Drop** | — | Momus | [ ] |
+
+### Rebuild sequence
+
+1. **Defect Analytics** (+ write-backs) — first product epic after Phase 7 deploy  
+2. **Defect Tracker** — own module/menu  
+3. **Leaderboard** — new Momus menu item  
+
+Performance is **out of scope** for Momus rebuild; that project owns its data dependency after QARATMS deletion.
 
 ---
 
@@ -44,7 +52,7 @@ All must be **PASS** before route flip:
 | G2 | Parallel-run diffs | `pnpm mig:diff -- --year=<Y>` clean for ≥1 sync cycle (prefer 1–2 weeks) | [ ] |
 | G3 | Settings + Vault token | `pnpm mig:settings` done; Jira token re-entered; Test Connection OK | [ ] |
 | G4 | Momus sync only | Cron/manual sync on Momus; QARATMS Bug Budget sync **disabled** | [ ] |
-| G5 | Consumer matrix | Every DATA-08 row disposition ≠ TBD; write-backs accounted for | [ ] |
+| G5 | Consumer matrix | Dispositions decided (2026-07-12); Analytics/Tracker/Leaderboard rebuilt or accepted deferred with no QARATMS dependency | [ ] |
 | G6 | Column contract | No drift on `is_open`, `defect_age_days`, `issue_type`, `final_issue_type`, JSON labels/linked_issues, `has_linked_test_execution` | [ ] |
 | G7 | Rollback ready | BB-MIG-06 plan signed; QARATMS image/DB snapshot retained | [ ] |
 
