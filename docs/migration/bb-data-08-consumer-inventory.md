@@ -92,12 +92,17 @@
 
 ## Migration checklist (from this inventory)
 
-- [ ] Preserve `is_open`, `defect_age_days`, `issue_type`, `final_issue_type` semantics
-- [ ] Preserve JSON encodings for `labels`, `ac_related_labels`, `linked_issues`
-- [ ] Keep `has_linked_test_execution` or equivalent
-- [ ] Coordinate Performance `DB::table('bug_budget')` path
-- [ ] Decide Defect Analytics cache flush vs TTL
-- [ ] Drop or document `/api/bug-budget/stats` (OQ-4 → drop)
-- [ ] Remove Test Documentation from downstream list
-- [ ] Include DefectAnalyticsController write paths in cutover testing
-- [ ] Next: BB-MIG-01/02 bulk copy + reconciliation scripts
+- [x] Preserve `is_open`, `defect_age_days`, `issue_type`, `final_issue_type` semantics (Momus contract + MIG-01/02)
+- [x] Preserve JSON encodings for `labels`, `ac_related_labels`, `linked_issues`
+- [x] Keep `has_linked_test_execution` or equivalent
+- [ ] Coordinate Performance path — **disposition required** before QARATMS delete (see [bb-mig-05-downstream-cutover.md](./bb-mig-05-downstream-cutover.md))
+- [ ] Decide Defect Analytics cache flush vs TTL (when rebuilt)
+- [ ] Drop or document `/api/bug-budget/stats` (OQ-4 → **drop** unless external client)
+- [x] Remove Test Documentation from downstream list (not a `bug_budget` consumer)
+- [ ] Include DefectAnalyticsController write paths in cutover testing / Momus SoT
+- [x] BB-MIG-01/02 bulk copy + reconciliation
+- [x] BB-MIG-03/04 settings + parallel-run diffs
+- [ ] BB-MIG-05 downstream cutover (Momus only; QARATMS deleted after window)
+- [ ] BB-MIG-06 30-day rollback then hard-delete QARATMS
+
+**Topology note (2026-07-12):** QARATMS and its database will be removed. Do **not** plan MySQL FDW/replica compatibility. Each former consumer must be rebuilt in Momus, moved, or retired — see MIG-05 matrix.

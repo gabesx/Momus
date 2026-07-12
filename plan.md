@@ -592,11 +592,12 @@ Daily automated diff:
 
 ### 12.3 Cutover
 
-1. Enable Momus routes (DNS/route flip)
-2. Point downstream consumers to new DB (or shared instance)
-3. Keep legacy system read-only for 30 days (rollback)
-4. Run incremental sync on new system
+1. Enable Momus routes (DNS/route flip) — **Momus is sole SoT**
+2. Account for every DATA-08 consumer (rebuild in Momus / move / retire) — see `docs/migration/bb-mig-05-downstream-cutover.md`
+3. Keep QARATMS read-only but deployable for 30 days — `docs/migration/bb-mig-06-rollback.md`
+4. Run incremental sync on Momus only
 5. Monitor for 48 hours
+6. After window: delete QARATMS app + MySQL (no compatibility view)
 
 ---
 
