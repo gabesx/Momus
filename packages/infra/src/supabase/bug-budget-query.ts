@@ -14,7 +14,7 @@ import {
 } from '@momus/domain';
 
 const SUMMARY_COLUMNS =
-  'jira_key, project, summary, priority, severity_issue, status, reporter, created_date, defect_age_days, is_open, final_issue_type, created_year, epic_name, parent, issue_type, status_category, assignee_final, ac_related_labels, quarter, labels, sprint, story_points, due_date, end_date, actual_end, resolved_date, updated_at, tested_by';
+  'jira_key, project, summary, priority, severity_issue, status, reporter, created_date, defect_age_days, is_open, final_issue_type, created_year, epic_name, parent, issue_type, status_category, assignee_final, ac_related_labels, quarter, labels, sprint, story_points, due_date, end_date, actual_end, resolved_date, updated_at, tested_by, service_feature, tester_assignee, owner';
 
 export type BugBudgetListRow = SummaryIssueInput & {
   issue_type?: string | null;
@@ -31,6 +31,9 @@ export type BugBudgetListRow = SummaryIssueInput & {
   resolved_date?: string | null;
   updated_at?: string | null;
   tested_by?: string | null;
+  service_feature?: string | null;
+  tester_assignee?: string | null;
+  owner?: string | null;
 };
 
 async function fetchAllPages<T>(

@@ -4,6 +4,7 @@ export * from './settings-config';
 export * from './sync-runs.repository';
 export * from './bug-budget.repository';
 export * from './tracker.repository';
+export * from './tracker-field-settings';
 export * from './bug-budget-query';
 export * from './cache';
 export * from './config';

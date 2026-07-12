@@ -231,6 +231,46 @@ export class JiraClient {
 
     return projects.sort((a, b) => a.key.localeCompare(b.key));
   }
+
+  /**
+   * Load select-list options for a custom field (Field Options API).
+   * Returns enabled option values only.
+   */
+  async getFieldOptions(fieldId: string): Promise<{ id: string; value: string }[]> {
+    const contexts = await this.request<{
+      values?: { id?: string | number }[];
+    }>(`/rest/api/3/field/${encodeURIComponent(fieldId)}/context`);
+
+    const contextId = contexts.values?.[0]?.id;
+    if (contextId == null) return [];
+
+    const options: { id: string; value: string }[] = [];
+    let startAt = 0;
+    const maxResults = 100;
+
+    for (let page = 0; page < 50; page++) {
+      const data = await this.request<{
+        values?: { id?: string | number; value?: string; disabled?: boolean }[];
+        isLast?: boolean;
+        total?: number;
+      }>(
+        `/rest/api/3/field/${encodeURIComponent(fieldId)}/context/${encodeURIComponent(String(contextId))}/option?startAt=${startAt}&maxResults=${maxResults}`,
+      );
+
+      for (const opt of data.values ?? []) {
+        if (opt.disabled === true) continue;
+        const value = typeof opt.value === 'string' ? opt.value.trim() : '';
+        if (!value) continue;
+        options.push({ id: String(opt.id ?? value), value });
+      }
+
+      if (data.isLast || !(data.values?.length)) break;
+      startAt += maxResults;
+      if (typeof data.total === 'number' && startAt >= data.total) break;
+    }
+
+    return options;
+  }
 }
 
 export function assertJiraEnabled(settings: {

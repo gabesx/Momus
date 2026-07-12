@@ -1,10 +1,18 @@
 import type { TrackerFilterParams, TrackerTab } from '@momus/domain';
+import { TIMEZONE } from '@momus/domain';
 
 const VALID_TABS: TrackerTab[] = ['all', 'missing_fields', 'no_linked_test'];
-const DEFAULT_TAB: TrackerTab = 'all';
+const DEFAULT_TAB: TrackerTab = 'missing_fields';
 const DEFAULT_PAGE = 1;
 const DEFAULT_PAGE_SIZE = 50;
 const MAX_PAGE_SIZE = 100;
+
+/** Current calendar year in Asia/Jakarta. */
+export function trackerDefaultYear(now = new Date()): number {
+  return Number(
+    new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE, year: 'numeric' }).format(now),
+  );
+}
 
 function parseTab(raw: string | null): TrackerTab {
   if (raw && (VALID_TABS as readonly string[]).includes(raw)) {
@@ -25,13 +33,30 @@ function parsePageSize(raw: string | null): number {
   return Math.min(n, MAX_PAGE_SIZE);
 }
 
+function parseYear(raw: string | null): string {
+  if (raw === 'all') return 'all';
+  if (raw != null && raw !== '' && Number.isFinite(Number(raw))) return String(Number(raw));
+  return String(trackerDefaultYear());
+}
+
+function parseExcludeProjects(sp: URLSearchParams): string[] | undefined {
+  const raw = sp.get('exclude_projects') ?? sp.get('exclude');
+  if (!raw?.trim()) return undefined;
+  const list = raw
+    .split(',')
+    .map((p) => p.trim())
+    .filter(Boolean);
+  return list.length ? [...new Set(list)] : undefined;
+}
+
 export function trackerParamsFromUrl(url: URL): TrackerFilterParams {
   const sp = url.searchParams;
   const get = (k: string) => sp.get(k) ?? undefined;
   return {
     tab: parseTab(sp.get('tab')),
-    year: get('year'),
+    year: parseYear(sp.get('year')),
     project: get('project'),
+    exclude_projects: parseExcludeProjects(sp),
     issue_type: (get('issue_type') as TrackerFilterParams['issue_type']) || undefined,
     q: get('q'),
     missing_field: get('missing_field'),
@@ -44,8 +69,18 @@ export function trackerParamsToQuery(state: TrackerFilterParams): string {
   const sp = new URLSearchParams();
   const tab = state.tab ?? DEFAULT_TAB;
   if (tab !== DEFAULT_TAB) sp.set('tab', tab);
-  if (state.year) sp.set('year', String(state.year));
+
+  const year =
+    state.year == null || state.year === ''
+      ? String(trackerDefaultYear())
+      : String(state.year);
+  // Always emit year so "all" is distinct from the default (this year).
+  sp.set('year', year);
+
   if (state.project) sp.set('project', state.project);
+  if (state.exclude_projects?.length) {
+    sp.set('exclude_projects', state.exclude_projects.join(','));
+  }
   if (state.issue_type) sp.set('issue_type', state.issue_type);
   if (state.q) sp.set('q', state.q);
   if (state.missing_field) sp.set('missing_field', state.missing_field);

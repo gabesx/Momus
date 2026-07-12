@@ -5,6 +5,7 @@ import {
 } from '@momus/domain';
 import { BugBudgetQueryRepository, createServerClient } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
+import { mapBugBudgetToLeaderboardRow } from '@/lib/leaderboard-map';
 import { leaderboardParamsFromUrl } from '@/lib/leaderboard-params';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
@@ -16,17 +17,7 @@ export async function GET(request: Request) {
     const nowIso = new Date().toISOString();
     const repo = new BugBudgetQueryRepository(createServerClient());
     const all = await repo.listAllForFilters();
-    const rows: LeaderboardIssueRow[] = all.map((r) => ({
-      reporter: r.reporter ?? null,
-      issue_type: r.issue_type ?? null,
-      project: r.project ?? null,
-      status: r.status ?? null,
-      created_date: r.created_date ?? null,
-      jira_key: r.jira_key ?? null,
-      summary: r.summary ?? null,
-      severity_issue: r.severity_issue ?? null,
-      priority: r.priority ?? null,
-    }));
+    const rows: LeaderboardIssueRow[] = all.map(mapBugBudgetToLeaderboardRow);
     const board = computeLeaderboard(rows, params, nowIso);
     return jsonOk({
       ...board,

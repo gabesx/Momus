@@ -81,7 +81,7 @@ describe('leaderboard domain', () => {
   });
 
   it('builds top-N reporter leaderboard', () => {
-    const ranks = buildReporterLeaderboard(rows.filter((r) => r.created_date!.startsWith('2026')), 10);
+    const ranks = buildReporterLeaderboard(rows.filter((r) => r.created_date!.startsWith('2026')));
     expect(ranks).toEqual([
       { reporter: 'Alice', count: 2 },
       { reporter: 'Bob', count: 1 },
@@ -97,5 +97,77 @@ describe('leaderboard domain', () => {
       'rejected',
     );
     expect(issues.map((i) => i.jira_key)).toEqual(['AF-2']);
+  });
+
+  it('ranks incomplete reporters with percentage by missing field', () => {
+    const sample: LeaderboardIssueRow[] = [
+      {
+        reporter: 'Alice',
+        issue_type: 'Bug',
+        project: 'AF',
+        status: 'Open',
+        created_date: '2026-04-10',
+        jira_key: 'AF-1',
+        summary: 'one',
+        parent: null,
+        severity_issue: 'Major',
+        service_feature: 'Checkout',
+        ac_related_labels: ['ac'],
+        tester_assignee: 'qa',
+        owner: 'qa',
+      },
+      {
+        reporter: 'Alice',
+        issue_type: 'Bug',
+        project: 'AF',
+        status: 'Open',
+        created_date: '2026-05-01',
+        jira_key: 'AF-2',
+        summary: 'two',
+        parent: 'EPIC-1',
+        severity_issue: null,
+        service_feature: 'Checkout',
+        ac_related_labels: ['ac'],
+        tester_assignee: 'qa',
+        owner: 'qa',
+      },
+      {
+        reporter: 'Bob',
+        issue_type: 'Bug',
+        project: 'SWAT',
+        status: 'Open',
+        created_date: '2026-05-15',
+        jira_key: 'SW-1',
+        summary: 'ok',
+        parent: 'EPIC-2',
+        severity_issue: 'Minor',
+        service_feature: 'Pay',
+        ac_related_labels: ['ac'],
+        tester_assignee: 'qa',
+        owner: 'qa',
+      },
+    ];
+    const result = computeLeaderboard(
+      sample,
+      { period_type: 'quarterly', year: 2026, period: 'Q2' },
+      now,
+    );
+    expect(result.summary.incomplete_count).toBe(2);
+    expect(result.incomplete_reporters[0]).toMatchObject({
+      reporter: 'Alice',
+      incomplete_count: 2,
+      total_count: 2,
+      pct: 100,
+    });
+    const parentBlock = result.incomplete_by_field.find((b) => b.field === 'parent');
+    expect(parentBlock?.total_incomplete).toBe(1);
+    expect(parentBlock?.reporters[0]).toMatchObject({
+      reporter: 'Alice',
+      incomplete_count: 1,
+      total_count: 2,
+      pct: 50,
+    });
+    const severityBlock = result.incomplete_by_field.find((b) => b.field === 'severity_issue');
+    expect(severityBlock?.reporters[0]?.reporter).toBe('Alice');
   });
 });

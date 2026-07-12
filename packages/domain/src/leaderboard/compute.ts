@@ -1,6 +1,15 @@
 import { BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '../constants/defaults';
 import {
+  getMissingFields,
+  TRACKER_MISSING_FIELD_KEYS,
+  TRACKER_MISSING_FIELD_LABELS,
+  type TrackerMissingFieldKey,
+} from '../tracker/missing-fields';
+import type { TrackerIssueRow } from '../tracker/types';
+import {
   LEADERBOARD_REJECTED_KEYWORDS,
+  type IncompleteFieldBlock,
+  type IncompleteReporterRank,
   type LeaderboardDrillContext,
   type LeaderboardFilterParams,
   type LeaderboardIssueRow,
@@ -34,9 +43,36 @@ export function mapIssueTypeGroup(issueType: string | null | undefined): 'Bug' |
   return 'Other';
 }
 
+function toTrackerShape(row: LeaderboardIssueRow): TrackerIssueRow {
+  return {
+    jira_key: row.jira_key ?? '',
+    project: row.project ?? '',
+    summary: row.summary ?? '',
+    parent: row.parent,
+    service_feature: row.service_feature,
+    severity_issue: row.severity_issue,
+    ac_related_labels: row.ac_related_labels,
+    tester_assignee: row.tester_assignee,
+    owner: row.owner,
+    has_linked_test_execution: false,
+  };
+}
+
+export function missingFieldsForLeaderboardRow(row: LeaderboardIssueRow): string[] {
+  return getMissingFields(toTrackerShape(row), []);
+}
+
+export function isIncompleteLeaderboardRow(row: LeaderboardIssueRow): boolean {
+  return missingFieldsForLeaderboardRow(row).length > 0;
+}
+
+function roundPct(numerator: number, denominator: number): number {
+  if (denominator <= 0) return 0;
+  return Math.round((numerator / denominator) * 1000) / 10;
+}
+
 export function buildReporterLeaderboard(
   rows: LeaderboardIssueRow[],
-  limit = 10,
 ): ReporterRank[] {
   const counts = new Map<string, number>();
   for (const row of rows) {
@@ -46,8 +82,97 @@ export function buildReporterLeaderboard(
   }
   return [...counts.entries()]
     .map(([reporter, count]) => ({ reporter, count }))
-    .sort((a, b) => b.count - a.count || a.reporter.localeCompare(b.reporter))
-    .slice(0, limit);
+    .sort((a, b) => b.count - a.count || a.reporter.localeCompare(b.reporter));
+}
+
+function buildIncompleteReporterRanks(
+  scoped: LeaderboardIssueRow[],
+  incompleteRows: LeaderboardIssueRow[],
+): IncompleteReporterRank[] {
+  const totalByReporter = new Map<string, number>();
+  for (const row of scoped) {
+    const name = row.reporter?.trim();
+    if (!name) continue;
+    totalByReporter.set(name, (totalByReporter.get(name) ?? 0) + 1);
+  }
+
+  const incompleteByReporter = new Map<string, number>();
+  for (const row of incompleteRows) {
+    const name = row.reporter?.trim();
+    if (!name) continue;
+    incompleteByReporter.set(name, (incompleteByReporter.get(name) ?? 0) + 1);
+  }
+
+  return [...incompleteByReporter.entries()]
+    .map(([reporter, incomplete_count]) => {
+      const total_count = totalByReporter.get(reporter) ?? incomplete_count;
+      return {
+        reporter,
+        incomplete_count,
+        total_count,
+        pct: roundPct(incomplete_count, total_count),
+      };
+    })
+    .sort(
+      (a, b) =>
+        b.incomplete_count - a.incomplete_count ||
+        b.pct - a.pct ||
+        a.reporter.localeCompare(b.reporter),
+    );
+}
+
+function buildIncompleteByField(
+  scoped: LeaderboardIssueRow[],
+): IncompleteFieldBlock[] {
+  const totalByReporter = new Map<string, number>();
+  for (const row of scoped) {
+    const name = row.reporter?.trim();
+    if (!name) continue;
+    totalByReporter.set(name, (totalByReporter.get(name) ?? 0) + 1);
+  }
+
+  const blocks: IncompleteFieldBlock[] = [];
+  for (const field of TRACKER_MISSING_FIELD_KEYS) {
+    const fieldRows = scoped.filter((row) =>
+      missingFieldsForLeaderboardRow(row).includes(field),
+    );
+    if (!fieldRows.length) continue;
+
+    const byReporter = new Map<string, number>();
+    for (const row of fieldRows) {
+      const name = row.reporter?.trim();
+      if (!name) continue;
+      byReporter.set(name, (byReporter.get(name) ?? 0) + 1);
+    }
+
+    const reporters = [...byReporter.entries()]
+      .map(([reporter, incomplete_count]) => {
+        const total_count = totalByReporter.get(reporter) ?? incomplete_count;
+        return {
+          reporter,
+          incomplete_count,
+          total_count,
+          pct: roundPct(incomplete_count, total_count),
+        };
+      })
+      .sort(
+        (a, b) =>
+          b.incomplete_count - a.incomplete_count ||
+          b.pct - a.pct ||
+          a.reporter.localeCompare(b.reporter),
+      );
+
+    blocks.push({
+      field,
+      label: TRACKER_MISSING_FIELD_LABELS[field as TrackerMissingFieldKey],
+      total_incomplete: fieldRows.length,
+      reporters,
+    });
+  }
+
+  return blocks.sort(
+    (a, b) => b.total_incomplete - a.total_incomplete || a.label.localeCompare(b.label),
+  );
 }
 
 export function applyLeaderboardWindow(
@@ -89,6 +214,7 @@ export function computeLeaderboard(
   const { rows: scoped, meta } = applyLeaderboardWindow(rows, params, nowIso);
   const rejected = scoped.filter((r) => isRejectedStatus(r.status));
   const accepted = scoped.filter((r) => !isRejectedStatus(r.status));
+  const incomplete = scoped.filter(isIncompleteLeaderboardRow);
 
   const byType: Record<string, ReporterRank[]> = {};
   for (const group of ['Bug', 'Defect'] as const) {
@@ -117,12 +243,15 @@ export function computeLeaderboard(
       unique_reporters: new Set(scoped.map((r) => r.reporter!.trim())).size,
       accepted_count: accepted.length,
       rejected_count: rejected.length,
+      incomplete_count: incomplete.length,
     },
     global: buildReporterLeaderboard(scoped),
     by_issue_type: byType,
     by_project,
     accepted: buildReporterLeaderboard(accepted),
     rejected: buildReporterLeaderboard(rejected),
+    incomplete_reporters: buildIncompleteReporterRanks(scoped, incomplete),
+    incomplete_by_field: buildIncompleteByField(scoped),
     meta,
   };
 }
@@ -155,6 +284,16 @@ export function filterReporterDrilldown(
       break;
     case 'rejected':
       out = out.filter((r) => isRejectedStatus(r.status));
+      break;
+    case 'incomplete':
+      out = out.filter(isIncompleteLeaderboardRow);
+      break;
+    case 'incomplete_field':
+      if (group) {
+        out = out.filter((r) => missingFieldsForLeaderboardRow(r).includes(group));
+      } else {
+        out = out.filter(isIncompleteLeaderboardRow);
+      }
       break;
     default:
       break;
