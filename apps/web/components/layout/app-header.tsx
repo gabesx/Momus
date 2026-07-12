@@ -25,6 +25,12 @@ const NAV = [
     match: (p: string) => p.startsWith('/bug-budget'),
   },
   {
+    href: '/settings/users',
+    label: 'Users',
+    match: (p: string) => p.startsWith('/settings/users'),
+    requires: 'manage_users' as const,
+  },
+  {
     href: '/settings/atlassian',
     label: 'Settings',
     match: (p: string) => p.startsWith('/settings'),
@@ -65,11 +71,11 @@ export function AppHeader() {
     await apiJson('/api/auth/sign-out', { method: 'POST' });
     setSigningOut(false);
     setMenuOpen(false);
-    router.push('/signed-out');
+    router.push('/sign-in');
     router.refresh();
   };
 
-  if (pathname === '/signed-out') return null;
+  if (pathname === '/sign-in') return null;
 
   const links = NAV.filter(
     (item) => !item.requires || user?.permissions.includes(item.requires),
