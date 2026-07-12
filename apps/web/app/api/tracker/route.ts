@@ -3,7 +3,7 @@ import {
   extractFilterOptions,
   type TrackerTab,
 } from '@momus/domain';
-import { TrackerRepository, createServerClient } from '@momus/infra';
+import { TrackerRepository, createServerClient, getJiraSettings } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
 import { trackerParamsFromUrl } from '@/lib/tracker-params';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
@@ -52,6 +52,14 @@ export async function GET(request: Request) {
     const start = (page - 1) * pageSize;
     const rows = filtered.slice(start, start + pageSize);
 
+    let jiraBrowseBase = '';
+    try {
+      const jira = await getJiraSettings();
+      jiraBrowseBase = jira.url ? `${jira.url.replace(/\/$/, '')}/browse` : '';
+    } catch {
+      jiraBrowseBase = '';
+    }
+
     return jsonOk({
       rows,
       total,
@@ -59,6 +67,7 @@ export async function GET(request: Request) {
       page_size: pageSize,
       tab_counts,
       filter_options,
+      jira_browse_base: jiraBrowseBase,
       meta: { scope_hint: scopeHint(params) },
     });
   } catch (err) {
