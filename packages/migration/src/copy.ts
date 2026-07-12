@@ -1,5 +1,5 @@
-import mysql from 'mysql2/promise';
-import pg from 'pg';
+import type { Client } from 'pg';
+import { createLegacyMysql, createTargetPg } from './db.js';
 import { BUG_BUDGET_COLUMNS, JSON_COLUMNS } from './columns.js';
 import type { MigrationEnv } from './env.js';
 import { transformBugBudgetRow } from './transform.js';
@@ -29,7 +29,7 @@ function placeholders(rowCount: number, colCount: number): string {
   return rows.join(',\n');
 }
 
-async function resolveFallbackUserId(client: pg.Client): Promise<number> {
+async function resolveFallbackUserId(client: Client): Promise<number> {
   const auto = await client.query<{ id: number }>(
     `SELECT id FROM users WHERE email = 'automated@system' AND is_candidate = false LIMIT 1`,
   );
@@ -48,7 +48,7 @@ async function resolveFallbackUserId(client: pg.Client): Promise<number> {
   return inserted.rows[0].id;
 }
 
-async function existingUserIds(client: pg.Client): Promise<Set<number>> {
+async function existingUserIds(client: Client): Promise<Set<number>> {
   const res = await client.query<{ id: string | number }>(`SELECT id FROM users`);
   return new Set(res.rows.map((r) => Number(r.id)));
 }
@@ -61,16 +61,8 @@ export async function copyBugBudgetTables(options: CopyOptions): Promise<{
   const log = options.log ?? console.log;
   const { env } = options;
 
-  const mysqlConn = await mysql.createConnection({
-    host: env.legacyHost,
-    port: env.legacyPort,
-    user: env.legacyUser,
-    password: env.legacyPassword,
-    database: env.legacyDatabase,
-    dateStrings: false,
-  });
-
-  const pgClient = new pg.Client({ connectionString: env.targetDatabaseUrl });
+  const mysqlConn = await createLegacyMysql(env);
+  const pgClient = createTargetPg(env);
   await pgClient.connect();
 
   let bugBudgetCopied = 0;

@@ -8,9 +8,12 @@
     "lint": "tsc --noEmit",
     "test": "vitest run",
     "copy": "tsx src/cli.ts copy",
-    "reconcile": "tsx src/cli.ts reconcile"
+    "reconcile": "tsx src/cli.ts reconcile",
+    "settings": "tsx src/cli.ts settings",
+    "diff": "tsx src/cli.ts diff"
   },
   "dependencies": {
+    "@momus/domain": "workspace:*",
     "mysql2": "^3.14.1",
     "pg": "^8.16.0"
   },

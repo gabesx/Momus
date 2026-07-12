@@ -1,7 +1,6 @@
-import mysql from 'mysql2/promise';
-import pg from 'pg';
 import { computeParityChecksum } from './checksum.js';
 import { PRD_BASELINE_BY_YEAR, PRD_BASELINE_TOTAL } from './columns.js';
+import { createLegacyMysql, createTargetPg } from './db.js';
 import type { MigrationEnv } from './env.js';
 import { toBool, toIsoTimestamp } from './transform.js';
 
@@ -28,14 +27,8 @@ export async function reconcileBugBudget(options: ReconcileOptions): Promise<Rec
   const { env } = options;
   const mismatches: string[] = [];
 
-  const mysqlConn = await mysql.createConnection({
-    host: env.legacyHost,
-    port: env.legacyPort,
-    user: env.legacyUser,
-    password: env.legacyPassword,
-    database: env.legacyDatabase,
-  });
-  const pgClient = new pg.Client({ connectionString: env.targetDatabaseUrl });
+  const mysqlConn = await createLegacyMysql(env);
+  const pgClient = createTargetPg(env);
   await pgClient.connect();
 
   try {

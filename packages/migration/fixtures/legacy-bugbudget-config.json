@@ -1,0 +1,38 @@
+{
+  "priority_multipliers": {
+    "highest": 2,
+    "high": 0.75,
+    "medium": 0.5,
+    "low": 0.25,
+    "lowest": 0.1
+  },
+  "severity_multipliers": {
+    "critical": 75,
+    "major": 50,
+    "moderate": 5,
+    "minor": 2.5,
+    "low": 1
+  },
+  "project_budgets": {
+    "SWAT": 100,
+    "operation": 100,
+    "Commercial": 100,
+    "FINANCE": 100,
+    "Core": 100,
+    "Operation": 100,
+    "Product Catalgue": 100,
+    "Warehouse": 100,
+    "Product": 100,
+    "Shopex": 100
+  },
+  "project_mappings": {
+    "AO": "operation",
+    "CSE": "Commercial",
+    "FIN": "FINANCE",
+    "GROWPAY": "Commercial",
+    "OD": "operation",
+    "OPK": "operation",
+    "OPUS": "operation"
+  },
+  "excluded_projects": ["XTEAM", "SOD", "PW", "PC", "MM", "AL"]
+}
