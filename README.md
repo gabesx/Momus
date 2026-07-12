@@ -40,7 +40,9 @@ Open:
 - App: http://localhost:3000
 - Bug Budget: http://localhost:3000/bug-budget
 - Health: http://localhost:3000/api/health
+- Worker health: http://localhost:3000/api/health/worker
 - Supabase Studio: http://localhost:54323
+- Ops runbook: [docs/ops/runbook.md](docs/ops/runbook.md)
 
 ## Project Structure
 

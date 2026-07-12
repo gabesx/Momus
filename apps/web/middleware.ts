@@ -9,6 +9,8 @@ export function middleware(request: NextRequest) {
   if (
     pathname === '/signed-out' ||
     pathname.startsWith('/api/auth/sign-in') ||
+    pathname === '/api/health' ||
+    pathname.startsWith('/api/health/') ||
     pathname.startsWith('/_next') ||
     pathname === '/favicon.ico'
   ) {
