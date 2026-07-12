@@ -11,13 +11,19 @@ type Props = {
   open: boolean;
   onClose: () => void;
   initialYear: string;
+  jiraBrowseBase?: string;
 };
 
 function yearOptions(): string[] {
   const current = new Date().getFullYear();
   const years: string[] = ['all'];
-  for (let y = 2020; y <= current + 1; y++) years.push(String(y));
+  for (let y = current + 1; y >= 2020; y--) years.push(String(y));
   return years;
+}
+
+function jiraUrl(base: string, key: string): string | null {
+  if (!base || !key) return null;
+  return `${base.replace(/\/$/, '')}/${key}`;
 }
 
 function ageClass(age: number | null | undefined): string {
@@ -27,7 +33,7 @@ function ageClass(age: number | null | undefined): string {
   return 'bb-badge--secondary';
 }
 
-export function SummaryModal({ kind, open, onClose, initialYear }: Props) {
+export function SummaryModal({ kind, open, onClose, initialYear, jiraBrowseBase = '' }: Props) {
   const [year, setYear] = useState(initialYear || String(new Date().getFullYear()));
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -101,7 +107,12 @@ export function SummaryModal({ kind, open, onClose, initialYear }: Props) {
         ) : (
           <div className="bb-summary-grid">
             {projects.map((p) => (
-              <ProjectCard key={p.project} project={p} kind={kind} />
+              <ProjectCard
+                key={p.project}
+                project={p}
+                kind={kind}
+                jiraBrowseBase={jiraBrowseBase}
+              />
             ))}
           </div>
         )}
@@ -110,7 +121,15 @@ export function SummaryModal({ kind, open, onClose, initialYear }: Props) {
   );
 }
 
-function ProjectCard({ project, kind }: { project: SummaryProject; kind: 'bug' | 'defect' }) {
+function ProjectCard({
+  project,
+  kind,
+  jiraBrowseBase,
+}: {
+  project: SummaryProject;
+  kind: 'bug' | 'defect';
+  jiraBrowseBase: string;
+}) {
   const count =
     kind === 'bug' ? (project.total_open_bugs ?? 0) : (project.total_open_defects ?? 0);
   const color = project.status_color || 'success';
@@ -159,6 +178,7 @@ function ProjectCard({ project, kind }: { project: SummaryProject; kind: 'bug' |
                       {kind === 'bug' ? (
                         <>
                           <th>Key</th>
+                          <th>Severity</th>
                           <th>Priority</th>
                           <th>Status</th>
                           <th>Reporter</th>
@@ -169,6 +189,7 @@ function ProjectCard({ project, kind }: { project: SummaryProject; kind: 'bug' |
                       ) : (
                         <>
                           <th>Key</th>
+                          <th>Severity</th>
                           <th>Priority</th>
                           <th>Reporter</th>
                           <th>Summary</th>
@@ -181,7 +202,12 @@ function ProjectCard({ project, kind }: { project: SummaryProject; kind: 'bug' |
                   </thead>
                   <tbody>
                     {issues.map((issue) => (
-                      <IssueRow key={issue.jira_key} issue={issue} kind={kind} />
+                      <IssueRow
+                        key={issue.jira_key}
+                        issue={issue}
+                        kind={kind}
+                        jiraBrowseBase={jiraBrowseBase}
+                      />
                     ))}
                   </tbody>
                 </table>
@@ -194,11 +220,38 @@ function ProjectCard({ project, kind }: { project: SummaryProject; kind: 'bug' |
   );
 }
 
-function IssueRow({ issue, kind }: { issue: SummaryIssue; kind: 'bug' | 'defect' }) {
+function IssueKeyCell({
+  jiraKey,
+  jiraBrowseBase,
+}: {
+  jiraKey: string;
+  jiraBrowseBase: string;
+}) {
+  const url = jiraUrl(jiraBrowseBase, jiraKey);
+  if (!url) return <>{jiraKey}</>;
+  return (
+    <a href={url} target="_blank" rel="noopener noreferrer">
+      {jiraKey}
+    </a>
+  );
+}
+
+function IssueRow({
+  issue,
+  kind,
+  jiraBrowseBase,
+}: {
+  issue: SummaryIssue;
+  kind: 'bug' | 'defect';
+  jiraBrowseBase: string;
+}) {
   if (kind === 'bug') {
     return (
       <tr>
-        <td>{issue.jira_key}</td>
+        <td>
+          <IssueKeyCell jiraKey={issue.jira_key} jiraBrowseBase={jiraBrowseBase} />
+        </td>
+        <td>{issue.severity || '—'}</td>
         <td>{issue.priority ?? '—'}</td>
         <td>{issue.status ?? '—'}</td>
         <td>{issue.reporter ?? '—'}</td>
@@ -212,7 +265,10 @@ function IssueRow({ issue, kind }: { issue: SummaryIssue; kind: 'bug' | 'defect'
   }
   return (
     <tr>
-      <td>{issue.jira_key}</td>
+      <td>
+        <IssueKeyCell jiraKey={issue.jira_key} jiraBrowseBase={jiraBrowseBase} />
+      </td>
+      <td>{issue.severity || '—'}</td>
       <td>{issue.priority ?? '—'}</td>
       <td>{issue.reporter ?? '—'}</td>
       <td className="summary-cell" title={issue.summary ?? undefined}>

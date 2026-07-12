@@ -315,7 +315,7 @@ Indexes: UNIQUE(`name`), (`is_active`,`next_run_at`).
 
 | Key | Default / fallback | Meaning |
 |---|---|---|
-| `jira_url` | env `JIRA_URL` (`https://allofresh.atlassian.net`) | Jira site URL, no trailing slash |
+| `jira_url` | env `JIRA_URL` (`https://{company-domain}.atlassian.net`) | Jira site URL, no trailing slash |
 | `jira_username` | env `JIRA_USERNAME` | Jira account email |
 | `jira_api_token` | env `JIRA_API_TOKEN` | API token (masked in UI as `****************`) |
 | `jira_enabled` | env `JIRA_ENABLED` (false) | string `'true'` enables sync |
@@ -477,7 +477,7 @@ Legend badges shown in the summary modals: `0` / `1-14` / `15-24` / `25-50` / `5
 
 `key, project, summary, description, assignee, status, created, updated, resolutiondate, duedate, issuetype, priority, labels, reporter, creator, parent, components, fixVersions, timetracking, issuelinks` + custom fields below.
 
-### 7.3 Custom field map — **BB-SYNC-03 [M]** (Allofresh instance; must be configurable in rebuild — §16.2)
+### 7.3 Custom field map — **BB-SYNC-03 [M]** (Company instance; must be configurable in rebuild — §16.2)
 
 | Custom field | Meaning → column(s) |
 |---|---|

@@ -1,6 +1,6 @@
 # BB-DATA-08: `bug_budget` Downstream Consumer Inventory
 
-**Source:** Legacy QARATMS at `/Users/emile/Allofresh/te/qaratms`  
+**Source:** Legacy Test Case Management
 **Date:** 2026-07-11  
 **Purpose:** Column-level dependency inventory for Momus migration cutover (PRD §4.7, BB-DATA-08)
 
