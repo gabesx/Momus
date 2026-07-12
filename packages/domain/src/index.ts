@@ -23,3 +23,6 @@ export * from './analytics/thresholds';
 export * from './schedule/next-run-at';
 export * from './tracker/types';
 export * from './tracker/overrides';
+export * from './tracker/missing-fields';
+export * from './tracker/filter';
+export * from './tracker/patch';
