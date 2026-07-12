@@ -20,6 +20,11 @@ const NAV = [
     match: (p: string) => p.startsWith('/tracker'),
   },
   {
+    href: '/leaderboard',
+    label: 'Leaderboard',
+    match: (p: string) => p.startsWith('/leaderboard'),
+  },
+  {
     href: '/bug-budget',
     label: 'Bug Budget',
     match: (p: string) => p.startsWith('/bug-budget'),
