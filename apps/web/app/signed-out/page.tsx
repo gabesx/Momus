@@ -1,5 +1,5 @@
-import { SignedOutScreen } from '@/components/layout/signed-out-screen';
+import { redirect } from 'next/navigation';
 
 export default function SignedOutPage() {
-  return <SignedOutScreen />;
+  redirect('/sign-in');
 }

@@ -1,30 +1,36 @@
 import { NextResponse, type NextRequest } from 'next/server';
-import { SIGNED_OUT_COOKIE } from '@/lib/auth-constants';
+import { updateSession } from '@/lib/supabase/middleware';
 
-export function middleware(request: NextRequest) {
-  const signedOut = request.cookies.get(SIGNED_OUT_COOKIE)?.value === '1';
-  if (!signedOut) return NextResponse.next();
+function isPublic(pathname: string): boolean {
+  if (pathname === '/sign-in' || pathname.startsWith('/sign-in/')) return true;
+  if (pathname === '/auth/callback' || pathname.startsWith('/auth/callback/')) return true;
+  if (pathname === '/api/health' || pathname.startsWith('/api/health/')) return true;
+  if (pathname === '/api/inngest' || pathname.startsWith('/api/inngest/')) return true;
+  if (pathname.startsWith('/_next')) return true;
+  if (pathname === '/favicon.ico') return true;
+  return false;
+}
 
+export async function middleware(request: NextRequest) {
+  const { user, response } = await updateSession(request);
   const { pathname } = request.nextUrl;
-  if (
-    pathname === '/signed-out' ||
-    pathname.startsWith('/api/auth/sign-in') ||
-    pathname === '/api/health' ||
-    pathname.startsWith('/api/health/') ||
-    pathname.startsWith('/_next') ||
-    pathname === '/favicon.ico'
-  ) {
-    return NextResponse.next();
+
+  if (isPublic(pathname)) return response;
+
+  if (!user) {
+    if (pathname.startsWith('/api/')) {
+      return NextResponse.json(
+        { success: false, message: 'Authentication required' },
+        { status: 401 },
+      );
+    }
+    const url = request.nextUrl.clone();
+    url.pathname = '/sign-in';
+    url.searchParams.set('next', pathname);
+    return NextResponse.redirect(url);
   }
 
-  if (pathname.startsWith('/api/')) {
-    return NextResponse.json(
-      { success: false, message: 'Authentication required' },
-      { status: 401 },
-    );
-  }
-
-  return NextResponse.redirect(new URL('/signed-out', request.url));
+  return response;
 }
 
 export const config = {

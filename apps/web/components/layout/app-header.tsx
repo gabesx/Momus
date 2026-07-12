@@ -30,9 +30,16 @@ const NAV = [
     match: (p: string) => p.startsWith('/bug-budget'),
   },
   {
+    href: '/settings/users',
+    label: 'Users',
+    match: (p: string) => p.startsWith('/settings/users'),
+    requires: 'manage_users' as const,
+  },
+  {
     href: '/settings/atlassian',
     label: 'Settings',
-    match: (p: string) => p.startsWith('/settings'),
+    match: (p: string) =>
+      p.startsWith('/settings') && !p.startsWith('/settings/users'),
     requires: 'access_settings' as const,
   },
 ];
@@ -67,14 +74,19 @@ export function AppHeader() {
 
   const signOut = async () => {
     setSigningOut(true);
-    await apiJson('/api/auth/sign-out', { method: 'POST' });
+    const res = await apiJson('/api/auth/sign-out', { method: 'POST' });
+    if (!res.success) {
+      console.error('Sign out failed:', res.message ?? 'Unknown error');
+      setSigningOut(false);
+      return;
+    }
     setSigningOut(false);
     setMenuOpen(false);
-    router.push('/signed-out');
+    router.push('/sign-in');
     router.refresh();
   };
 
-  if (pathname === '/signed-out') return null;
+  if (pathname === '/sign-in') return null;
 
   const links = NAV.filter(
     (item) => !item.requires || user?.permissions.includes(item.requires),
