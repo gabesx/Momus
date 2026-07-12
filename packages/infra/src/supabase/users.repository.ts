@@ -1,4 +1,6 @@
+import { isEmailAllowlisted, type ApprovalStatus } from '@momus/domain';
 import type { SupabaseClient } from '@supabase/supabase-js';
+import { AuthAllowlistRepository } from './auth-allowlist.repository';
 
 const ALLOWED_PERMISSIONS = new Set([
   'view_analytics',
@@ -36,6 +38,7 @@ export type UserRecord = {
   name: string | null;
   is_candidate: boolean;
   auth_user_id: string | null;
+  approval_status: ApprovalStatus;
   permissions: string[];
 };
 
@@ -50,12 +53,23 @@ export type UpdateUserInput = {
   is_candidate?: boolean;
 };
 
+export type EnsureUserInput = {
+  authUserId: string;
+  email: string;
+  name: string | null;
+};
+
+export type ListUsersFilter = {
+  status?: ApprovalStatus;
+};
+
 type UserRow = {
   id: number;
   email: string;
   name: string | null;
   is_candidate: boolean;
   auth_user_id: string | null;
+  approval_status: ApprovalStatus;
   user_permissions?: { permission: string }[];
 };
 
@@ -67,6 +81,7 @@ function mapUserRow(row: UserRow): UserRecord {
     name: row.name,
     is_candidate: row.is_candidate,
     auth_user_id: row.auth_user_id,
+    approval_status: row.approval_status,
     permissions,
   };
 }
@@ -82,18 +97,88 @@ function isAuthUserConflict(error: { message?: string; status?: number }): boole
 }
 
 const USER_SELECT =
-  'id, email, name, is_candidate, auth_user_id, user_permissions(permission)';
+  'id, email, name, is_candidate, auth_user_id, approval_status, user_permissions(permission)';
 
 export class UsersRepository {
   constructor(private readonly db: SupabaseClient) {}
 
-  async listUsers(): Promise<UserRecord[]> {
-    const { data, error } = await this.db
-      .from('users')
-      .select(USER_SELECT)
-      .order('id', { ascending: true });
+  async listUsers(filter?: ListUsersFilter): Promise<UserRecord[]> {
+    let query = this.db.from('users').select(USER_SELECT).order('id', { ascending: true });
+    if (filter?.status) {
+      query = query.eq('approval_status', filter.status);
+    }
+    const { data, error } = await query;
     if (error) throw new Error(`listUsers failed: ${error.message}`);
     return (data ?? []).map((row) => mapUserRow(row as UserRow));
+  }
+
+  async ensureUser(
+    input: EnsureUserInput,
+  ): Promise<{ ok: true; user: UserRecord } | { ok: false; reason: 'not_allowlisted' }> {
+    const allowlist = await new AuthAllowlistRepository(this.db).list();
+    if (!isEmailAllowlisted(input.email, allowlist.domains, allowlist.emails)) {
+      return { ok: false, reason: 'not_allowlisted' };
+    }
+
+    const existing = await this.getUserByAuthUserId(input.authUserId);
+    if (existing) {
+      return { ok: true, user: existing };
+    }
+
+    const { data, error } = await this.db
+      .from('users')
+      .insert({
+        auth_user_id: input.authUserId,
+        email: input.email,
+        name: input.name,
+        is_candidate: false,
+        approval_status: 'pending',
+      })
+      .select(USER_SELECT)
+      .single();
+
+    if (error) throw new Error(`ensureUser insert failed: ${error.message}`);
+
+    return { ok: true, user: mapUserRow(data as UserRow) };
+  }
+
+  async approveUser(id: number, permissions: string[]): Promise<UserRecord> {
+    const existing = await this.getUserById(id);
+    if (!existing) throw new UserNotFoundError(`User ${id} not found`);
+
+    const normalized = normalizePermissions(permissions);
+    if (normalized === null || normalized.length === 0) {
+      throw new Error('Invalid permissions');
+    }
+
+    const { error } = await this.db
+      .from('users')
+      .update({ approval_status: 'approved', is_candidate: false })
+      .eq('id', id);
+    if (error) throw new Error(`approveUser failed: ${error.message}`);
+
+    await this.replacePermissions(id, normalized);
+
+    const updated = await this.getUserById(id);
+    if (!updated) throw new UserNotFoundError(`User ${id} not found`);
+    return updated;
+  }
+
+  async rejectUser(id: number): Promise<UserRecord> {
+    const existing = await this.getUserById(id);
+    if (!existing) throw new UserNotFoundError(`User ${id} not found`);
+
+    const { error } = await this.db
+      .from('users')
+      .update({ approval_status: 'rejected' })
+      .eq('id', id);
+    if (error) throw new Error(`rejectUser failed: ${error.message}`);
+
+    await this.replacePermissions(id, []);
+
+    const updated = await this.getUserById(id);
+    if (!updated) throw new UserNotFoundError(`User ${id} not found`);
+    return updated;
   }
 
   async inviteUser(input: InviteUserInput): Promise<UserRecord> {
@@ -127,10 +212,11 @@ export class UsersRepository {
           email: input.email,
           name: input.name,
           is_candidate: false,
+          approval_status: 'approved',
         },
         { onConflict: 'auth_user_id' },
       )
-      .select('id, email, name, is_candidate, auth_user_id')
+      .select('id, email, name, is_candidate, auth_user_id, approval_status')
       .single();
 
     if (upsertError) throw new Error(`inviteUser upsert failed: ${upsertError.message}`);
@@ -175,6 +261,16 @@ export class UsersRepository {
       .eq('id', id)
       .maybeSingle();
     if (error) throw new Error(`getUserById failed: ${error.message}`);
+    return data ? mapUserRow(data as UserRow) : null;
+  }
+
+  private async getUserByAuthUserId(authUserId: string): Promise<UserRecord | null> {
+    const { data, error } = await this.db
+      .from('users')
+      .select(USER_SELECT)
+      .eq('auth_user_id', authUserId)
+      .maybeSingle();
+    if (error) throw new Error(`getUserByAuthUserId failed: ${error.message}`);
     return data ? mapUserRow(data as UserRow) : null;
   }
 
