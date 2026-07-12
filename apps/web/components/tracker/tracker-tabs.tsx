@@ -9,25 +9,23 @@ type Props = {
 };
 
 const TABS: { id: TrackerTab; label: string }[] = [
-  { id: 'all', label: 'All' },
-  { id: 'missing_fields', label: 'Missing fields' },
-  { id: 'no_linked_test', label: 'No linked test' },
+  { id: 'missing_fields', label: 'Incomplete Fields' },
+  { id: 'all', label: 'All Issues' },
+  { id: 'no_linked_test', label: 'No Test Execution Link' },
 ];
 
 export function TrackerTabs({ active, counts, onChange }: Props) {
   return (
-    <nav className="settings-tabs" aria-label="Tracker views">
+    <nav className="bb-tracker-tabs" aria-label="Tracker views">
       {TABS.map((tab) => (
         <button
           key={tab.id}
           type="button"
-          className={`settings-tab${active === tab.id ? ' is-active' : ''}`}
+          className={`bb-tracker-tab${active === tab.id ? ' is-active' : ''}`}
           onClick={() => onChange(tab.id)}
         >
           {tab.label}
-          <span className="bb-count-badge" style={{ marginLeft: '0.35rem' }}>
-            {counts[tab.id] ?? 0}
-          </span>
+          <span className="bb-tracker-tab__badge">{counts[tab.id] ?? 0}</span>
         </button>
       ))}
     </nav>

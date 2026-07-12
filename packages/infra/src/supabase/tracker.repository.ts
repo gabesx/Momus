@@ -8,7 +8,7 @@ import {
 } from '@momus/domain';
 
 const TRACKER_COLUMNS =
-  'jira_key, project, summary, issue_type, parent, linked_issues, severity_issue, service_feature, ac_related_labels, tester_assignee, has_linked_test_execution, created_year, tracker_overrides';
+  'jira_key, project, summary, issue_type, parent, linked_issues, severity_issue, service_feature, ac_related_labels, tester_assignee, owner, has_linked_test_execution, created_year, tracker_overrides, reporter, creator, description, labels, created_date, end_date, status';
 
 async function fetchAllPages<T>(
   fetchPage: (from: number, to: number) => Promise<T[]>,
@@ -66,5 +66,20 @@ export class TrackerRepository {
     if (updateError) throw new Error(`patchFields update failed: ${updateError.message}`);
 
     return updated as TrackerIssueRow;
+  }
+
+  /** Distinct non-empty values for a tracker select field (Jira options fallback). */
+  async listDistinctFieldValues(
+    column: 'severity_issue' | 'service_feature',
+  ): Promise<string[]> {
+    const { data, error } = await this.db.from('bug_budget').select(column).not(column, 'is', null);
+    if (error) throw new Error(`listDistinctFieldValues failed: ${error.message}`);
+
+    const values = new Set<string>();
+    for (const row of data ?? []) {
+      const raw = (row as Record<string, unknown>)[column];
+      if (typeof raw === 'string' && raw.trim()) values.add(raw.trim());
+    }
+    return [...values].sort((a, b) => a.localeCompare(b));
   }
 }

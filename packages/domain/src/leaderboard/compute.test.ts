@@ -1,0 +1,173 @@
+import { describe, expect, it } from 'vitest';
+import {
+  buildReporterLeaderboard,
+  computeLeaderboard,
+  filterReporterDrilldown,
+  isRejectedStatus,
+  mapIssueTypeGroup,
+} from './compute';
+import { dateInRange, resolvePeriodRange } from './period';
+import type { LeaderboardIssueRow } from './types';
+
+const now = '2026-07-12T00:00:00.000Z';
+
+const rows: LeaderboardIssueRow[] = [
+  {
+    reporter: 'Alice',
+    issue_type: 'Bug',
+    project: 'AF',
+    status: 'Open',
+    created_date: '2026-04-10',
+    jira_key: 'AF-1',
+  },
+  {
+    reporter: 'Alice',
+    issue_type: 'Defect',
+    project: 'AF',
+    status: 'Rejected',
+    created_date: '2026-05-01',
+    jira_key: 'AF-2',
+  },
+  {
+    reporter: 'Bob',
+    issue_type: 'Bug',
+    project: 'SWAT',
+    status: 'Done',
+    created_date: '2026-05-15',
+    jira_key: 'SW-1',
+  },
+  {
+    reporter: 'Bob',
+    issue_type: 'Bug',
+    project: 'SWAT',
+    status: 'Cancelled',
+    created_date: '2025-01-01',
+    jira_key: 'SW-OLD',
+  },
+];
+
+describe('leaderboard domain', () => {
+  it('classifies rejected statuses by keyword', () => {
+    expect(isRejectedStatus('Rejected by QA')).toBe(true);
+    expect(isRejectedStatus('Cancelled')).toBe(true);
+    expect(isRejectedStatus('Open')).toBe(false);
+  });
+
+  it('maps issue types to Bug/Defect groups', () => {
+    expect(mapIssueTypeGroup('Defect Task')).toBe('Defect');
+    expect(mapIssueTypeGroup('Bug')).toBe('Bug');
+  });
+
+  it('resolves Q2 range', () => {
+    expect(resolvePeriodRange(2026, 'quarterly', 'Q2')).toEqual({
+      start: '2026-04-01',
+      end: '2026-06-30',
+    });
+    expect(dateInRange('2026-05-01', resolvePeriodRange(2026, 'quarterly', 'Q2'))).toBe(true);
+    expect(dateInRange('2026-07-01', resolvePeriodRange(2026, 'quarterly', 'Q2'))).toBe(false);
+  });
+
+  it('computes global ranks for quarterly window', () => {
+    const result = computeLeaderboard(
+      rows,
+      { period_type: 'quarterly', year: 2026, period: 'Q2' },
+      now,
+    );
+    expect(result.summary.total_issues).toBe(3);
+    expect(result.summary.rejected_count).toBe(1);
+    expect(result.summary.accepted_count).toBe(2);
+    expect(result.global[0]).toEqual({ reporter: 'Alice', count: 2 });
+    expect(result.by_issue_type.Bug?.[0]?.reporter).toBe('Alice');
+  });
+
+  it('builds top-N reporter leaderboard', () => {
+    const ranks = buildReporterLeaderboard(rows.filter((r) => r.created_date!.startsWith('2026')));
+    expect(ranks).toEqual([
+      { reporter: 'Alice', count: 2 },
+      { reporter: 'Bob', count: 1 },
+    ]);
+  });
+
+  it('filters reporter drilldown by rejected context', () => {
+    const issues = filterReporterDrilldown(
+      rows,
+      { period_type: 'quarterly', year: 2026, period: 'Q2' },
+      now,
+      'Alice',
+      'rejected',
+    );
+    expect(issues.map((i) => i.jira_key)).toEqual(['AF-2']);
+  });
+
+  it('ranks incomplete reporters with percentage by missing field', () => {
+    const sample: LeaderboardIssueRow[] = [
+      {
+        reporter: 'Alice',
+        issue_type: 'Bug',
+        project: 'AF',
+        status: 'Open',
+        created_date: '2026-04-10',
+        jira_key: 'AF-1',
+        summary: 'one',
+        parent: null,
+        severity_issue: 'Major',
+        service_feature: 'Checkout',
+        ac_related_labels: ['ac'],
+        tester_assignee: 'qa',
+        owner: 'qa',
+      },
+      {
+        reporter: 'Alice',
+        issue_type: 'Bug',
+        project: 'AF',
+        status: 'Open',
+        created_date: '2026-05-01',
+        jira_key: 'AF-2',
+        summary: 'two',
+        parent: 'EPIC-1',
+        severity_issue: null,
+        service_feature: 'Checkout',
+        ac_related_labels: ['ac'],
+        tester_assignee: 'qa',
+        owner: 'qa',
+      },
+      {
+        reporter: 'Bob',
+        issue_type: 'Bug',
+        project: 'SWAT',
+        status: 'Open',
+        created_date: '2026-05-15',
+        jira_key: 'SW-1',
+        summary: 'ok',
+        parent: 'EPIC-2',
+        severity_issue: 'Minor',
+        service_feature: 'Pay',
+        ac_related_labels: ['ac'],
+        tester_assignee: 'qa',
+        owner: 'qa',
+      },
+    ];
+    const result = computeLeaderboard(
+      sample,
+      { period_type: 'quarterly', year: 2026, period: 'Q2' },
+      now,
+    );
+    expect(result.summary.incomplete_count).toBe(2);
+    expect(result.incomplete_reporters[0]).toMatchObject({
+      reporter: 'Alice',
+      incomplete_count: 2,
+      total_count: 2,
+      pct: 100,
+    });
+    const parentBlock = result.incomplete_by_field.find((b) => b.field === 'parent');
+    expect(parentBlock?.total_incomplete).toBe(1);
+    expect(parentBlock?.reporters[0]).toMatchObject({
+      reporter: 'Alice',
+      incomplete_count: 1,
+      total_count: 2,
+      pct: 50,
+    });
+    const severityBlock = result.incomplete_by_field.find((b) => b.field === 'severity_issue');
+    expect(severityBlock?.reporters[0]?.reporter).toBe('Alice');
+  });
+});
