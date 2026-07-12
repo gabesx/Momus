@@ -1,5 +1,6 @@
-import { BugBudgetConfigRepository, createServerClient } from '@momus/infra';
+import { BugBudgetConfigRepository, createServerClient, loadSettingsConfig } from '@momus/infra';
 import { MESSAGES } from '@momus/shared';
+import { writeSettingsAudit } from '@/lib/audit';
 import { assertCsrf, requireAccessSettings } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
@@ -34,6 +35,12 @@ export async function POST(request: Request) {
 
     const db = createServerClient();
     const repo = new BugBudgetConfigRepository(db);
+    const beforeCfg = await loadSettingsConfig(db);
+    const before = {
+      project_budgets: beforeCfg.project_budgets,
+      project_mappings: beforeCfg.project_mappings,
+      excluded_projects: beforeCfg.excluded_projects,
+    };
     const allProjects = await repo.listDistinctProjects();
     await repo.saveProjectSettings(
       {
@@ -44,6 +51,20 @@ export async function POST(request: Request) {
       },
       allProjects,
     );
+    const afterCfg = await loadSettingsConfig(db);
+    await writeSettingsAudit({
+      db,
+      userId: auth.user.id,
+      action: 'update',
+      entityType: 'bug_budget_config',
+      entityKey: 'project_settings',
+      beforeValue: before,
+      afterValue: {
+        project_budgets: afterCfg.project_budgets,
+        project_mappings: afterCfg.project_mappings,
+        excluded_projects: afterCfg.excluded_projects,
+      },
+    });
     return jsonOk({ message: MESSAGES.M16 });
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Failed to save project settings';
