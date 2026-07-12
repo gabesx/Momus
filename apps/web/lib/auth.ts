@@ -137,6 +137,55 @@ export async function requirePendingOrOk(): Promise<SessionResult> {
   return getSessionUser();
 }
 
+export type SupabaseAuthUser = {
+  id: string;
+  email: string;
+  name: string | null;
+};
+
+/** Supabase Auth session only — does not require a linked public.users row. */
+export async function getSupabaseAuthUser(): Promise<
+  { authUser: SupabaseAuthUser } | { error: NextResponse }
+> {
+  if (process.env.MOMUS_DEV_AUTH_BYPASS === 'true' && process.env.NODE_ENV !== 'production') {
+    return {
+      authUser: {
+        id: 'dev-bypass',
+        email: process.env.MOMUS_DEV_USER_EMAIL ?? 'admin@momus.local',
+        name: 'Dev User',
+      },
+    };
+  }
+
+  const supabase = await createSupabaseServerClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user?.email) {
+    return {
+      error: NextResponse.json(
+        { success: false, message: 'Authentication required' },
+        { status: 401 },
+      ),
+    };
+  }
+
+  const meta = user.user_metadata ?? {};
+  const name =
+    (typeof meta.name === 'string' && meta.name.trim()) ||
+    (typeof meta.full_name === 'string' && meta.full_name.trim()) ||
+    null;
+
+  return {
+    authUser: {
+      id: user.id,
+      email: user.email,
+      name,
+    },
+  };
+}
+
 /** BB-PERM-01 — require authenticated approved user with a permission. */
 export async function requirePermission(
   permission: UserPermission,
