@@ -24,9 +24,9 @@ Cut traffic and ownership to Momus in one coordinated release such that:
 | Consumer | Access today | Disposition | Rebuild order | Owner | Done |
 |---|---|---|---|---|---|
 | **Bug Budget** (module) | Owner of table + sync | **Momus (live)** | — | Momus | [x] |
-| **Defect Analytics** | `BugBudget::query()` aggs | **Rebuild in Momus** | **1st** | Momus | [ ] |
-| **Defect Analytics Controller write-backs** | Writes after Jira to `bug_budget` | **Rebuild with Analytics** (Momus SoT) | with #1 | Momus | [ ] |
-| **Defect Tracker** | Eloquent filters/counts | **Rebuild in Momus** (own module/menu) | **2nd** | Momus | [ ] |
+| **Defect Analytics** | `BugBudget::query()` aggs | **Rebuild in Momus** | **1st** | Momus | [x] |
+| **Defect Analytics Controller write-backs** | Writes after Jira to `bug_budget` | **Tracker overrides** — Momus PATCH for `parent`, `severity_issue`, `service_feature`, `linked_issues` (sync skips overridden columns) | with Tracker | Momus | [x] |
+| **Defect Tracker** | Eloquent filters/counts | **Rebuild in Momus** (own module/menu) | **2nd** | Momus | [x] *(feat/defect-tracker — PR pending merge)* |
 | **Leaderboard** | `BugBudget::query()` | **Rebuild in Momus** (new menu) | **3rd** | Momus | [ ] |
 | **Performance** | `DB::table('bug_budget')` | **Moved elsewhere** (already split to another project) — not a Momus Bug/Defect deliverable | — | Other project | [x] |
 | **Test Documentation** | Jira REST only | **N/A** — drop from §4.7 list | — | — | [x] |
