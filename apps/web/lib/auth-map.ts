@@ -1,8 +1,11 @@
+import type { ApprovalStatus } from '@momus/domain';
+
 export type MomusUserRow = {
   id: number | string;
   email: string;
   name: string | null;
   is_candidate: boolean;
+  approval_status: ApprovalStatus;
 };
 
 export type AuthUser = {
@@ -10,18 +13,18 @@ export type AuthUser = {
   email: string;
   name: string;
   permissions: string[];
+  approvalStatus: ApprovalStatus;
 };
 
 export type MapResult =
   | { ok: true; user: AuthUser }
-  | { ok: false; reason: 'no_momus_user' | 'candidate' };
+  | { ok: false; reason: 'no_momus_user' };
 
 export function mapMomusUser(
   row: MomusUserRow | null | undefined,
   permissions: string[],
 ): MapResult {
   if (!row) return { ok: false, reason: 'no_momus_user' };
-  if (row.is_candidate) return { ok: false, reason: 'candidate' };
   return {
     ok: true,
     user: {
@@ -29,6 +32,7 @@ export function mapMomusUser(
       email: row.email,
       name: row.name ?? row.email,
       permissions,
+      approvalStatus: row.approval_status,
     },
   };
 }
