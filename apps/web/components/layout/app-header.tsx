@@ -33,7 +33,8 @@ const NAV = [
   {
     href: '/settings/atlassian',
     label: 'Settings',
-    match: (p: string) => p.startsWith('/settings'),
+    match: (p: string) =>
+      p.startsWith('/settings') && !p.startsWith('/settings/users'),
     requires: 'access_settings' as const,
   },
 ];
@@ -68,7 +69,12 @@ export function AppHeader() {
 
   const signOut = async () => {
     setSigningOut(true);
-    await apiJson('/api/auth/sign-out', { method: 'POST' });
+    const res = await apiJson('/api/auth/sign-out', { method: 'POST' });
+    if (!res.success) {
+      console.error('Sign out failed:', res.message ?? 'Unknown error');
+      setSigningOut(false);
+      return;
+    }
     setSigningOut(false);
     setMenuOpen(false);
     router.push('/sign-in');
