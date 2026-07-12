@@ -9,3 +9,4 @@ export * from './cache';
 export * from './config';
 export * from './system-user';
 export * from './audit-logs.repository';
+export * from './users.repository';
