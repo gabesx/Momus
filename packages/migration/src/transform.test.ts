@@ -28,6 +28,9 @@ describe('toBool / dates', () => {
   it('formats timestamps and dates', () => {
     expect(toIsoTimestamp(new Date('2024-06-01T00:00:00.000Z'))).toBe('2024-06-01T00:00:00.000Z');
     expect(toDateOnly('2024-06-01 12:00:00')).toBe('2024-06-01');
+    // Local calendar date — not UTC slice (avoids MySQL DATE day-shift)
+    const local = new Date(2026, 5, 22); // month is 0-based
+    expect(toDateOnly(local)).toBe('2026-06-22');
   });
 });
 

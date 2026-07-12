@@ -46,12 +46,16 @@ export function toIsoTimestamp(value: unknown): string | null {
   return null;
 }
 
-/** DATE columns → YYYY-MM-DD (Postgres date). */
+/** DATE columns → YYYY-MM-DD (Postgres date). Uses local Y-M-D for JS Date
+ *  so MySQL DATE values are not shifted by UTC conversion. */
 export function toDateOnly(value: unknown): string | null {
   if (value == null || value === '') return null;
   if (value instanceof Date) {
     if (Number.isNaN(value.getTime())) return null;
-    return value.toISOString().slice(0, 10);
+    const y = value.getFullYear();
+    const m = String(value.getMonth() + 1).padStart(2, '0');
+    const d = String(value.getDate()).padStart(2, '0');
+    return `${y}-${m}-${d}`;
   }
   if (typeof value === 'string') {
     const m = value.match(/^(\d{4}-\d{2}-\d{2})/);
