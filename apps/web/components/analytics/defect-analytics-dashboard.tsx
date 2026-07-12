@@ -3,12 +3,14 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
   AnalyticsFilterParams,
+  AnalyticsPeriodDetail,
   AnalyticsSummaryResult,
   AnalyticsTrendsResult,
 } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
-import { analyticsParamsFromUrl } from '@/lib/analytics-params';
+import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
 import { AnalyticsFilters } from './analytics-filters';
+import { PeriodDetailPanel } from './period-detail-panel';
 import { SummaryCards } from './summary-cards';
 import { TrendChart } from './trend-chart';
 
@@ -18,21 +20,17 @@ type AnalyticsResponse = {
   summary: AnalyticsSummaryResult;
   trends: AnalyticsTrendsResult;
   filter_options: { projects: string[]; years: number[] };
-  meta: { last_updated: string | null; scope_hint: string };
+  meta: { last_updated: string | null; scope_hint: string; trend_grain?: string };
+};
+
+type PeriodDetailResponse = {
+  success: boolean;
+  message?: string;
+  detail: AnalyticsPeriodDetail;
 };
 
 function parseAnalyticsQuery(sp: URLSearchParams): AnalyticsFilterParams {
   return analyticsParamsFromUrl(new URL(`http://local?${sp.toString()}`));
-}
-
-function toQueryString(state: AnalyticsFilterParams): string {
-  const sp = new URLSearchParams();
-  if (state.year) sp.set('year', String(state.year));
-  if (state.project) sp.set('project', state.project);
-  if (state.issue_type) sp.set('issue_type', state.issue_type);
-  if (state.status) sp.set('status', state.status);
-  const s = sp.toString();
-  return s ? `?${s}` : '';
 }
 
 function formatLastUpdated(iso: string | null): string {
@@ -40,19 +38,37 @@ function formatLastUpdated(iso: string | null): string {
   return new Date(iso).toLocaleString();
 }
 
+function grainTitle(grain: string | undefined): string {
+  if (grain === 'quarter') return 'Quarterly Trends';
+  if (grain === 'year') return 'Yearly Trends';
+  return 'Monthly Trends';
+}
+
 export function DefectAnalyticsDashboard() {
-  const [state, setState] = useState<AnalyticsFilterParams>({});
+  const [state, setState] = useState<AnalyticsFilterParams>({ trend_grain: 'month' });
   const [data, setData] = useState<AnalyticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  const [periodLabel, setPeriodLabel] = useState<string | null>(null);
+  const [periodDetail, setPeriodDetail] = useState<AnalyticsPeriodDetail | null>(null);
+  const [periodLoading, setPeriodLoading] = useState(false);
+  const [periodError, setPeriodError] = useState<string | null>(null);
 
   const ready = useRef(false);
   const lastFetchedQs = useRef<string | null>(null);
   const debounceRef = useRef<number | null>(null);
   const suppressPush = useRef(false);
 
+  const clearPeriod = useCallback(() => {
+    setPeriodLabel(null);
+    setPeriodDetail(null);
+    setPeriodError(null);
+    setPeriodLoading(false);
+  }, []);
+
   const fetchData = useCallback(async (next: AnalyticsFilterParams) => {
-    const qs = toQueryString(next);
+    const qs = analyticsParamsToQuery(next);
     lastFetchedQs.current = qs;
     setLoading(true);
     setError(null);
@@ -70,8 +86,38 @@ export function DefectAnalyticsDashboard() {
     }
   }, []);
 
+  const fetchPeriodDetail = useCallback(
+    async (periodKey: string, label: string, filters: AnalyticsFilterParams) => {
+      setPeriodLabel(label);
+      setPeriodLoading(true);
+      setPeriodError(null);
+      try {
+        const base = analyticsParamsToQuery(filters);
+        const sp = new URLSearchParams(base.startsWith('?') ? base.slice(1) : base);
+        sp.set('period', periodKey);
+        sp.set('grain', filters.trend_grain ?? 'month');
+        const res = await apiJson<PeriodDetailResponse>(
+          `/api/analytics/period-detail?${sp.toString()}`,
+        );
+        if (!res.success) {
+          setPeriodError(res.message ?? 'Failed to load period detail');
+          setPeriodDetail(null);
+          return;
+        }
+        setPeriodDetail(res.detail);
+      } catch (err) {
+        setPeriodError(err instanceof Error ? err.message : 'Failed to load period detail');
+        setPeriodDetail(null);
+      } finally {
+        setPeriodLoading(false);
+      }
+    },
+    [],
+  );
+
   useEffect(() => {
     const initial = parseAnalyticsQuery(new URLSearchParams(window.location.search));
+    if (!initial.trend_grain) initial.trend_grain = 'month';
     suppressPush.current = true;
     setState(initial);
     ready.current = true;
@@ -79,13 +125,15 @@ export function DefectAnalyticsDashboard() {
 
     const onPop = () => {
       const parsed = parseAnalyticsQuery(new URLSearchParams(window.location.search));
+      if (!parsed.trend_grain) parsed.trend_grain = 'month';
       suppressPush.current = true;
       setState(parsed);
+      clearPeriod();
       void fetchData(parsed);
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
-  }, [fetchData]);
+  }, [fetchData, clearPeriod]);
 
   useEffect(() => {
     if (!ready.current) return;
@@ -97,9 +145,10 @@ export function DefectAnalyticsDashboard() {
 
     if (debounceRef.current) window.clearTimeout(debounceRef.current);
     debounceRef.current = window.setTimeout(() => {
-      const qs = toQueryString(state);
+      const qs = analyticsParamsToQuery(state);
       window.history.pushState(null, '', qs ? `/${qs}` : '/');
       if (qs !== lastFetchedQs.current) {
+        clearPeriod();
         void fetchData(state);
       }
     }, 100);
@@ -107,7 +156,7 @@ export function DefectAnalyticsDashboard() {
     return () => {
       if (debounceRef.current) window.clearTimeout(debounceRef.current);
     };
-  }, [state, fetchData]);
+  }, [state, fetchData, clearPeriod]);
 
   const replaceState = (next: AnalyticsFilterParams) => {
     suppressPush.current = false;
@@ -119,22 +168,28 @@ export function DefectAnalyticsDashboard() {
   };
 
   const resetFilters = () => {
-    replaceState({});
+    replaceState({ trend_grain: 'month' });
   };
 
   const onRefresh = () => {
+    clearPeriod();
     void fetchData(state);
+  };
+
+  const onPeriodSelect = (periodKey: string, label: string) => {
+    void fetchPeriodDetail(periodKey, label, state);
   };
 
   const filterOptions = data?.filter_options ?? { projects: [], years: [] };
   const scopeHint = data?.meta.scope_hint;
+  const grain = state.trend_grain ?? data?.meta.trend_grain ?? 'month';
 
   return (
     <main className="bb-analytics">
       <header className="bb-analytics-header">
         <div>
           <h1>Defect Analytics Dashboard</h1>
-          <p>Monthly trends and summary metrics for bugs and defects</p>
+          <p>Trends and summary metrics for bugs and defects</p>
         </div>
         <div className="bb-analytics-toolbar">
           <span className="bb-analytics-updated">
@@ -161,10 +216,7 @@ export function DefectAnalyticsDashboard() {
       ) : null}
 
       <AnalyticsFilters
-        year={state.year ? String(state.year) : ''}
-        project={state.project ?? ''}
-        issue_type={(state.issue_type as '' | 'bugs' | 'defects') ?? ''}
-        status={(state.status as '' | 'open' | 'in-progress' | 'resolved' | 'closed') ?? ''}
+        state={state}
         options={filterOptions}
         scope_hint={scopeHint}
         onChange={onFilterChange}
@@ -174,9 +226,21 @@ export function DefectAnalyticsDashboard() {
       <SummaryCards summary={data?.summary ?? null} loading={loading} />
 
       <section className="bb-analytics-chart-card">
-        <h2>Monthly Trends</h2>
-        <TrendChart trends={data?.trends ?? null} loading={loading} />
+        <h2>{grainTitle(grain)}</h2>
+        <TrendChart
+          trends={data?.trends ?? null}
+          loading={loading}
+          onPeriodSelect={onPeriodSelect}
+        />
       </section>
+
+      <PeriodDetailPanel
+        detail={periodDetail}
+        label={periodLabel}
+        loading={periodLoading}
+        error={periodError}
+        onClose={clearPeriod}
+      />
     </main>
   );
 }
