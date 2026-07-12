@@ -1,5 +1,5 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import type { BugBudgetRow } from '@momus/domain';
+import { omitOverriddenFields, type BugBudgetRow, type TrackerOverrides } from '@momus/domain';
 
 /** Map domain row (snake_case already) to DB insert payload. */
 export function toDbInsert(row: BugBudgetRow): Record<string, unknown> {
@@ -98,12 +98,24 @@ export class BugBudgetRepository {
     return data != null;
   }
 
+  async getTrackerOverrides(jiraKey: string): Promise<TrackerOverrides | null> {
+    const { data, error } = await this.db
+      .from('bug_budget')
+      .select('tracker_overrides')
+      .eq('jira_key', jiraKey)
+      .maybeSingle();
+    if (error) throw new Error(`getTrackerOverrides failed: ${error.message}`);
+    return (data?.tracker_overrides as TrackerOverrides | undefined) ?? null;
+  }
+
   async upsertMany(rows: BugBudgetRow[]): Promise<{ newCount: number; updatedCount: number }> {
     let newCount = 0;
     let updatedCount = 0;
     for (const row of rows) {
       const existed = await this.existsByKey(row.jira_key);
-      const { error } = await this.db.from('bug_budget').upsert(toDbInsert(row), {
+      const overrides = await this.getTrackerOverrides(row.jira_key);
+      const payload = omitOverriddenFields(toDbInsert(row), overrides);
+      const { error } = await this.db.from('bug_budget').upsert(payload, {
         onConflict: 'jira_key',
       });
       if (error) throw new Error(`upsert ${row.jira_key} failed: ${error.message}`);

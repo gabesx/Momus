@@ -3,6 +3,7 @@ export * from './settings';
 export * from './settings-config';
 export * from './sync-runs.repository';
 export * from './bug-budget.repository';
+export * from './tracker.repository';
 export * from './bug-budget-query';
 export * from './cache';
 export * from './config';

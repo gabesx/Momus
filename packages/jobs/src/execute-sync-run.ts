@@ -4,6 +4,7 @@ import {
   SyncRunRepository,
   assertJiraEnabled,
   bumpBugBudgetCacheVersion,
+  bumpDefectTrackerCacheVersion,
   createServerClient,
   getJiraSettings,
   recordLastSyncUser,
@@ -138,6 +139,7 @@ async function executeInline(input: {
     },
     afterSuccess: async () => {
       await bumpBugBudgetCacheVersion(input.db);
+      await bumpDefectTrackerCacheVersion(input.db);
       await recordLastSyncUser(
         input.db,
         input.options.requestedByLabel ?? 'unknown',
@@ -267,6 +269,7 @@ async function executePagedWithSteps(input: {
 
   await step.run('cache-and-audit', async () => {
     await bumpBugBudgetCacheVersion(input.db);
+    await bumpDefectTrackerCacheVersion(input.db);
     await recordLastSyncUser(
       input.db,
       input.options.requestedByLabel ?? 'unknown',
