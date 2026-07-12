@@ -59,6 +59,8 @@ export type AnalyticsSummaryResult = AnalyticsSummaryMetrics & {
 
 export type AnalyticsTrendsResult = {
   labels: string[];
+  /** Parallel to labels — machine keys for period-detail (e.g. 2026-04, 2026-Q2, 2026) */
+  period_keys?: string[];
   bugs: number[];
   defects: number[];
   total: number[];

@@ -94,6 +94,7 @@ export function computeTrends(
   const end = cmpKey(lastData, nowKey) < 0 ? lastData : nowKey;
 
   const labels: string[] = [];
+  const period_keys: string[] = [];
   const bugs: number[] = [];
   const defects: number[] = [];
   const total: number[] = [];
@@ -104,6 +105,7 @@ export function computeTrends(
     const bucket = withDate.filter((r) => periodKeyFromIso(r.created_date!, grain) === key);
     const stats = bucketStats(bucket);
     labels.push(labelForKey(key, grain));
+    period_keys.push(key);
     bugs.push(stats.bugs);
     defects.push(stats.defects);
     total.push(stats.total);
@@ -112,7 +114,7 @@ export function computeTrends(
     key = nextKey(key, grain);
   }
 
-  return { labels, bugs, defects, total, resolution_rate, grain };
+  return { labels, period_keys, bugs, defects, total, resolution_rate, grain };
 }
 
 /** @deprecated Prefer computeTrends(..., 'month', nowIso) */
@@ -121,6 +123,12 @@ export function computeMonthlyTrends(
   nowIso: string,
 ): AnalyticsTrendsResult {
   const t = computeTrends(rows, 'month', nowIso);
-  const { grain: _g, ...rest } = t;
-  return rest;
+  return {
+    labels: t.labels,
+    period_keys: t.period_keys,
+    bugs: t.bugs,
+    defects: t.defects,
+    total: t.total,
+    resolution_rate: t.resolution_rate,
+  };
 }
