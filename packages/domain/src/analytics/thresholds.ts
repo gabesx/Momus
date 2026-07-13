@@ -38,6 +38,34 @@ export function criticalMajorPctTone(
   return 'ok';
 }
 
+export function slaComplianceTone(
+  pct: number | null,
+  healthy = ANALYTICS_KPI_THRESHOLDS.sla_compliance_healthy_pct,
+): KpiTone {
+  if (pct === null) return 'neutral';
+  if (pct >= healthy) return 'ok';
+  if (pct >= healthy - 15) return 'warning';
+  return 'danger';
+}
+
+export function firstResponseTone(
+  avgDays: number,
+  threshold = ANALYTICS_KPI_THRESHOLDS.sla_first_response_days,
+): KpiTone {
+  if (avgDays >= threshold) return 'danger';
+  if (avgDays >= threshold * 0.7) return 'warning';
+  return 'ok';
+}
+
+export function mttrCriticalMajorTone(
+  avgHours: number,
+  threshold = ANALYTICS_KPI_THRESHOLDS.mttr_critical_major_warning_hours,
+): KpiTone {
+  if (avgHours >= threshold) return 'danger';
+  if (avgHours >= threshold * 0.7) return 'warning';
+  return 'ok';
+}
+
 export function longOverduePctTone(
   pct: number,
   threshold = ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning,

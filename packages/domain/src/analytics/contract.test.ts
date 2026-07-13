@@ -129,6 +129,36 @@ describe('analytics M1 contract', () => {
     });
     expect(summary.risk.mom).toHaveProperty('open_critical_major');
     expect(summary.risk.mom).toHaveProperty('open_long_overdue');
+    expect(summary.resolution).toBeDefined();
+    for (const group of ['overall', 'critical_major', 'other'] as const) {
+      expect(summary.resolution[group]).toEqual({
+        resolved_count: expect.any(Number),
+        avg_hours: expect.any(Number),
+        median_hours: expect.any(Number),
+      });
+    }
+    expect(summary.resolution.mom).toHaveProperty('avg_hours');
+    expect(summary.resolution.mom).toHaveProperty('median_hours');
+    for (const sla of [
+      'sla_first_response',
+      'sla_critical_resolution',
+      'sla_major_resolution',
+    ] as const) {
+      expect(summary.response[sla]).toHaveProperty('pct');
+      expect(summary.response[sla]).toMatchObject({
+        within: expect.any(Number),
+        eligible: expect.any(Number),
+        threshold_days: expect.any(Number),
+      });
+    }
+    expect(summary.distribution.by_squad).toBeInstanceOf(Array);
+    expect(summary.distribution.by_service).toBeInstanceOf(Array);
+    expect(summary.distribution.by_engineer).toBeInstanceOf(Array);
+    expect(summary.distribution.traceability).toEqual({
+      linked: expect.any(Number),
+      total: expect.any(Number),
+      pct: expect.any(Number),
+    });
   });
 
   it('exports KPI threshold defaults and period-detail shape', () => {
@@ -137,6 +167,11 @@ describe('analytics M1 contract', () => {
     expect(ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct).toBe(70);
     expect(ANALYTICS_KPI_THRESHOLDS.open_critical_major_pct_warning).toBe(25);
     expect(ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning).toBe(20);
+    expect(ANALYTICS_KPI_THRESHOLDS.mttr_critical_major_warning_hours).toBe(72);
+    expect(ANALYTICS_KPI_THRESHOLDS.sla_first_response_days).toBe(2);
+    expect(ANALYTICS_KPI_THRESHOLDS.sla_critical_resolution_days).toBe(3);
+    expect(ANALYTICS_KPI_THRESHOLDS.sla_major_resolution_days).toBe(7);
+    expect(ANALYTICS_KPI_THRESHOLDS.sla_compliance_healthy_pct).toBe(90);
 
     const detail: AnalyticsPeriodDetail = {
       period_key: '2026-Q2',
