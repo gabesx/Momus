@@ -89,6 +89,20 @@ Serve functions via `apps/web/app/api/inngest/route.ts`.
 
 Never commit real tokens. Prefer Vault (DEV-9) once available; until then treat `settings.jira_api_token` as secret.
 
+### Wire Inngest on Vercel (Momus)
+
+App serve path is already public: `https://momus.vercel.app/api/inngest` (`apps/web/app/api/inngest/route.ts`, middleware allowlist).
+
+1. Open [Inngest for Vercel](https://vercel.com/marketplace/inngest) → **Install** / **Connect Account**.
+2. Sign in to Inngest (or create an account) and select the Vercel project **`momus`** (`prj_H8LDfC9MnWsDrRBROCcd7eiynksj`).
+3. Confirm Vercel env now has **`INNGEST_EVENT_KEY`** and **`INNGEST_SIGNING_KEY`** for Production (+ Preview if desired).
+4. If Deployment Protection is on: enable **Protection Bypass for Automation** on the Vercel project, copy the secret into Inngest → Integrations → Vercel → Deployment protection key, then **redeploy**.
+5. Redeploy Momus (or wait for the next git push) so the new env vars land on the runtime.
+6. Verify: `GET https://momus.vercel.app/api/health/worker` shows `inngest_event_key: true`, `inngest_signing_key: true`, `status: "healthy"`.
+7. Trigger Settings → Sync; run should enqueue (`queued`) instead of failing with “No sync worker available”.
+
+Local fallback (not for production): leave keys unset and run `next dev` — `shouldRunInlineSync` auto-inlines when `NODE_ENV !== 'production'`.
+
 ## 6. Related docs
 
 - Spec: `docs/superpowers/specs/2026-07-11-health-ops-runbook-design.md`
