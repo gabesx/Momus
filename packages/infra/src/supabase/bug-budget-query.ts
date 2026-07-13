@@ -15,7 +15,7 @@ import {
 } from '@momus/domain';
 
 const SUMMARY_COLUMNS =
-  'jira_key, project, summary, priority, severity_issue, status, reporter, created_date, defect_age_days, is_open, final_issue_type, created_year, epic_name, parent, issue_type, status_category, assignee_final, ac_related_labels, quarter, labels, sprint, story_points, due_date, end_date, actual_end, resolved_date, updated_at, tested_by, service_feature, tester_assignee, owner';
+  'jira_key, project, summary, priority, severity_issue, status, reporter, created_date, defect_age_days, is_open, final_issue_type, created_year, epic_name, parent, issue_type, status_category, assignee_final, ac_related_labels, quarter, labels, sprint, story_points, due_date, end_date, actual_end, resolved_date, time_to_resolution_hours, first_response_age_days, chart_date_first_response, real_project, service_feature_final, engineer_assignee, test_engineer_assignee, has_linked_test_execution, updated_at, tested_by, service_feature, tester_assignee, owner';
 
 /** Narrow column set for leaderboard rankings + reporter drill. */
 export const LEADERBOARD_COLUMNS =
@@ -47,6 +47,14 @@ export type BugBudgetListRow = SummaryIssueInput & {
   end_date?: string | null;
   actual_end?: string | null;
   resolved_date?: string | null;
+  time_to_resolution_hours?: number | null;
+  first_response_age_days?: number | null;
+  chart_date_first_response?: string | null;
+  real_project?: string | null;
+  service_feature_final?: string | null;
+  engineer_assignee?: string | null;
+  test_engineer_assignee?: string | null;
+  has_linked_test_execution?: boolean | null;
   updated_at?: string | null;
   tested_by?: string | null;
   service_feature?: string | null;

@@ -5,7 +5,7 @@ import {
   extractFilterOptions,
   type AnalyticsTrendGrain,
 } from '@momus/domain';
-import { BugBudgetQueryRepository, createServerClient } from '@momus/infra';
+import { BugBudgetQueryRepository, createServerClient, loadSummaryConfig } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
 import { analyticsParamsFromUrl } from '@/lib/analytics-params';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
@@ -17,8 +17,9 @@ export async function GET(request: Request) {
     const params = analyticsParamsFromUrl(new URL(request.url));
     const grain: AnalyticsTrendGrain = params.trend_grain ?? 'month';
     const nowIso = new Date().toISOString();
-    const repo = new BugBudgetQueryRepository(createServerClient());
-    const all = await repo.listAllForFilters();
+    const db = createServerClient();
+    const repo = new BugBudgetQueryRepository(db);
+    const [all, config] = await Promise.all([repo.listAllForFilters(), loadSummaryConfig(db)]);
     const opts = extractFilterOptions(all);
     const filter_options = {
       projects: opts.projects,
@@ -26,7 +27,7 @@ export async function GET(request: Request) {
     };
     const filtered = applyAnalyticsFilters(all, params, nowIso);
     const summary = computeAnalyticsSummary(filtered, nowIso);
-    const trends = computeTrends(filtered, grain, nowIso);
+    const trends = computeTrends(filtered, grain, nowIso, config.multipliers);
     const last_updated =
       all
         .map((r) => r.updated_at)
