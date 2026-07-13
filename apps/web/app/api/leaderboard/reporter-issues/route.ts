@@ -10,6 +10,7 @@ import { BugBudgetQueryRepository, createServerClient, getJiraSettings } from '@
 import { requireViewAnalytics } from '@/lib/auth';
 import { mapBugBudgetToLeaderboardRow } from '@/lib/leaderboard-map';
 import { leaderboardParamsFromUrl } from '@/lib/leaderboard-params';
+import { leaderboardSqlRange } from '@/lib/load-leaderboard';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 export async function GET(request: Request) {
@@ -24,8 +25,9 @@ export async function GET(request: Request) {
     const params = leaderboardParamsFromUrl(url);
     const nowIso = new Date().toISOString();
 
+    const range = leaderboardSqlRange(params, nowIso);
     const repo = new BugBudgetQueryRepository(createServerClient());
-    const all = await repo.listAllForFilters();
+    const all = await repo.listForLeaderboard(range);
     const rows: LeaderboardIssueRow[] = all.map(mapBugBudgetToLeaderboardRow);
 
     const issues = filterReporterDrilldown(rows, params, nowIso, reporter, context, group);

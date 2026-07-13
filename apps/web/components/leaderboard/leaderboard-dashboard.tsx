@@ -13,6 +13,7 @@ import type {
 } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
 import { leaderboardParamsFromUrl, leaderboardParamsToQuery } from '@/lib/leaderboard-params';
+import type { LeaderboardPayload } from '@/lib/load-leaderboard';
 
 type LeaderboardTab =
   | 'global'
@@ -23,12 +24,17 @@ type LeaderboardTab =
   | 'incomplete';
 
 type LeaderboardResponse = LeaderboardResult & {
-  success: boolean;
+  success?: boolean;
   message?: string;
   filter_options: {
     years: number[];
     period_types: { value: string; label: string }[];
   };
+};
+
+type LeaderboardDashboardProps = {
+  initialData?: LeaderboardPayload | LeaderboardResponse | null;
+  initialParams?: LeaderboardFilterParams;
 };
 
 type DrillIssue = {
@@ -363,16 +369,16 @@ function ProjectBlocks({
   );
 }
 
-export function LeaderboardDashboard() {
-  const [draft, setDraft] = useState<LeaderboardFilterParams>({
-    period_type: 'quarterly',
-  });
-  const [state, setState] = useState<LeaderboardFilterParams>({
-    period_type: 'quarterly',
-  });
+export function LeaderboardDashboard({
+  initialData = null,
+  initialParams,
+}: LeaderboardDashboardProps) {
+  const seedParams: LeaderboardFilterParams = initialParams ?? { period_type: 'quarterly' };
+  const [draft, setDraft] = useState<LeaderboardFilterParams>(seedParams);
+  const [state, setState] = useState<LeaderboardFilterParams>(seedParams);
   const [tab, setTab] = useState<LeaderboardTab>('global');
-  const [data, setData] = useState<LeaderboardResponse | null>(null);
-  const [loading, setLoading] = useState(true);
+  const [data, setData] = useState<LeaderboardResponse | null>(initialData ?? null);
+  const [loading, setLoading] = useState(!initialData);
   const [error, setError] = useState<string | null>(null);
 
   const [drillReporter, setDrillReporter] = useState<string | null>(null);
@@ -395,8 +401,10 @@ export function LeaderboardDashboard() {
   }, []);
 
   const ready = useRef(false);
-  const lastFetchedQs = useRef<string | null>(null);
-  const suppressPush = useRef(false);
+  const lastFetchedQs = useRef<string | null>(
+    initialData ? leaderboardParamsToQuery(seedParams) : null,
+  );
+  const suppressPush = useRef(Boolean(initialData));
 
   const fetchData = useCallback(async (next: LeaderboardFilterParams) => {
     const qs = leaderboardParamsToQuery(next);
@@ -485,15 +493,21 @@ export function LeaderboardDashboard() {
   }, [drillReporter, closeDrill]);
 
   useEffect(() => {
-    const initial = leaderboardParamsFromUrl(
-      new URL(`http://local${window.location.search}`),
-    );
-    if (!initial.period_type) initial.period_type = 'quarterly';
-    suppressPush.current = true;
-    setDraft(initial);
-    setState(initial);
-    ready.current = true;
-    void fetchData(initial);
+    if (initialData) {
+      ready.current = true;
+      lastFetchedQs.current = leaderboardParamsToQuery(seedParams);
+      suppressPush.current = true;
+    } else {
+      const initial = leaderboardParamsFromUrl(
+        new URL(`http://local${window.location.search}`),
+      );
+      if (!initial.period_type) initial.period_type = 'quarterly';
+      suppressPush.current = true;
+      setDraft(initial);
+      setState(initial);
+      ready.current = true;
+      void fetchData(initial);
+    }
 
     const onPop = () => {
       const parsed = leaderboardParamsFromUrl(
@@ -506,6 +520,8 @@ export function LeaderboardDashboard() {
     };
     window.addEventListener('popstate', onPop);
     return () => window.removeEventListener('popstate', onPop);
+    // Seed once on mount; fetchData is stable.
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- intentional mount-only init
   }, [fetchData]);
 
   useEffect(() => {
