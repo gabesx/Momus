@@ -156,11 +156,29 @@ export function TrackerActiveChips({
 }: {
   state: TrackerFilterParams;
   onRemove: (
-    key: 'year' | 'issue_type' | 'missing_field' | 'q' | 'project' | 'exclude_projects',
+    key:
+      | 'year'
+      | 'issue_type'
+      | 'missing_field'
+      | 'q'
+      | 'project'
+      | 'exclude_projects'
+      | 'squad'
+      | 'service'
+      | 'engineer',
   ) => void;
 }) {
   const chips: {
-    key: 'year' | 'issue_type' | 'missing_field' | 'q' | 'project' | 'exclude_projects';
+    key:
+      | 'year'
+      | 'issue_type'
+      | 'missing_field'
+      | 'q'
+      | 'project'
+      | 'exclude_projects'
+      | 'squad'
+      | 'service'
+      | 'engineer';
     label: string;
   }[] = [];
 
@@ -187,6 +205,9 @@ export function TrackerActiveChips({
       label: `Excluded: ${state.exclude_projects.join(', ')}`,
     });
   }
+  if (state.squad) chips.push({ key: 'squad', label: `Squad: ${state.squad}` });
+  if (state.service) chips.push({ key: 'service', label: `Service: ${state.service}` });
+  if (state.engineer) chips.push({ key: 'engineer', label: `Engineer: ${state.engineer}` });
 
   if (!chips.length) return null;
 

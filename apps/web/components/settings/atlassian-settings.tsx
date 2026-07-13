@@ -3,10 +3,11 @@
 import { useCallback, useEffect, useState } from 'react';
 import Link from 'next/link';
 import { apiJson } from '@/lib/api-client';
+import { AnalyticsTab } from './tabs/analytics-tab';
 import { AtlassianTab } from './tabs/atlassian-tab';
 import { BugBudgetTab } from './tabs/bug-budget-tab';
 
-export type SettingsTab = 'atlassian' | 'bug-budget';
+export type SettingsTab = 'atlassian' | 'bug-budget' | 'analytics';
 
 export type ConnectionState = {
   site_url: string;
@@ -32,6 +33,7 @@ function normalizeTab(raw: string | null | undefined): SettingsTab | null {
     return 'atlassian';
   }
   if (raw === 'bug-budget') return 'bug-budget';
+  if (raw === 'analytics') return 'analytics';
   return null;
 }
 
@@ -98,6 +100,7 @@ export function AtlassianSettings({ initialTab }: Props) {
           [
             ['atlassian', 'Atlassian'],
             ['bug-budget', 'Bug Budget'],
+            ['analytics', 'Analytics'],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -133,6 +136,7 @@ export function AtlassianSettings({ initialTab }: Props) {
             onOpenConnection={() => selectTab('atlassian')}
           />
         )}
+        {tab === 'analytics' && <AnalyticsTab onAlert={showAlert} />}
       </div>
     </div>
   );

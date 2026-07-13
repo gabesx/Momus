@@ -4,6 +4,7 @@ import { stuckRunSweeper } from './stuck-run-sweeper';
 import { schedulerTick } from './scheduler-tick';
 import { retentionPrune } from './retention-prune';
 import { executeBugBudgetSyncRun } from './execute-sync-run';
+import { weeklyAnalyticsDigest } from './weekly-digest';
 
 export {
   inngest,
@@ -13,6 +14,7 @@ export {
   schedulerTick,
   retentionPrune,
   executeBugBudgetSyncRun,
+  weeklyAnalyticsDigest,
 };
 
 export const functions = [
@@ -20,4 +22,5 @@ export const functions = [
   stuckRunSweeper,
   schedulerTick,
   retentionPrune,
+  weeklyAnalyticsDigest,
 ];

@@ -60,6 +60,9 @@ export function trackerParamsFromUrl(url: URL): TrackerFilterParams {
     issue_type: (get('issue_type') as TrackerFilterParams['issue_type']) || undefined,
     q: get('q'),
     missing_field: get('missing_field'),
+    squad: get('squad'),
+    service: get('service'),
+    engineer: get('engineer'),
     page: parsePage(sp.get('page')),
     page_size: parsePageSize(sp.get('page_size')),
   };
@@ -84,6 +87,9 @@ export function trackerParamsToQuery(state: TrackerFilterParams): string {
   if (state.issue_type) sp.set('issue_type', state.issue_type);
   if (state.q) sp.set('q', state.q);
   if (state.missing_field) sp.set('missing_field', state.missing_field);
+  if (state.squad) sp.set('squad', state.squad);
+  if (state.service) sp.set('service', state.service);
+  if (state.engineer) sp.set('engineer', state.engineer);
   const page = state.page ?? DEFAULT_PAGE;
   if (page !== DEFAULT_PAGE) sp.set('page', String(page));
   const pageSize = state.page_size ?? DEFAULT_PAGE_SIZE;

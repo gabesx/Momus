@@ -1,7 +1,16 @@
 import { round1 } from '../budget/status';
 import { monthKeyFromIso } from './filter';
+import { computeAnalyticsDistribution } from './distribution';
+import { computeAnalyticsEscape } from './escape';
+import { computeAnalyticsResolution } from './resolution';
+import { computeAnalyticsResponse } from './response';
 import { computeAnalyticsRisk } from './risk';
-import type { AnalyticsIssueRow, AnalyticsSummaryMetrics, AnalyticsSummaryResult } from './types';
+import type {
+  AnalyticsIssueRow,
+  AnalyticsSummaryMetrics,
+  AnalyticsSummaryOptions,
+  AnalyticsSummaryResult,
+} from './types';
 
 function metrics(rows: AnalyticsIssueRow[]): AnalyticsSummaryMetrics {
   const total = rows.length;
@@ -21,6 +30,7 @@ function pctChange(current: number, previous: number): number | null {
 export function computeAnalyticsSummary(
   rows: AnalyticsIssueRow[],
   nowIso: string,
+  options: AnalyticsSummaryOptions = {},
 ): AnalyticsSummaryResult {
   const base = metrics(rows);
   const curKey = monthKeyFromIso(nowIso);
@@ -39,6 +49,13 @@ export function computeAnalyticsSummary(
   const curRisk = computeAnalyticsRisk(curRows);
   const prevRisk = computeAnalyticsRisk(prevRows);
 
+  // MTTR MoM compares issues by the month they were resolved, not created.
+  const resolvedIn = (key: string) =>
+    rows.filter((r) => r.resolved_date && monthKeyFromIso(r.resolved_date) === key);
+  const baseResolution = computeAnalyticsResolution(rows);
+  const curResolution = computeAnalyticsResolution(resolvedIn(curKey));
+  const prevResolution = computeAnalyticsResolution(resolvedIn(prevKey));
+
   return {
     ...base,
     mom: {
@@ -55,5 +72,18 @@ export function computeAnalyticsSummary(
         open_long_overdue: pctChange(curRisk.open_long_overdue, prevRisk.open_long_overdue),
       },
     },
+    resolution: {
+      ...baseResolution,
+      mom: {
+        avg_hours: pctChange(curResolution.overall.avg_hours, prevResolution.overall.avg_hours),
+        median_hours: pctChange(
+          curResolution.overall.median_hours,
+          prevResolution.overall.median_hours,
+        ),
+      },
+    },
+    response: computeAnalyticsResponse(rows, options.sla),
+    distribution: computeAnalyticsDistribution(rows),
+    escape: computeAnalyticsEscape(rows, options.prod_labels),
   };
 }

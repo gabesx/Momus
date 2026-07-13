@@ -36,6 +36,16 @@ export type AnalyticsIssueRow = {
   labels?: string[] | null;
   ac_related_labels?: string[] | null;
   defect_age_days?: number | null;
+  resolved_date?: string | null;
+  time_to_resolution_hours?: number | null;
+  first_response_age_days?: number | null;
+  chart_date_first_response?: string | null;
+  real_project?: string | null;
+  service_feature?: string | null;
+  service_feature_final?: string | null;
+  engineer_assignee?: string | null;
+  test_engineer_assignee?: string | null;
+  has_linked_test_execution?: boolean | null;
   updated_at?: string | null;
 };
 
@@ -56,6 +66,10 @@ export type AnalyticsSummaryResult = AnalyticsSummaryMetrics & {
     avg_age: number | null;
   };
   risk: AnalyticsRiskResult;
+  resolution: AnalyticsResolutionResult;
+  response: AnalyticsResponseResult;
+  distribution: AnalyticsDistributionResult;
+  escape: AnalyticsEscapeResult;
 };
 
 export type AnalyticsAgeBuckets = {
@@ -80,6 +94,81 @@ export type AnalyticsRiskResult = {
   };
 };
 
+export type AnalyticsMttrStats = {
+  /** Resolved rows with a usable resolution time */
+  resolved_count: number;
+  avg_hours: number;
+  median_hours: number;
+};
+
+export type AnalyticsResolutionResult = {
+  overall: AnalyticsMttrStats;
+  critical_major: AnalyticsMttrStats;
+  other: AnalyticsMttrStats;
+  by_severity: Record<string, AnalyticsMttrStats>;
+  mom: {
+    avg_hours: number | null;
+    median_hours: number | null;
+  };
+};
+
+export type AnalyticsSlaCompliance = {
+  /** Null when no eligible issues in scope */
+  pct: number | null;
+  within: number;
+  eligible: number;
+  threshold_days: number;
+};
+
+export type AnalyticsResponseResult = {
+  /** Rows with a usable first-response time */
+  responded_count: number;
+  avg_days: number;
+  median_days: number;
+  /** Open rows with no first response at all */
+  open_untouched: number;
+  sla_first_response: AnalyticsSlaCompliance;
+  sla_critical_resolution: AnalyticsSlaCompliance;
+  sla_major_resolution: AnalyticsSlaCompliance;
+};
+
+export type AnalyticsDistributionEntry = {
+  key: string;
+  total: number;
+  open: number;
+  open_critical_major: number;
+};
+
+export type AnalyticsEscapeResult = {
+  /** Issues labeled as found in production */
+  prod: number;
+  total: number;
+  pct: number;
+  labels_used: string[];
+};
+
+/** SLA day thresholds — overridable via bug_budget_config.analytics_settings. */
+export type AnalyticsSlaSettings = {
+  sla_first_response_days: number;
+  sla_critical_resolution_days: number;
+  sla_major_resolution_days: number;
+};
+
+export type AnalyticsSummaryOptions = {
+  sla?: AnalyticsSlaSettings;
+  prod_labels?: readonly string[];
+};
+
+export type AnalyticsDistributionResult = {
+  /** real_project (fallback project), sorted by total desc */
+  by_squad: AnalyticsDistributionEntry[];
+  /** service_feature_final (fallback service_feature), sorted by total desc */
+  by_service: AnalyticsDistributionEntry[];
+  /** engineer_assignee (fallback test_engineer_assignee), sorted by open desc */
+  by_engineer: AnalyticsDistributionEntry[];
+  traceability: { linked: number; total: number; pct: number };
+};
+
 export type AnalyticsTrendsResult = {
   labels: string[];
   /** Parallel to labels — machine keys for period-detail (e.g. 2026-04, 2026-Q2, 2026) */
@@ -88,6 +177,8 @@ export type AnalyticsTrendsResult = {
   defects: number[];
   total: number[];
   resolution_rate: number[];
+  /** Bug cost per period — present when cost multipliers were provided */
+  cost?: number[];
   grain?: AnalyticsTrendGrain;
 };
 
@@ -109,4 +200,10 @@ export const ANALYTICS_KPI_THRESHOLDS = {
   resolution_rate_healthy_pct: 70,
   open_critical_major_pct_warning: 25,
   open_long_overdue_pct_warning: 20,
+  mttr_critical_major_warning_hours: 72,
+  sla_first_response_days: 2,
+  sla_critical_resolution_days: 3,
+  sla_major_resolution_days: 7,
+  sla_compliance_healthy_pct: 90,
+  escape_rate_warning_pct: 10,
 } as const;

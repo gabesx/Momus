@@ -10,8 +10,12 @@ import type {
 import { apiJson } from '@/lib/api-client';
 import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
 import { AnalyticsFilters } from './analytics-filters';
+import { CostQualityPanel } from './cost-quality-panel';
+import { DistributionPanel } from './distribution-panel';
+import { MttrPanel } from './mttr-panel';
 import { PeriodDetailPanel } from './period-detail-panel';
 import { RiskPanel } from './risk-panel';
+import { TriagePanel } from './triage-panel';
 import { SummaryCards } from './summary-cards';
 import { TrendChart } from './trend-chart';
 
@@ -196,6 +200,13 @@ export function DefectAnalyticsDashboard() {
           <span className="bb-analytics-updated">
             Last Updated: {formatLastUpdated(data?.meta.last_updated ?? null)}
           </span>
+          <a
+            className="btn btn-outline"
+            href={`/api/analytics/export/csv${analyticsParamsToQuery(state)}`}
+            download
+          >
+            Export CSV
+          </a>
           <button type="button" className="btn btn-outline" onClick={onRefresh} disabled={loading}>
             Refresh
           </button>
@@ -224,9 +235,6 @@ export function DefectAnalyticsDashboard() {
         onReset={resetFilters}
       />
 
-      <SummaryCards summary={data?.summary ?? null} loading={loading} />
-      <RiskPanel summary={data?.summary ?? null} loading={loading} />
-
       <section className="bb-analytics-chart-card">
         <h2>{grainTitle(grain)}</h2>
         <TrendChart
@@ -242,6 +250,22 @@ export function DefectAnalyticsDashboard() {
         loading={periodLoading}
         error={periodError}
         onClose={clearPeriod}
+      />
+
+      <SummaryCards summary={data?.summary ?? null} loading={loading} />
+      <RiskPanel summary={data?.summary ?? null} loading={loading} />
+      <MttrPanel summary={data?.summary ?? null} loading={loading} />
+      <TriagePanel summary={data?.summary ?? null} loading={loading} />
+      <DistributionPanel
+        summary={data?.summary ?? null}
+        loading={loading}
+        year={state.year ? String(state.year) : 'all'}
+      />
+
+      <CostQualityPanel
+        summary={data?.summary ?? null}
+        trends={data?.trends ?? null}
+        loading={loading}
       />
     </main>
   );

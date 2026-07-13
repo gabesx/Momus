@@ -115,8 +115,31 @@ export function TrendChart({ trends, loading, onPeriodSelect }: Props) {
     return <p className="muted">No trend data for the current filters.</p>;
   }
 
+  const downloadPng = () => {
+    const src = canvasRef.current;
+    if (!src) return;
+    // Re-draw on a white background — the chart canvas is transparent.
+    const out = document.createElement('canvas');
+    out.width = src.width;
+    out.height = src.height;
+    const ctx = out.getContext('2d');
+    if (!ctx) return;
+    ctx.fillStyle = '#ffffff';
+    ctx.fillRect(0, 0, out.width, out.height);
+    ctx.drawImage(src, 0, 0);
+    const a = document.createElement('a');
+    a.href = out.toDataURL('image/png');
+    a.download = `defect-trends-${new Date().toISOString().slice(0, 10)}.png`;
+    a.click();
+  };
+
   return (
     <div className="bb-analytics-chart">
+      <div className="bb-analytics-chart__actions">
+        <button type="button" className="btn btn-ghost" onClick={downloadPng}>
+          Download PNG
+        </button>
+      </div>
       <canvas ref={canvasRef} />
       {onPeriodSelect ? (
         <p className="muted" style={{ marginTop: '0.5rem', fontSize: '0.85rem' }}>

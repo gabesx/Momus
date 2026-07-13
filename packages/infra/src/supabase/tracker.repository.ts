@@ -8,7 +8,7 @@ import {
 } from '@momus/domain';
 
 const TRACKER_COLUMNS =
-  'jira_key, project, summary, issue_type, parent, linked_issues, severity_issue, service_feature, ac_related_labels, tester_assignee, owner, has_linked_test_execution, created_year, tracker_overrides, reporter, creator, description, labels, created_date, end_date, status';
+  'jira_key, project, summary, issue_type, parent, linked_issues, severity_issue, service_feature, service_feature_final, real_project, engineer_assignee, test_engineer_assignee, ac_related_labels, tester_assignee, owner, has_linked_test_execution, created_year, tracker_overrides, reporter, creator, description, labels, created_date, end_date, status';
 
 async function fetchAllPages<T>(
   fetchPage: (from: number, to: number) => Promise<T[]>,

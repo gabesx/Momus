@@ -1,4 +1,5 @@
 import { BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '../constants/defaults';
+import { calculateCost, type CostMultipliers } from '../budget/cost';
 import { round1 } from '../budget/status';
 import {
   issueTypeOf,
@@ -80,10 +81,19 @@ export function computeTrends(
   rows: AnalyticsIssueRow[],
   grain: AnalyticsTrendGrain,
   nowIso: string,
+  multipliers?: CostMultipliers,
 ): AnalyticsTrendsResult {
   const withDate = rows.filter((r) => r.created_date);
   if (withDate.length === 0) {
-    return { labels: [], bugs: [], defects: [], total: [], resolution_rate: [], grain };
+    return {
+      labels: [],
+      bugs: [],
+      defects: [],
+      total: [],
+      resolution_rate: [],
+      ...(multipliers ? { cost: [] } : {}),
+      grain,
+    };
   }
   const keys = [
     ...new Set(withDate.map((r) => periodKeyFromIso(r.created_date!, grain))),
@@ -99,6 +109,7 @@ export function computeTrends(
   const defects: number[] = [];
   const total: number[] = [];
   const resolution_rate: number[] = [];
+  const cost: number[] | undefined = multipliers ? [] : undefined;
 
   let key = start;
   for (;;) {
@@ -110,11 +121,30 @@ export function computeTrends(
     defects.push(stats.defects);
     total.push(stats.total);
     resolution_rate.push(stats.resolution_rate);
+    if (cost && multipliers) {
+      cost.push(
+        round1(
+          bucket.reduce(
+            (sum, r) => sum + calculateCost(r.priority, r.severity_issue, multipliers),
+            0,
+          ),
+        ),
+      );
+    }
     if (cmpKey(key, end) >= 0) break;
     key = nextKey(key, grain);
   }
 
-  return { labels, period_keys, bugs, defects, total, resolution_rate, grain };
+  return {
+    labels,
+    period_keys,
+    bugs,
+    defects,
+    total,
+    resolution_rate,
+    ...(cost ? { cost } : {}),
+    grain,
+  };
 }
 
 /** @deprecated Prefer computeTrends(..., 'month', nowIso) */
