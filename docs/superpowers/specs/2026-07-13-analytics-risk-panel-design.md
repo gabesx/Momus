@@ -1,7 +1,7 @@
 # Defect Analytics — Open Risk Panel — Design
 
 **Date:** 2026-07-13  
-**Status:** Awaiting review  
+**Status:** Implemented  
 **Approach:** Dedicated Risk panel on Defect Analytics (Approach 2) — no click-through  
 **Scope:** Aging + severity risk for **open** issues on `localhost:3000` / Defect Analytics homepage  
 **Depends on:** Existing analytics module (`packages/domain/src/analytics/*`, `GET /api/analytics`, `DefectAnalyticsDashboard`)
@@ -17,7 +17,7 @@ A Test Engineering Manager opens Defect Analytics and immediately sees whether o
 | Domain age | `defectAgeBucket` — fresh ≤5, aging ≤20, stale ≤80, long overdue >80 business days |
 | Domain analytics | Summary MoM (total/open/resolved/rate/avg_age), trends, period-detail severity matrices |
 | Bug Budget stats | `open_critical`, `open_critical_major` (exact `severity_issue` match) |
-| UI | Summary cards → trend chart → period detail; **no** open-risk aging/severity panel |
+| UI | Summary cards → **Open risk panel** → trend chart → period detail |
 
 ## Product rules
 
@@ -118,10 +118,10 @@ Loading: skeleton matching panel height. No click-through / filter patches in th
 
 ## Success criteria
 
-- [ ] Domain tests cover open-only scoping, Critical/Major parity with Bug Budget, bucket boundaries, age exclusion, zero-open pcts, MoM nulls  
-- [ ] `/api/analytics` summary includes `risk` for filtered data  
-- [ ] Defect Analytics shows Risk panel between summary and trends with loading/empty states  
-- [ ] Existing analytics summary MoM KPIs and golden/contract tests remain green  
+- [x] Domain tests cover open-only scoping, Critical/Major parity with Bug Budget, bucket boundaries, age exclusion, zero-open pcts, MoM nulls  
+- [x] `/api/analytics` summary includes `risk` for filtered data  
+- [x] Defect Analytics shows Risk panel between summary and trends with loading/empty states  
+- [x] Existing analytics summary MoM KPIs and golden/contract tests remain green  
 
 ## Implementation order
 
