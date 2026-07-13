@@ -120,6 +120,15 @@ describe('analytics M1 contract', () => {
     for (const key of ['total', 'open', 'resolved', 'resolution_rate', 'avg_age'] as const) {
       expect(summary.mom).toHaveProperty(key);
     }
+    expect(summary.risk).toBeDefined();
+    expect(summary.risk.open_age_buckets).toEqual({
+      fresh: expect.any(Number),
+      aging: expect.any(Number),
+      stale: expect.any(Number),
+      long_overdue: expect.any(Number),
+    });
+    expect(summary.risk.mom).toHaveProperty('open_critical_major');
+    expect(summary.risk.mom).toHaveProperty('open_long_overdue');
   });
 
   it('exports KPI threshold defaults and period-detail shape', () => {

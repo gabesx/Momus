@@ -16,6 +16,7 @@ export * from './badges/colors';
 export * from './export/csv-export';
 export * from './analytics/types';
 export * from './analytics/filter';
+export * from './analytics/risk';
 export * from './analytics/summary';
 export * from './analytics/trends';
 export * from './analytics/period-detail';

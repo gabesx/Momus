@@ -55,6 +55,7 @@ export type AnalyticsSummaryResult = AnalyticsSummaryMetrics & {
     resolution_rate: number | null;
     avg_age: number | null;
   };
+  risk: AnalyticsRiskResult;
 };
 
 export type AnalyticsAgeBuckets = {

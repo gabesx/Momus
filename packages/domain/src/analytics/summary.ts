@@ -1,5 +1,6 @@
 import { round1 } from '../budget/status';
 import { monthKeyFromIso } from './filter';
+import { computeAnalyticsRisk } from './risk';
 import type { AnalyticsIssueRow, AnalyticsSummaryMetrics, AnalyticsSummaryResult } from './types';
 
 function metrics(rows: AnalyticsIssueRow[]): AnalyticsSummaryMetrics {
@@ -34,6 +35,9 @@ export function computeAnalyticsSummary(
   const prevRows = rows.filter((r) => r.created_date && monthKeyFromIso(r.created_date) === prevKey);
   const cur = metrics(curRows);
   const prev = metrics(prevRows);
+  const baseRisk = computeAnalyticsRisk(rows);
+  const curRisk = computeAnalyticsRisk(curRows);
+  const prevRisk = computeAnalyticsRisk(prevRows);
 
   return {
     ...base,
@@ -43,6 +47,13 @@ export function computeAnalyticsSummary(
       resolved: pctChange(cur.resolved, prev.resolved),
       resolution_rate: pctChange(cur.resolution_rate, prev.resolution_rate),
       avg_age: pctChange(cur.avg_age, prev.avg_age),
+    },
+    risk: {
+      ...baseRisk,
+      mom: {
+        open_critical_major: pctChange(curRisk.open_critical_major, prevRisk.open_critical_major),
+        open_long_overdue: pctChange(curRisk.open_long_overdue, prevRisk.open_long_overdue),
+      },
     },
   };
 }
