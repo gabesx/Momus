@@ -200,6 +200,13 @@ export function DefectAnalyticsDashboard() {
           <span className="bb-analytics-updated">
             Last Updated: {formatLastUpdated(data?.meta.last_updated ?? null)}
           </span>
+          <a
+            className="btn btn-outline"
+            href={`/api/analytics/export/csv${analyticsParamsToQuery(state)}`}
+            download
+          >
+            Export CSV
+          </a>
           <button type="button" className="btn btn-outline" onClick={onRefresh} disabled={loading}>
             Refresh
           </button>
@@ -249,7 +256,11 @@ export function DefectAnalyticsDashboard() {
       <RiskPanel summary={data?.summary ?? null} loading={loading} />
       <MttrPanel summary={data?.summary ?? null} loading={loading} />
       <TriagePanel summary={data?.summary ?? null} loading={loading} />
-      <DistributionPanel summary={data?.summary ?? null} loading={loading} />
+      <DistributionPanel
+        summary={data?.summary ?? null}
+        loading={loading}
+        year={state.year ? String(state.year) : 'all'}
+      />
 
       <CostQualityPanel
         summary={data?.summary ?? null}

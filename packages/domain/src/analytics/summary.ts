@@ -1,10 +1,16 @@
 import { round1 } from '../budget/status';
 import { monthKeyFromIso } from './filter';
 import { computeAnalyticsDistribution } from './distribution';
+import { computeAnalyticsEscape } from './escape';
 import { computeAnalyticsResolution } from './resolution';
 import { computeAnalyticsResponse } from './response';
 import { computeAnalyticsRisk } from './risk';
-import type { AnalyticsIssueRow, AnalyticsSummaryMetrics, AnalyticsSummaryResult } from './types';
+import type {
+  AnalyticsIssueRow,
+  AnalyticsSummaryMetrics,
+  AnalyticsSummaryOptions,
+  AnalyticsSummaryResult,
+} from './types';
 
 function metrics(rows: AnalyticsIssueRow[]): AnalyticsSummaryMetrics {
   const total = rows.length;
@@ -24,6 +30,7 @@ function pctChange(current: number, previous: number): number | null {
 export function computeAnalyticsSummary(
   rows: AnalyticsIssueRow[],
   nowIso: string,
+  options: AnalyticsSummaryOptions = {},
 ): AnalyticsSummaryResult {
   const base = metrics(rows);
   const curKey = monthKeyFromIso(nowIso);
@@ -75,7 +82,8 @@ export function computeAnalyticsSummary(
         ),
       },
     },
-    response: computeAnalyticsResponse(rows),
+    response: computeAnalyticsResponse(rows, options.sla),
     distribution: computeAnalyticsDistribution(rows),
+    escape: computeAnalyticsEscape(rows, options.prod_labels),
   };
 }

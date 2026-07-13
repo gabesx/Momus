@@ -21,6 +21,12 @@ export type TrackerFilterParams = {
   issue_type?: 'bugs' | 'defects' | '' | null;
   q?: string | null; // search summary / jira_key
   missing_field?: string | null; // 'all' or a known missing-field key
+  /** Analytics drill-through: real_project (fallback project) */
+  squad?: string | null;
+  /** Analytics drill-through: service_feature_final (fallback service_feature); 'Unspecified' matches rows with neither */
+  service?: string | null;
+  /** Analytics drill-through: engineer_assignee (fallback test_engineer_assignee); 'Unassigned' matches rows with neither */
+  engineer?: string | null;
   page?: number | null;
   page_size?: number | null;
   /** Field keys excluded from incompleteness tracking (from Field Settings). */
@@ -36,6 +42,10 @@ export type TrackerIssueRow = {
   linked_issues?: unknown;
   severity_issue?: string | null;
   service_feature?: string | null;
+  service_feature_final?: string | null;
+  real_project?: string | null;
+  engineer_assignee?: string | null;
+  test_engineer_assignee?: string | null;
   ac_related_labels?: string[] | null;
   tester_assignee?: string | null;
   owner?: string | null;

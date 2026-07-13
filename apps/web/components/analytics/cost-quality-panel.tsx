@@ -1,6 +1,10 @@
 'use client';
 
-import type { AnalyticsSummaryResult, AnalyticsTrendsResult } from '@momus/domain';
+import {
+  escapeRateTone,
+  type AnalyticsSummaryResult,
+  type AnalyticsTrendsResult,
+} from '@momus/domain';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
@@ -12,6 +16,13 @@ const MAX_PERIODS = 12;
 
 function formatCost(value: number): string {
   return value.toLocaleString('en-US', { maximumFractionDigits: 1 });
+}
+
+function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
+  if (tone === 'danger') return 'bb-analytics-metric-card--threshold-danger';
+  if (tone === 'warning') return 'bb-analytics-metric-card--threshold-warning';
+  if (tone === 'ok') return 'bb-analytics-metric-card--threshold-ok';
+  return '';
 }
 
 export function CostQualityPanel({ summary, trends, loading }: Props) {
@@ -32,6 +43,7 @@ export function CostQualityPanel({ summary, trends, loading }: Props) {
     .slice(-MAX_PERIODS);
   const maxCost = Math.max(0, ...periods.map((p) => p.value));
   const { traceability } = summary.distribution;
+  const { escape } = summary;
 
   return (
     <section className="bb-analytics-risk" aria-label="Bug cost and test traceability">
@@ -52,6 +64,18 @@ export function CostQualityPanel({ summary, trends, loading }: Props) {
           <div className="bb-analytics-metric-card__value">{traceability.pct}%</div>
           <div className="bb-analytics-risk__meta">
             {traceability.linked}/{traceability.total} linked to a test execution
+          </div>
+        </div>
+
+        <div
+          className={`bb-analytics-metric-card ${
+            escape.prod > 0 ? thresholdClass(escapeRateTone(escape.pct)) : ''
+          }`.trim()}
+        >
+          <div className="bb-analytics-metric-card__label">Escape rate (prod)</div>
+          <div className="bb-analytics-metric-card__value">{escape.pct}%</div>
+          <div className="bb-analytics-risk__meta">
+            {escape.prod}/{escape.total} labeled {escape.labels_used.join(', ')}
           </div>
         </div>
       </div>

@@ -58,7 +58,11 @@ export function TriagePanel({ summary, loading }: Props) {
       <div className="bb-analytics-risk__kpis bb-analytics-risk__kpis--wide">
         <div
           className={`bb-analytics-metric-card ${
-            hasResponses ? thresholdClass(firstResponseTone(response.avg_days)) : ''
+            hasResponses
+              ? thresholdClass(
+                  firstResponseTone(response.avg_days, response.sla_first_response.threshold_days),
+                )
+              : ''
           }`.trim()}
         >
           <div className="bb-analytics-metric-card__label">Avg first response</div>

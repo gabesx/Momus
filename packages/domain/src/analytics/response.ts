@@ -5,6 +5,7 @@ import type {
   AnalyticsIssueRow,
   AnalyticsResponseResult,
   AnalyticsSlaCompliance,
+  AnalyticsSlaSettings,
 } from './types';
 
 /**
@@ -42,10 +43,7 @@ function compliance(daysValues: number[], thresholdDays: number): AnalyticsSlaCo
  */
 export function computeAnalyticsResponse(
   rows: AnalyticsIssueRow[],
-  thresholds: Pick<
-    typeof ANALYTICS_KPI_THRESHOLDS,
-    'sla_first_response_days' | 'sla_critical_resolution_days' | 'sla_major_resolution_days'
-  > = ANALYTICS_KPI_THRESHOLDS,
+  thresholds: AnalyticsSlaSettings = ANALYTICS_KPI_THRESHOLDS,
 ): AnalyticsResponseResult {
   const responded = rows
     .map(firstResponseDays)

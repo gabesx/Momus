@@ -69,6 +69,7 @@ export type AnalyticsSummaryResult = AnalyticsSummaryMetrics & {
   resolution: AnalyticsResolutionResult;
   response: AnalyticsResponseResult;
   distribution: AnalyticsDistributionResult;
+  escape: AnalyticsEscapeResult;
 };
 
 export type AnalyticsAgeBuckets = {
@@ -138,6 +139,26 @@ export type AnalyticsDistributionEntry = {
   open_critical_major: number;
 };
 
+export type AnalyticsEscapeResult = {
+  /** Issues labeled as found in production */
+  prod: number;
+  total: number;
+  pct: number;
+  labels_used: string[];
+};
+
+/** SLA day thresholds — overridable via bug_budget_config.analytics_settings. */
+export type AnalyticsSlaSettings = {
+  sla_first_response_days: number;
+  sla_critical_resolution_days: number;
+  sla_major_resolution_days: number;
+};
+
+export type AnalyticsSummaryOptions = {
+  sla?: AnalyticsSlaSettings;
+  prod_labels?: readonly string[];
+};
+
 export type AnalyticsDistributionResult = {
   /** real_project (fallback project), sorted by total desc */
   by_squad: AnalyticsDistributionEntry[];
@@ -184,4 +205,5 @@ export const ANALYTICS_KPI_THRESHOLDS = {
   sla_critical_resolution_days: 3,
   sla_major_resolution_days: 7,
   sla_compliance_healthy_pct: 90,
+  escape_rate_warning_pct: 10,
 } as const;

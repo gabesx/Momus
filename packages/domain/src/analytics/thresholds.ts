@@ -57,6 +57,15 @@ export function firstResponseTone(
   return 'ok';
 }
 
+export function escapeRateTone(
+  pct: number,
+  threshold = ANALYTICS_KPI_THRESHOLDS.escape_rate_warning_pct,
+): KpiTone {
+  if (pct >= threshold) return 'danger';
+  if (pct >= threshold * 0.7) return 'warning';
+  return 'ok';
+}
+
 export function mttrCriticalMajorTone(
   avgHours: number,
   threshold = ANALYTICS_KPI_THRESHOLDS.mttr_critical_major_warning_hours,

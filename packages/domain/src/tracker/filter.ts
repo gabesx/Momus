@@ -19,6 +19,27 @@ function hasNoLinkedTest(row: TrackerIssueRow): boolean {
   return !hasTestExecutionLink(row);
 }
 
+function firstNonEmpty(...values: Array<string | null | undefined>): string | null {
+  for (const v of values) {
+    const t = v?.trim();
+    if (t) return t;
+  }
+  return null;
+}
+
+/** Keys must mirror analytics computeAnalyticsDistribution grouping. */
+export function trackerSquadKey(row: TrackerIssueRow): string {
+  return firstNonEmpty(row.real_project) ?? row.project;
+}
+
+export function trackerServiceKey(row: TrackerIssueRow): string {
+  return firstNonEmpty(row.service_feature_final, row.service_feature) ?? 'Unspecified';
+}
+
+export function trackerEngineerKey(row: TrackerIssueRow): string {
+  return firstNonEmpty(row.engineer_assignee, row.test_engineer_assignee) ?? 'Unassigned';
+}
+
 export function applyTrackerFilters(
   rows: TrackerIssueRow[],
   params: TrackerFilterParams,
@@ -53,6 +74,16 @@ export function applyTrackerFilters(
     out = out.filter((row) => (BUG_GROUP_TYPES as readonly string[]).includes(issueTypeOf(row)));
   } else if (params.issue_type === 'defects') {
     out = out.filter((row) => (DEFECT_GROUP_TYPES as readonly string[]).includes(issueTypeOf(row)));
+  }
+
+  if (params.squad) {
+    out = out.filter((row) => trackerSquadKey(row) === params.squad);
+  }
+  if (params.service) {
+    out = out.filter((row) => trackerServiceKey(row) === params.service);
+  }
+  if (params.engineer) {
+    out = out.filter((row) => trackerEngineerKey(row) === params.engineer);
   }
 
   const q = params.q?.trim();

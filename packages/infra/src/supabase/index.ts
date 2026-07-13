@@ -12,3 +12,4 @@ export * from './system-user';
 export * from './audit-logs.repository';
 export * from './auth-allowlist.repository';
 export * from './users.repository';
+export * from './analytics-settings';

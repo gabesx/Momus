@@ -245,7 +245,16 @@ export function DefectTrackerDashboard() {
   };
 
   const removeChip = (
-    key: 'year' | 'issue_type' | 'missing_field' | 'q' | 'project' | 'exclude_projects',
+    key:
+      | 'year'
+      | 'issue_type'
+      | 'missing_field'
+      | 'q'
+      | 'project'
+      | 'exclude_projects'
+      | 'squad'
+      | 'service'
+      | 'engineer',
   ) => {
     if (key === 'year') {
       onFilterChange({ year: 'all', page: 1 });
@@ -297,6 +306,9 @@ export function DefectTrackerDashboard() {
       state.missing_field ||
       state.q ||
       state.project ||
+      state.squad ||
+      state.service ||
+      state.engineer ||
       (state.exclude_projects && state.exclude_projects.length > 0),
   );
 

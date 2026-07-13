@@ -5,19 +5,31 @@ import type { AnalyticsDistributionEntry, AnalyticsSummaryResult } from '@momus/
 type Props = {
   summary: AnalyticsSummaryResult | null;
   loading?: boolean;
+  /** Year filter to carry into Tracker drill-through links */
+  year?: string;
 };
 
 const TOP_N = 8;
+
+function trackerHref(drillKey: 'squad' | 'service' | 'engineer', value: string, year?: string) {
+  const sp = new URLSearchParams({ tab: 'all', year: year || 'all' });
+  sp.set(drillKey, value);
+  return `/tracker?${sp.toString()}`;
+}
 
 function DistList({
   title,
   entries,
   metric,
+  drillKey,
+  year,
 }: {
   title: string;
   entries: AnalyticsDistributionEntry[];
   /** Which count drives the bar and the number shown */
   metric: 'total' | 'open';
+  drillKey: 'squad' | 'service' | 'engineer';
+  year?: string;
 }) {
   const top = entries.slice(0, TOP_N);
   const rest = entries.length - top.length;
@@ -31,10 +43,11 @@ function DistList({
       ) : (
         <div className="bb-analytics-risk__sev-list">
           {top.map((e) => (
-            <div
+            <a
               key={e.key}
-              className="bb-analytics-dist__row"
-              title={`${e.open} open (${e.open_critical_major} critical/major) of ${e.total} total`}
+              className="bb-analytics-dist__row bb-analytics-dist__row--link"
+              href={trackerHref(drillKey, e.key, year)}
+              title={`${e.open} open (${e.open_critical_major} critical/major) of ${e.total} total — open in Tracker`}
             >
               <span>{e.key}</span>
               <div className="bb-analytics-risk__sev-track">
@@ -44,7 +57,7 @@ function DistList({
                 />
               </div>
               <span>{e[metric]}</span>
-            </div>
+            </a>
           ))}
           {rest > 0 ? <p className="muted bb-analytics-dist__more">+{rest} more</p> : null}
         </div>
@@ -53,7 +66,7 @@ function DistList({
   );
 }
 
-export function DistributionPanel({ summary, loading }: Props) {
+export function DistributionPanel({ summary, loading, year }: Props) {
   if (loading && !summary) {
     return (
       <div className="bb-analytics-risk">
@@ -73,12 +86,26 @@ export function DistributionPanel({ summary, loading }: Props) {
       </div>
 
       <div className="bb-analytics-dist__cols">
-        <DistList title="By squad" entries={distribution.by_squad} metric="total" />
-        <DistList title="By service / feature" entries={distribution.by_service} metric="total" />
+        <DistList
+          title="By squad"
+          entries={distribution.by_squad}
+          metric="total"
+          drillKey="squad"
+          year={year}
+        />
+        <DistList
+          title="By service / feature"
+          entries={distribution.by_service}
+          metric="total"
+          drillKey="service"
+          year={year}
+        />
         <DistList
           title="Engineer workload (open)"
           entries={distribution.by_engineer.filter((e) => e.open > 0)}
           metric="open"
+          drillKey="engineer"
+          year={year}
         />
       </div>
     </section>
