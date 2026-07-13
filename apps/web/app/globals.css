@@ -1645,6 +1645,113 @@ button.linkish {
   color: var(--bb-danger);
 }
 
+.bb-analytics-risk {
+  background: var(--bb-white);
+  border: 1px solid var(--bb-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+}
+
+.bb-analytics-risk__header h2 {
+  margin: 0;
+  font-size: 1.15rem;
+}
+
+.bb-analytics-risk__header p {
+  margin: 0.25rem 0 1rem;
+  font-size: 0.9rem;
+  color: var(--bb-secondary);
+}
+
+.bb-analytics-risk__kpis {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+
+.bb-analytics-risk__meta {
+  font-size: 0.8rem;
+  color: var(--bb-secondary);
+}
+
+.bb-analytics-risk__section-title {
+  margin: 0 0 0.5rem;
+  font-size: 0.95rem;
+}
+
+.bb-analytics-risk__age-bar {
+  display: flex;
+  width: 100%;
+  height: 12px;
+  border-radius: 6px;
+  overflow: hidden;
+  background: var(--bb-border);
+  margin-bottom: 0.5rem;
+}
+
+.bb-analytics-risk__age-seg {
+  height: 100%;
+  min-width: 0;
+}
+
+.bb-analytics-risk__age-seg--fresh {
+  background: var(--bb-success);
+}
+
+.bb-analytics-risk__age-seg--aging {
+  background: var(--bb-info);
+}
+
+.bb-analytics-risk__age-seg--stale {
+  background: var(--bb-warning, #f0ad4e);
+}
+
+.bb-analytics-risk__age-seg--long_overdue {
+  background: var(--bb-danger);
+}
+
+.bb-analytics-risk__age-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem 1.25rem;
+  font-size: 0.8rem;
+  margin-bottom: 1rem;
+}
+
+.bb-analytics-risk__sev-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.bb-analytics-risk__sev-row {
+  display: grid;
+  grid-template-columns: 7rem 1fr 2.5rem;
+  gap: 0.5rem;
+  align-items: center;
+  font-size: 0.85rem;
+}
+
+.bb-analytics-risk__sev-track {
+  height: 8px;
+  background: var(--bb-border);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.bb-analytics-risk__sev-fill {
+  height: 100%;
+  background: var(--bb-primary);
+}
+
+@media (max-width: 800px) {
+  .bb-analytics-risk__kpis {
+    grid-template-columns: 1fr;
+  }
+}
+
 .bb-analytics-chart-card {
   background: var(--bb-white);
   border: 1px solid var(--bb-border);
