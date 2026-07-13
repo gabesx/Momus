@@ -11,6 +11,7 @@ import { apiJson } from '@/lib/api-client';
 import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
 import { AnalyticsFilters } from './analytics-filters';
 import { PeriodDetailPanel } from './period-detail-panel';
+import { RiskPanel } from './risk-panel';
 import { SummaryCards } from './summary-cards';
 import { TrendChart } from './trend-chart';
 
@@ -224,6 +225,7 @@ export function DefectAnalyticsDashboard() {
       />
 
       <SummaryCards summary={data?.summary ?? null} loading={loading} />
+      <RiskPanel summary={data?.summary ?? null} loading={loading} />
 
       <section className="bb-analytics-chart-card">
         <h2>{grainTitle(grain)}</h2>

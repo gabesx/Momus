@@ -55,6 +55,29 @@ export type AnalyticsSummaryResult = AnalyticsSummaryMetrics & {
     resolution_rate: number | null;
     avg_age: number | null;
   };
+  risk: AnalyticsRiskResult;
+};
+
+export type AnalyticsAgeBuckets = {
+  fresh: number;
+  aging: number;
+  stale: number;
+  long_overdue: number;
+};
+
+export type AnalyticsRiskResult = {
+  open_critical: number;
+  open_major: number;
+  open_critical_major: number;
+  open_critical_major_pct_of_open: number;
+  open_long_overdue: number;
+  open_long_overdue_pct_of_open: number;
+  open_age_buckets: AnalyticsAgeBuckets;
+  open_severity: Record<string, number>;
+  mom: {
+    open_critical_major: number | null;
+    open_long_overdue: number | null;
+  };
 };
 
 export type AnalyticsTrendsResult = {
@@ -84,4 +107,6 @@ export const ANALYTICS_KPI_THRESHOLDS = {
   open_warning: 100,
   avg_age_warning_days: 30,
   resolution_rate_healthy_pct: 70,
+  open_critical_major_pct_warning: 25,
+  open_long_overdue_pct_warning: 20,
 } as const;

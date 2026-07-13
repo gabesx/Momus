@@ -42,3 +42,6 @@ test-results/
 # TypeScript
 *.tsbuildinfo
 .superpowers/
+
+# Git worktrees
+.worktrees/

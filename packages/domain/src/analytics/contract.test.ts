@@ -120,12 +120,23 @@ describe('analytics M1 contract', () => {
     for (const key of ['total', 'open', 'resolved', 'resolution_rate', 'avg_age'] as const) {
       expect(summary.mom).toHaveProperty(key);
     }
+    expect(summary.risk).toBeDefined();
+    expect(summary.risk.open_age_buckets).toEqual({
+      fresh: expect.any(Number),
+      aging: expect.any(Number),
+      stale: expect.any(Number),
+      long_overdue: expect.any(Number),
+    });
+    expect(summary.risk.mom).toHaveProperty('open_critical_major');
+    expect(summary.risk.mom).toHaveProperty('open_long_overdue');
   });
 
   it('exports KPI threshold defaults and period-detail shape', () => {
     expect(ANALYTICS_KPI_THRESHOLDS.open_warning).toBe(100);
     expect(ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days).toBe(30);
     expect(ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct).toBe(70);
+    expect(ANALYTICS_KPI_THRESHOLDS.open_critical_major_pct_warning).toBe(25);
+    expect(ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning).toBe(20);
 
     const detail: AnalyticsPeriodDetail = {
       period_key: '2026-Q2',

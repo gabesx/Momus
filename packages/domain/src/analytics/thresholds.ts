@@ -28,3 +28,21 @@ export function resolutionRateTone(
   if (rate >= healthy - 15) return 'warning';
   return 'danger';
 }
+
+export function criticalMajorPctTone(
+  pct: number,
+  threshold = ANALYTICS_KPI_THRESHOLDS.open_critical_major_pct_warning,
+): KpiTone {
+  if (pct >= threshold) return 'danger';
+  if (pct >= threshold * 0.7) return 'warning';
+  return 'ok';
+}
+
+export function longOverduePctTone(
+  pct: number,
+  threshold = ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning,
+): KpiTone {
+  if (pct >= threshold) return 'danger';
+  if (pct >= threshold * 0.7) return 'warning';
+  return 'ok';
+}
