@@ -3,6 +3,7 @@ import {
   DEFAULT_PRIORITY_MULTIPLIERS,
   DEFAULT_SEVERITY_MULTIPLIERS,
   type CostMultipliers,
+  type DateRange,
   type SummaryConfig,
   type SummaryIssueInput,
   applyFilters,
@@ -15,6 +16,23 @@ import {
 
 const SUMMARY_COLUMNS =
   'jira_key, project, summary, priority, severity_issue, status, reporter, created_date, defect_age_days, is_open, final_issue_type, created_year, epic_name, parent, issue_type, status_category, assignee_final, ac_related_labels, quarter, labels, sprint, story_points, due_date, end_date, actual_end, resolved_date, updated_at, tested_by, service_feature, tester_assignee, owner';
+
+/** Narrow column set for leaderboard rankings + reporter drill. */
+export const LEADERBOARD_COLUMNS =
+  'reporter, issue_type, project, status, created_date, jira_key, summary, severity_issue, priority, parent, service_feature, ac_related_labels, tester_assignee, owner';
+
+/**
+ * Inclusive end YYYY-MM-DD → exclusive next-day bound for PostgREST `lt`.
+ * Matches domain `dateInRange` which compares `isoDate.slice(0, 10)`.
+ */
+export function exclusiveEndAfterInclusiveYmd(endYmd: string): string {
+  const [y, m, d] = endYmd.split('-').map(Number);
+  const dt = new Date(Date.UTC(y, m - 1, d + 1));
+  const yy = dt.getUTCFullYear();
+  const mm = String(dt.getUTCMonth() + 1).padStart(2, '0');
+  const dd = String(dt.getUTCDate()).padStart(2, '0');
+  return `${yy}-${mm}-${dd}`;
+}
 
 export type BugBudgetListRow = SummaryIssueInput & {
   issue_type?: string | null;
@@ -78,6 +96,24 @@ export class BugBudgetQueryRepository {
         .select(SUMMARY_COLUMNS)
         .range(from, to);
       if (error) throw new Error(`listAllForFilters failed: ${error.message}`);
+      return (data ?? []) as BugBudgetListRow[];
+    });
+  }
+
+  /**
+   * Leaderboard rows only: 14 columns, optional created_date window.
+   * Pass `null` range for period_type `all`.
+   */
+  async listForLeaderboard(range: DateRange | null): Promise<BugBudgetListRow[]> {
+    return fetchAllPages(async (from, to) => {
+      let q = this.db.from('bug_budget').select(LEADERBOARD_COLUMNS).range(from, to);
+      if (range) {
+        q = q
+          .gte('created_date', range.start)
+          .lt('created_date', exclusiveEndAfterInclusiveYmd(range.end));
+      }
+      const { data, error } = await q;
+      if (error) throw new Error(`listForLeaderboard failed: ${error.message}`);
       return (data ?? []) as BugBudgetListRow[];
     });
   }
