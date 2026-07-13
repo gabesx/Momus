@@ -126,6 +126,8 @@ describe('analytics M1 contract', () => {
     expect(ANALYTICS_KPI_THRESHOLDS.open_warning).toBe(100);
     expect(ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days).toBe(30);
     expect(ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct).toBe(70);
+    expect(ANALYTICS_KPI_THRESHOLDS.open_critical_major_pct_warning).toBe(25);
+    expect(ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning).toBe(20);
 
     const detail: AnalyticsPeriodDetail = {
       period_key: '2026-Q2',
