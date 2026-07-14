@@ -13,3 +13,5 @@ export * from './audit-logs.repository';
 export * from './auth-allowlist.repository';
 export * from './users.repository';
 export * from './analytics-settings';
+export * from './roster.repository';
+export * from './atlassian-org';

@@ -3,6 +3,7 @@ import {
   computeAnalyticsSummary,
   computeTrends,
   extractFilterOptions,
+  buildQaSlipRows,
   type AnalyticsTrendGrain,
 } from '@momus/domain';
 import {
@@ -10,6 +11,7 @@ import {
   createServerClient,
   loadAnalyticsSettings,
   loadSummaryConfig,
+  RosterRepository,
 } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
 import {
@@ -41,10 +43,11 @@ export async function GET(request: Request) {
 
     const nowIso = new Date().toISOString();
     const repo = new BugBudgetQueryRepository(db);
-    const [all, config, settings] = await Promise.all([
+    const [all, config, settings, roster] = await Promise.all([
       repo.listAllForFilters(),
       loadSummaryConfig(db),
       loadAnalyticsSettings(db),
+      new RosterRepository(db).list(),
     ]);
     const opts = extractFilterOptions(all);
     const filter_options = {
@@ -57,6 +60,7 @@ export async function GET(request: Request) {
       prod_labels: settings.prod_labels,
     });
     const trends = computeTrends(filtered, grain, nowIso, config.multipliers);
+    const qa_slip = buildQaSlipRows(roster, filtered);
     const last_updated =
       all
         .map((r) => r.updated_at)
@@ -72,6 +76,7 @@ export async function GET(request: Request) {
     const payload = {
       summary,
       trends,
+      qa_slip,
       filter_options,
       meta: { last_updated, scope_hint, trend_grain: grain },
     };

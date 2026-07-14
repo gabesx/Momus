@@ -27,6 +27,7 @@ export * from './analytics/summary';
 export * from './analytics/trends';
 export * from './analytics/period-detail';
 export * from './analytics/thresholds';
+export * from './analytics/qa-slip';
 export * from './schedule/next-run-at';
 export * from './tracker/types';
 export * from './tracker/overrides';

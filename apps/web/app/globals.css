@@ -1153,7 +1153,9 @@ button.linkish {
   padding: 1.25rem;
   text-decoration: none;
   color: inherit;
-  transition: box-shadow 0.15s ease, border-color 0.15s ease;
+  transition:
+    box-shadow 0.15s ease,
+    border-color 0.15s ease;
 }
 
 .bb-hub-card:hover {
@@ -1826,6 +1828,49 @@ button.linkish {
 
 .bb-analytics-chart canvas {
   max-height: 400px;
+}
+
+.bb-qa-slip-table th.bb-qa-slip-table__number,
+.bb-qa-slip-table td.bb-qa-slip-table__number {
+  text-align: right;
+}
+
+.roster-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: 0.75rem;
+  margin: 0.75rem 0 1rem;
+}
+
+.roster-actions {
+  white-space: nowrap;
+}
+.roster-remove {
+  color: var(--bb-danger);
+}
+
+.roster-import-head,
+.roster-import-controls {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 1rem;
+  flex-wrap: wrap;
+}
+
+.roster-import-head h3 {
+  margin-bottom: 0.25rem;
+}
+.roster-import-head .muted {
+  margin: 0;
+  max-width: 620px;
+}
+.roster-import-controls {
+  margin-top: 0.85rem;
+  justify-content: flex-start;
+}
+.roster-import-controls .field {
+  min-width: min(100%, 330px);
 }
 
 @media (max-width: 1100px) {
