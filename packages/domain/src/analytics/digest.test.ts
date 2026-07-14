@@ -43,7 +43,8 @@ describe('buildAnalyticsDigest', () => {
     expect(text).toContain('1 Critical/Major');
     expect(text).toContain('MTTR: avg 48h');
     expect(text).toContain('escape rate 50%');
-    expect(text).toContain('Top squads: operation (1), FIN (1)');
+    // Equal totals tie-break alphabetically.
+    expect(text).toContain('Top squads: FIN (1), operation (1)');
     expect(text).toContain('Top open workload: Dewi (1 open)');
     expect(text).toContain('<https://momus.example.com/|Open the dashboard>');
   });

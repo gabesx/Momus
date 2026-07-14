@@ -6,6 +6,7 @@ import type {
   AnalyticsPeriodDetail,
   AnalyticsSummaryResult,
   AnalyticsTrendsResult,
+  QaSlipRow,
 } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
 import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
@@ -18,12 +19,14 @@ import { RiskPanel } from './risk-panel';
 import { TriagePanel } from './triage-panel';
 import { SummaryCards } from './summary-cards';
 import { TrendChart } from './trend-chart';
+import { QaSlipPanel } from './qa-slip-panel';
 
 type AnalyticsResponse = {
   success: boolean;
   message?: string;
   summary: AnalyticsSummaryResult;
   trends: AnalyticsTrendsResult;
+  qa_slip: QaSlipRow[];
   filter_options: { projects: string[]; years: number[] };
   meta: { last_updated: string | null; scope_hint: string; trend_grain?: string };
 };
@@ -261,6 +264,7 @@ export function DefectAnalyticsDashboard() {
         loading={loading}
         year={state.year ? String(state.year) : 'all'}
       />
+      <QaSlipPanel rows={data?.qa_slip ?? []} loading={loading} />
 
       <CostQualityPanel
         summary={data?.summary ?? null}

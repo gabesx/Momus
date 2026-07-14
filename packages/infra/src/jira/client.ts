@@ -16,6 +16,9 @@ export type JiraIdentity = {
   emailAddress?: string;
 };
 
+export type JiraTeam = { id: string; name: string };
+export type JiraTeamMember = { name: string; accountId: string | null };
+
 export class JiraApiError extends Error {
   constructor(
     message: string,
@@ -85,10 +88,7 @@ export class JiraClient {
     return `${this.creds.baseUrl.replace(/\/$/, '')}${path}`;
   }
 
-  private async request<T>(
-    path: string,
-    init: RequestInit & { retry?: number } = {},
-  ): Promise<T> {
+  private async request<T>(path: string, init: RequestInit & { retry?: number } = {}): Promise<T> {
     const retry = init.retry ?? 0;
     const { retry: _r, ...rest } = init;
     const res = await this.fetchFn(this.url(path), {
@@ -224,12 +224,132 @@ export class JiraClient {
         }
       }
 
-      if (data.isLast || !(data.values?.length)) break;
+      if (data.isLast || !data.values?.length) break;
       startAt += maxResults;
       if (typeof data.total === 'number' && startAt >= data.total) break;
     }
 
     return projects.sort((a, b) => a.key.localeCompare(b.key));
+  }
+
+  /**
+   * Atlassian Teams for this connection. With an organization ID (the UUID
+   * from admin.atlassian.com/o/{orgId}/teams) it uses the Teams Public API
+   * via the site gateway — the only Teams surface Jira Cloud exposes. The
+   * legacy `/rest/teams/1.0` path is kept for Data Center sites.
+   */
+  async listTeams(orgId?: string): Promise<JiraTeam[]> {
+    if (orgId) return this.listCloudTeams(orgId);
+    try {
+      const data = await this.request<{ values?: unknown[]; teams?: unknown[] }>(
+        '/rest/teams/1.0/team?startAt=0&maxResults=100',
+      );
+      const raw = data.values ?? data.teams ?? [];
+      return raw
+        .flatMap((value) => {
+          const team = value as { id?: string | number; name?: string; displayName?: string };
+          const id = team.id == null ? '' : String(team.id);
+          const name = (team.name ?? team.displayName ?? '').trim();
+          return id && name ? [{ id, name }] : [];
+        })
+        .sort((a, b) => a.name.localeCompare(b.name));
+    } catch (err) {
+      if (err instanceof JiraApiError && (err.status === 404 || err.status === 410)) {
+        throw new Error(
+          'This Jira site only exposes Teams through the organization API — ' +
+            'enter your Atlassian organization ID (the UUID in the ' +
+            'admin.atlassian.com/o/…/teams URL) and try again.',
+        );
+      }
+      throw err;
+    }
+  }
+
+  /** Teams Public API: all teams in the organization, cursor-paginated. */
+  private async listCloudTeams(orgId: string): Promise<JiraTeam[]> {
+    const teams: JiraTeam[] = [];
+    let cursor: string | undefined;
+    for (;;) {
+      const qs = new URLSearchParams({ size: '100' });
+      if (cursor) qs.set('cursor', cursor);
+      const data = await this.request<{
+        entities?: Array<{ teamId?: string; displayName?: string }>;
+        cursor?: string;
+      }>(`/gateway/api/public/teams/v1/org/${encodeURIComponent(orgId)}/teams?${qs.toString()}`);
+      const entities = data.entities ?? [];
+      for (const team of entities) {
+        // teamId may arrive as a plain UUID or an ARI ("ari:cloud:identity::team/<uuid>").
+        const id = team.teamId?.split('/').pop()?.trim();
+        const name = team.displayName?.trim();
+        if (id && name) teams.push({ id, name });
+      }
+      if (!data.cursor || entities.length === 0) break;
+      cursor = data.cursor;
+    }
+    return teams.sort((a, b) => a.name.localeCompare(b.name));
+  }
+
+  /** Members of a single team (Teams Public API with orgId, else Data Center). */
+  async listTeamMembers(teamId: string, orgId?: string): Promise<JiraTeamMember[]> {
+    if (orgId) return this.listCloudTeamMembers(orgId, teamId);
+    const data = await this.request<{ values?: unknown[]; members?: unknown[] }>(
+      `/rest/teams/1.0/team/${encodeURIComponent(teamId)}/member?startAt=0&maxResults=100`,
+    );
+    return (data.values ?? data.members ?? []).flatMap((value) => {
+      const member = value as {
+        displayName?: string;
+        name?: string;
+        accountId?: string;
+        account_id?: string;
+        user?: { displayName?: string; accountId?: string };
+      };
+      const name = (member.displayName ?? member.name ?? member.user?.displayName ?? '').trim();
+      const accountId = member.accountId ?? member.account_id ?? member.user?.accountId ?? null;
+      return name ? [{ name, accountId }] : [];
+    });
+  }
+
+  /** Teams Public API members (account ids) resolved to display names. */
+  private async listCloudTeamMembers(orgId: string, teamId: string): Promise<JiraTeamMember[]> {
+    const accountIds: string[] = [];
+    let after: string | undefined;
+    for (;;) {
+      const data = await this.request<{
+        results?: Array<{ accountId?: string }>;
+        pageInfo?: { hasNextPage?: boolean; endCursor?: string };
+      }>(
+        `/gateway/api/public/teams/v1/org/${encodeURIComponent(orgId)}/teams/` +
+          `${encodeURIComponent(teamId)}/members`,
+        { method: 'POST', body: JSON.stringify({ first: 50, ...(after ? { after } : {}) }) },
+      );
+      const results = data.results ?? [];
+      for (const member of results) {
+        if (member.accountId) accountIds.push(member.accountId);
+      }
+      if (!data.pageInfo?.hasNextPage || !data.pageInfo.endCursor || results.length === 0) break;
+      after = data.pageInfo.endCursor;
+    }
+    return this.resolveAccountNames(accountIds);
+  }
+
+  /** Bulk-resolve account ids to display names (apps/bots excluded). */
+  private async resolveAccountNames(accountIds: string[]): Promise<JiraTeamMember[]> {
+    const members: JiraTeamMember[] = [];
+    for (let i = 0; i < accountIds.length; i += 50) {
+      const chunk = accountIds.slice(i, i + 50);
+      const qs = new URLSearchParams({ maxResults: '50' });
+      for (const id of chunk) qs.append('accountId', id);
+      const data = await this.request<{
+        values?: Array<{ accountId?: string; displayName?: string; accountType?: string }>;
+      }>(`/rest/api/3/user/bulk?${qs.toString()}`);
+      for (const user of data.values ?? []) {
+        const name = user.displayName?.trim();
+        if (!name) continue;
+        if (user.accountType && user.accountType !== 'atlassian') continue;
+        members.push({ name, accountId: user.accountId ?? null });
+      }
+    }
+    return members;
   }
 
   /**
@@ -264,7 +384,7 @@ export class JiraClient {
         options.push({ id: String(opt.id ?? value), value });
       }
 
-      if (data.isLast || !(data.values?.length)) break;
+      if (data.isLast || !data.values?.length) break;
       startAt += maxResults;
       if (typeof data.total === 'number' && startAt >= data.total) break;
     }

@@ -4,6 +4,7 @@ type SearchParams = Promise<{ tab?: string }>;
 
 function resolveTab(tab?: string): SettingsTab {
   if (tab === 'bug-budget') return 'bug-budget';
+  if (tab === 'roster') return 'roster';
   // Legacy Connection / Confluence / Shared / Jira → Atlassian
   return 'atlassian';
 }

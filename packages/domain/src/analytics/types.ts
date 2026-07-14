@@ -46,6 +46,11 @@ export type AnalyticsIssueRow = {
   engineer_assignee?: string | null;
   test_engineer_assignee?: string | null;
   has_linked_test_execution?: boolean | null;
+  /** QA Bug Slip attribution (see analytics/qa-slip.ts) */
+  reporter?: string | null;
+  owner?: string | null;
+  tested_by?: string | null;
+  tester_assignee?: string | null;
   updated_at?: string | null;
 };
 
