@@ -5,7 +5,7 @@ import {
 } from './bug-budget-query';
 
 describe('leaderboard query helpers', () => {
-  it('selects exactly the 14 leaderboard fields', () => {
+  it('selects exactly the 15 leaderboard fields', () => {
     const cols = LEADERBOARD_COLUMNS.split(',').map((s) => s.trim());
     expect(cols).toEqual([
       'reporter',
@@ -20,6 +20,7 @@ describe('leaderboard query helpers', () => {
       'parent',
       'service_feature',
       'ac_related_labels',
+      'labels',
       'tester_assignee',
       'owner',
     ]);

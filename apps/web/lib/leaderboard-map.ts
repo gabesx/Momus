@@ -12,6 +12,7 @@ export function mapBugBudgetToLeaderboardRow(r: {
   parent?: string | null;
   service_feature?: string | null;
   ac_related_labels?: string[] | null;
+  labels?: string[] | null;
   tester_assignee?: string | null;
   owner?: string | null;
 }) {
@@ -28,6 +29,7 @@ export function mapBugBudgetToLeaderboardRow(r: {
     parent: r.parent ?? null,
     service_feature: r.service_feature ?? null,
     ac_related_labels: r.ac_related_labels ?? null,
+    labels: r.labels ?? null,
     tester_assignee: r.tester_assignee ?? null,
     owner: r.owner ?? null,
   };
