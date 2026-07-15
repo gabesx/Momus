@@ -8,6 +8,9 @@ import {
 import type { TrackerIssueRow } from '../tracker/types';
 import {
   LEADERBOARD_REJECTED_KEYWORDS,
+  AC_LABEL_GROUPS,
+  type AcLabelGroup,
+  type AcLabelMatrixRow,
   type IncompleteFieldBlock,
   type IncompleteReporterRank,
   type LeaderboardDrillContext,
@@ -34,6 +37,65 @@ export function isRejectedStatus(status: string | null | undefined): boolean {
   if (!status) return false;
   const lower = status.toLowerCase();
   return LEADERBOARD_REJECTED_KEYWORDS.some((k) => lower.includes(k));
+}
+
+/**
+ * AC label bucket for an issue. Checks raw labels first so an issue tagged
+ * with BOTH ac-related and non-ac-related surfaces as 'Both labels' — the
+ * sync-derived ac_related_labels collapses to a single label and would hide
+ * the conflict. Falls back to the derived labels for inferred values.
+ */
+export function acLabelGroupOf(row: LeaderboardIssueRow): AcLabelGroup {
+  const all = [...(row.labels ?? []), ...(row.ac_related_labels ?? [])]
+    .filter((l): l is string => typeof l === 'string')
+    .map((l) => l.trim().toLowerCase());
+  const hasNonAc = all.some((l) => l.includes('non-ac') || l.includes('not-ac'));
+  const hasAc = all.some(
+    (l) => l.includes('ac-related') && !l.includes('non-ac') && !l.includes('not-ac'),
+  );
+  if (hasAc && hasNonAc) return 'Both labels';
+  if (hasAc) return 'AC-related';
+  if (hasNonAc) return 'Non-AC-related';
+  return 'Unlabeled';
+}
+
+/** Reporter × (Defect Group | Bug) × AC bucket matrix, sorted by total desc. */
+export function buildAcLabelMatrix(rows: LeaderboardIssueRow[]): AcLabelMatrixRow[] {
+  const byReporter = new Map<string, AcLabelMatrixRow>();
+  for (const row of rows) {
+    const name = row.reporter?.trim();
+    if (!name) continue;
+    const entry = byReporter.get(name) ?? {
+      reporter: name,
+      defect_ac: 0,
+      defect_non_ac: 0,
+      defect_both: 0,
+      bug_ac: 0,
+      bug_non_ac: 0,
+      bug_both: 0,
+      unlabeled: 0,
+      total: 0,
+    };
+    const typeGroup = mapIssueTypeGroup(row.issue_type);
+    const acGroup = acLabelGroupOf(row);
+    if (acGroup === 'Unlabeled') entry.unlabeled += 1;
+    else if (typeGroup === 'Defect') {
+      if (acGroup === 'AC-related') entry.defect_ac += 1;
+      else if (acGroup === 'Non-AC-related') entry.defect_non_ac += 1;
+      else entry.defect_both += 1;
+    } else if (typeGroup === 'Bug') {
+      if (acGroup === 'AC-related') entry.bug_ac += 1;
+      else if (acGroup === 'Non-AC-related') entry.bug_non_ac += 1;
+      else entry.bug_both += 1;
+    } else {
+      entry.unlabeled += 1;
+    }
+    entry.total += 1;
+    byReporter.set(name, entry);
+  }
+  return [...byReporter.values()].sort(
+    (a, b) => b.total - a.total || a.reporter.localeCompare(b.reporter),
+  );
 }
 
 export function mapIssueTypeGroup(issueType: string | null | undefined): 'Bug' | 'Defect' | 'Other' {
@@ -222,6 +284,8 @@ export function computeLeaderboard(
     if (subset.length) byType[group] = buildReporterLeaderboard(subset);
   }
 
+  const ac_label_matrix = buildAcLabelMatrix(scoped);
+
   const byProjectMap = new Map<string, LeaderboardIssueRow[]>();
   for (const row of scoped) {
     const project = row.project?.trim() || 'Unknown';
@@ -247,6 +311,7 @@ export function computeLeaderboard(
     },
     global: buildReporterLeaderboard(scoped),
     by_issue_type: byType,
+    ac_label_matrix,
     by_project,
     accepted: buildReporterLeaderboard(accepted),
     rejected: buildReporterLeaderboard(rejected),
@@ -272,6 +337,20 @@ export function filterReporterDrilldown(
       if (group === 'Defect') out = out.filter((r) => mapIssueTypeGroup(r.issue_type) === 'Defect');
       else if (group === 'Bug') out = out.filter((r) => mapIssueTypeGroup(r.issue_type) === 'Bug');
       break;
+    case 'ac_label': {
+      if (!group) break;
+      // Matrix cells drill with "Bug|AC-related"; a bare bucket also works.
+      const [first, second] = group.split('|');
+      const typeGroup = second ? first : null;
+      const acGroup = second ?? first;
+      if (typeGroup === 'Bug' || typeGroup === 'Defect') {
+        out = out.filter((r) => mapIssueTypeGroup(r.issue_type) === typeGroup);
+      }
+      if ((AC_LABEL_GROUPS as readonly string[]).includes(acGroup)) {
+        out = out.filter((r) => acLabelGroupOf(r) === acGroup);
+      }
+      break;
+    }
     case 'project':
       if (group === 'Unknown') {
         out = out.filter((r) => !r.project?.trim());

@@ -19,7 +19,7 @@ const SUMMARY_COLUMNS =
 
 /** Narrow column set for leaderboard rankings + reporter drill. */
 export const LEADERBOARD_COLUMNS =
-  'reporter, issue_type, project, status, created_date, jira_key, summary, severity_issue, priority, parent, service_feature, ac_related_labels, tester_assignee, owner';
+  'reporter, issue_type, project, status, created_date, jira_key, summary, severity_issue, priority, parent, service_feature, ac_related_labels, labels, tester_assignee, owner';
 
 /**
  * Inclusive end YYYY-MM-DD → exclusive next-day bound for PostgREST `lt`.

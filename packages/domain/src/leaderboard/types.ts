@@ -19,8 +19,35 @@ export type LeaderboardIssueRow = {
   parent?: string | null;
   service_feature?: string | null;
   ac_related_labels?: string[] | null;
+  /** Raw Jira labels — needed to detect issues carrying both AC and non-AC labels. */
+  labels?: string[] | null;
   tester_assignee?: string | null;
   owner?: string | null;
+};
+
+/** AC label buckets — 'Both labels' flags issues tagged AC and non-AC at once. */
+export const AC_LABEL_GROUPS = [
+  'AC-related',
+  'Non-AC-related',
+  'Both labels',
+  'Unlabeled',
+] as const;
+export type AcLabelGroup = (typeof AC_LABEL_GROUPS)[number];
+
+/** One reporter row of the AC matrix: Defect Group / Bug × AC label buckets. */
+export type AcLabelMatrixRow = {
+  reporter: string;
+  defect_ac: number;
+  defect_non_ac: number;
+  /** Defects tagged ac-related AND non-ac-related at once */
+  defect_both: number;
+  bug_ac: number;
+  bug_non_ac: number;
+  /** Bugs tagged ac-related AND non-ac-related at once */
+  bug_both: number;
+  /** Issues with no AC labels at all (either group) */
+  unlabeled: number;
+  total: number;
 };
 
 export type ReporterRank = {
@@ -63,6 +90,8 @@ export type LeaderboardResult = {
   summary: LeaderboardSummary;
   global: ReporterRank[];
   by_issue_type: Record<string, ReporterRank[]>;
+  /** Reporter × (Defect Group | Bug) × AC label matrix, sorted by total desc. */
+  ac_label_matrix: AcLabelMatrixRow[];
   by_project: ProjectLeaderboardBlock[];
   accepted: ReporterRank[];
   rejected: ReporterRank[];
@@ -82,6 +111,7 @@ export type LeaderboardResult = {
 export type LeaderboardDrillContext =
   | 'global'
   | 'issue_type'
+  | 'ac_label'
   | 'project'
   | 'accepted'
   | 'rejected'

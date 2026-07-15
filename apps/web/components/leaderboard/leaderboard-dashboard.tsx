@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type {
+  AcLabelMatrixRow,
   IncompleteFieldBlock,
   IncompleteReporterRank,
   LeaderboardDrillContext,
@@ -18,6 +19,7 @@ import type { LeaderboardPayload } from '@/lib/load-leaderboard';
 type LeaderboardTab =
   | 'global'
   | 'issue_type'
+  | 'ac_label'
   | 'project'
   | 'accepted'
   | 'rejected'
@@ -53,6 +55,7 @@ type DrillIssue = {
 const TABS: { id: LeaderboardTab; label: string }[] = [
   { id: 'global', label: 'Global' },
   { id: 'issue_type', label: 'By Issue Type' },
+  { id: 'ac_label', label: 'AC vs Non-AC' },
   { id: 'project', label: 'By Project' },
   { id: 'accepted', label: 'Most Accepted' },
   { id: 'rejected', label: 'Most Rejected' },
@@ -98,6 +101,8 @@ function drillMatchedLabel(context: LeaderboardDrillContext, group: string | nul
       if (group === 'Defect') return 'Defects';
       if (group === 'Bug') return 'Bugs';
       return 'By Issue Type';
+    case 'ac_label':
+      return group ? group.replace('|', ' · ') : 'AC vs Non-AC';
     case 'project':
       return group ? `Project: ${group}` : 'By Project';
     case 'accepted':
@@ -118,6 +123,8 @@ function drillContextSubtitle(context: LeaderboardDrillContext, group: string | 
   switch (context) {
     case 'issue_type':
       return group ? ` · ${group} issues only` : '';
+    case 'ac_label':
+      return group ? ` · ${group.replace('|', ' ').toLowerCase()} only` : '';
     case 'project':
       return group ? ` · project ${group}` : '';
     case 'accepted':
@@ -341,6 +348,91 @@ function IncompleteByFieldGrid({
         />
       ))}
     </div>
+  );
+}
+
+function AcMatrixTable({
+  rows,
+  onSelect,
+}: {
+  rows: AcLabelMatrixRow[];
+  onSelect: (reporter: string, group: string) => void;
+}) {
+  if (!rows.length) {
+    return <p className="muted">No AC label data in this period.</p>;
+  }
+  const showDefectBoth = rows.some((r) => r.defect_both > 0);
+  const showBugBoth = rows.some((r) => r.bug_both > 0);
+  const showUnlabeled = rows.some((r) => r.unlabeled > 0);
+  const defectCols = 2 + (showDefectBoth ? 1 : 0);
+  const bugCols = 2 + (showBugBoth ? 1 : 0);
+
+  const cell = (reporter: string, count: number, group: string) =>
+    count > 0 ? (
+      <td className="bb-lb-rank-table__count">
+        <button
+          type="button"
+          className="linkish"
+          onClick={() => onSelect(reporter, group)}
+          title={`View ${group.replace('|', ' · ')} issues`}
+        >
+          {count}
+        </button>
+      </td>
+    ) : (
+      <td className="bb-lb-rank-table__count muted">0</td>
+    );
+
+  return (
+    <section className="bb-lb-rank-card">
+      <div className="bb-lb-section-head">
+        <h3>AC vs Non-AC</h3>
+        <p className="muted">
+          Issues per reporter, split by Defect Group / Bug and AC label
+          {showDefectBoth || showBugBoth
+            ? ' — “Both” means tagged ac-related AND non-ac-related (needs label cleanup)'
+            : ''}
+        </p>
+      </div>
+      <div className="bb-table-wrap">
+        <table className="bb-table bb-lb-rank-table">
+          <thead>
+            <tr>
+              <th rowSpan={2}>User</th>
+              <th colSpan={defectCols}>Defect Group</th>
+              <th colSpan={bugCols}>Bug</th>
+              {showUnlabeled ? <th rowSpan={2}>Unlabeled</th> : null}
+              <th rowSpan={2} className="bb-lb-rank-table__count">
+                Total
+              </th>
+            </tr>
+            <tr>
+              <th>AC Related</th>
+              <th>Non-ac-related</th>
+              {showDefectBoth ? <th>Both</th> : null}
+              <th>AC Related</th>
+              <th>Non-ac-related</th>
+              {showBugBoth ? <th>Both</th> : null}
+            </tr>
+          </thead>
+          <tbody>
+            {rows.map((r) => (
+              <tr key={r.reporter}>
+                <td>{r.reporter}</td>
+                {cell(r.reporter, r.defect_ac, 'Defect|AC-related')}
+                {cell(r.reporter, r.defect_non_ac, 'Defect|Non-AC-related')}
+                {showDefectBoth ? cell(r.reporter, r.defect_both, 'Defect|Both labels') : null}
+                {cell(r.reporter, r.bug_ac, 'Bug|AC-related')}
+                {cell(r.reporter, r.bug_non_ac, 'Bug|Non-AC-related')}
+                {showBugBoth ? cell(r.reporter, r.bug_both, 'Bug|Both labels') : null}
+                {showUnlabeled ? cell(r.reporter, r.unlabeled, 'Unlabeled') : null}
+                <td className="bb-lb-rank-table__count">{r.total}</td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+    </section>
   );
 }
 
@@ -579,6 +671,13 @@ export function LeaderboardDashboard({
               onSelect={(r) => void openDrill(r, 'issue_type', 'Defect')}
             />
           </div>
+        );
+      case 'ac_label':
+        return (
+          <AcMatrixTable
+            rows={data.ac_label_matrix ?? []}
+            onSelect={(reporter, group) => void openDrill(reporter, 'ac_label', group)}
+          />
         );
       case 'project':
         return (
