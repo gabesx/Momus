@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import { Plus_Jakarta_Sans, Source_Serif_4 } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { MESSAGES } from '@momus/shared/messages';
 import { AppHeader } from '@/components/layout/app-header';
 import './globals.css';
@@ -29,6 +30,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <AppHeader />
           {children}
         </div>
+        <Analytics />
       </body>
     </html>
   );
