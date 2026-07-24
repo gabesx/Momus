@@ -92,16 +92,37 @@ export function computeTrends(
       total: [],
       resolution_rate: [],
       ...(multipliers ? { cost: [] } : {}),
+      created: [],
+      resolved: [],
+      net: [],
+      backlog: [],
       grain,
     };
   }
-  const keys = [
-    ...new Set(withDate.map((r) => periodKeyFromIso(r.created_date!, grain))),
-  ].sort(cmpKey);
-  const start = keys[0]!;
+
   const nowKey = periodKeyFromIso(nowIso, grain);
-  const lastData = keys[keys.length - 1]!;
-  const end = cmpKey(lastData, nowKey) < 0 ? lastData : nowKey;
+  // Precompute per-row created/resolved period keys once. A row contributes to
+  // outflow only when it is closed and carries a usable `resolved_date`; a
+  // resolution key beyond "now" (bad data) is ignored.
+  const enriched = withDate.map((r) => {
+    let rk: string | null = null;
+    if (!r.is_open && r.resolved_date) {
+      const k = periodKeyFromIso(r.resolved_date, grain);
+      if (cmpKey(k, nowKey) <= 0) rk = k;
+    }
+    return { row: r, ck: periodKeyFromIso(r.created_date!, grain), rk };
+  });
+
+  const createdKeys = enriched.map((e) => e.ck).sort(cmpKey);
+  const start = createdKeys[0]!;
+  const lastCreated = createdKeys[createdKeys.length - 1]!;
+  const lastData = cmpKey(lastCreated, nowKey) < 0 ? lastCreated : nowKey;
+  // Extend the range so periods where issues were resolved (but none created)
+  // still appear for outflow — capped at "now".
+  let end = lastData;
+  for (const e of enriched) {
+    if (e.rk && cmpKey(e.rk, end) > 0) end = e.rk;
+  }
 
   const labels: string[] = [];
   const period_keys: string[] = [];
@@ -110,10 +131,14 @@ export function computeTrends(
   const total: number[] = [];
   const resolution_rate: number[] = [];
   const cost: number[] | undefined = multipliers ? [] : undefined;
+  const created: number[] = [];
+  const resolved: number[] = [];
+  const net: number[] = [];
+  const backlog: number[] = [];
 
   let key = start;
   for (;;) {
-    const bucket = withDate.filter((r) => periodKeyFromIso(r.created_date!, grain) === key);
+    const bucket = enriched.filter((e) => e.ck === key).map((e) => e.row);
     const stats = bucketStats(bucket);
     labels.push(labelForKey(key, grain));
     period_keys.push(key);
@@ -131,6 +156,20 @@ export function computeTrends(
         ),
       );
     }
+
+    const inflow = bucket.length;
+    const outflow = enriched.filter((e) => e.rk === key).length;
+    created.push(inflow);
+    resolved.push(outflow);
+    net.push(inflow - outflow);
+    // Open backlog at period end: created on/before this period AND not yet
+    // resolved by its end (still open, or resolved strictly after it).
+    backlog.push(
+      enriched.filter(
+        (e) => cmpKey(e.ck, key) <= 0 && (e.rk === null ? e.row.is_open : cmpKey(e.rk, key) > 0),
+      ).length,
+    );
+
     if (cmpKey(key, end) >= 0) break;
     key = nextKey(key, grain);
   }
@@ -143,6 +182,10 @@ export function computeTrends(
     total,
     resolution_rate,
     ...(cost ? { cost } : {}),
+    created,
+    resolved,
+    net,
+    backlog,
     grain,
   };
 }
