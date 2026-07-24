@@ -45,6 +45,7 @@ describe('buildAnalyticsCsv', () => {
     expect(csv).toContain('Jun 2026,1,0,1,0,10,1,0,1,1');
     expect(csv).toContain('Squad,Total,Open,Open Critical/Major');
     expect(csv).toContain('operation,1,1,1');
+    expect(csv).toContain('Squad heat (open by severity),Critical,Total');
   });
 
   it('escapes cells containing commas or quotes', () => {
