@@ -3,7 +3,11 @@ import type {
   AnalyticsDistributionEntry,
   AnalyticsDistributionResult,
   AnalyticsIssueRow,
+  AnalyticsSquadHeat,
 } from './types';
+
+/** Column priority for the squad heat map; unknown severities sort after these. */
+const SEVERITY_PRIORITY = ['Critical', 'Major', 'Minor', 'Low'];
 
 function nonEmpty(...values: Array<string | null | undefined>): string | null {
   for (const v of values) {
@@ -41,6 +45,58 @@ function byOpenDesc(a: AnalyticsDistributionEntry, b: AnalyticsDistributionEntry
   return b.open - a.open || b.total - a.total || a.key.localeCompare(b.key);
 }
 
+function severityKey(row: AnalyticsIssueRow): string {
+  return nonEmpty(row.severity_issue) ?? 'Unspecified';
+}
+
+/** Squad × severity matrix of open-issue counts. Rows worst-first, columns by severity. */
+function computeSquadHeat(rows: AnalyticsIssueRow[]): AnalyticsSquadHeat {
+  const open: Record<string, Record<string, number>> = {};
+  const row_totals: Record<string, number> = {};
+  const col_totals: Record<string, number> = {};
+  const critical_major: Record<string, number> = {};
+  const squadSet = new Set<string>();
+  const sevSet = new Set<string>();
+
+  for (const r of rows) {
+    if (!r.is_open) continue;
+    const squad = nonEmpty(r.real_project) ?? r.project;
+    const sev = severityKey(r);
+    squadSet.add(squad);
+    sevSet.add(sev);
+    (open[squad] ??= {})[sev] = (open[squad]![sev] ?? 0) + 1;
+    row_totals[squad] = (row_totals[squad] ?? 0) + 1;
+    col_totals[sev] = (col_totals[sev] ?? 0) + 1;
+    if (sev === 'Critical' || sev === 'Major') {
+      critical_major[squad] = (critical_major[squad] ?? 0) + 1;
+    }
+  }
+
+  const severities = [...sevSet].sort((a, b) => {
+    const ia = SEVERITY_PRIORITY.indexOf(a);
+    const ib = SEVERITY_PRIORITY.indexOf(b);
+    const ra = ia === -1 ? Number.MAX_SAFE_INTEGER : ia;
+    const rb = ib === -1 ? Number.MAX_SAFE_INTEGER : ib;
+    return ra - rb || a.localeCompare(b);
+  });
+  const squads = [...squadSet].sort(
+    (a, b) =>
+      (critical_major[b] ?? 0) - (critical_major[a] ?? 0) ||
+      (row_totals[b] ?? 0) - (row_totals[a] ?? 0) ||
+      a.localeCompare(b),
+  );
+
+  let max = 0;
+  for (const s of squads) {
+    for (const v of severities) {
+      const c = open[s]?.[v] ?? 0;
+      if (c > max) max = c;
+    }
+  }
+
+  return { squads, severities, open, row_totals, col_totals, max };
+}
+
 /** Where defects concentrate: squad, service/feature, engineer workload, traceability. */
 export function computeAnalyticsDistribution(
   rows: AnalyticsIssueRow[],
@@ -67,5 +123,6 @@ export function computeAnalyticsDistribution(
       total,
       pct: total > 0 ? round1((linked / total) * 100) : 0,
     },
+    squad_heat: computeSquadHeat(rows),
   };
 }
