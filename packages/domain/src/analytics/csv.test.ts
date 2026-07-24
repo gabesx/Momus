@@ -39,8 +39,10 @@ describe('buildAnalyticsCsv', () => {
 
     expect(csv).toContain('Total issues,2');
     expect(csv).toContain('Escape rate (%),50');
-    expect(csv).toContain('Period,Bugs,Defects,Total,Resolution rate (%),Cost');
-    expect(csv).toContain('Jun 2026,1,0,1,0,10');
+    expect(csv).toContain(
+      'Period,Bugs,Defects,Total,Resolution rate (%),Cost,Created,Resolved,Net,Backlog',
+    );
+    expect(csv).toContain('Jun 2026,1,0,1,0,10,1,0,1,1');
     expect(csv).toContain('Squad,Total,Open,Open Critical/Major');
     expect(csv).toContain('operation,1,1,1');
   });

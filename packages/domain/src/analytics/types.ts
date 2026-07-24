@@ -184,6 +184,14 @@ export type AnalyticsTrendsResult = {
   resolution_rate: number[];
   /** Bug cost per period — present when cost multipliers were provided */
   cost?: number[];
+  /** Inflow: issues created in the period (parallel to labels; equals `total`). */
+  created?: number[];
+  /** Outflow: issues resolved in the period (by `resolved_date`; open rows excluded). */
+  resolved?: number[];
+  /** Net flow per period: `created - resolved` (positive = backlog grew). */
+  net?: number[];
+  /** Open backlog at the end of each period. */
+  backlog?: number[];
   grain?: AnalyticsTrendGrain;
 };
 

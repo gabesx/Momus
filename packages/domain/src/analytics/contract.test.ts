@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { applyAnalyticsFilters, defaultWindowStartIso } from './filter';
 import { computeAnalyticsSummary } from './summary';
+import { computeTrends } from './trends';
 import {
   ANALYTICS_KPI_THRESHOLDS,
   type AnalyticsIssueRow,
@@ -159,6 +160,30 @@ describe('analytics M1 contract', () => {
       total: expect.any(Number),
       pct: expect.any(Number),
     });
+  });
+
+  it('trends carry inflow/outflow/net/backlog arrays parallel to labels', () => {
+    const rows: AnalyticsIssueRow[] = [
+      {
+        project: 'A',
+        created_date: '2026-06-01T00:00:00+07:00',
+        resolved_date: '2026-06-20T00:00:00+07:00',
+        is_open: false,
+        issue_type: 'Bug',
+      },
+      {
+        project: 'A',
+        created_date: '2026-07-01T00:00:00+07:00',
+        is_open: true,
+        issue_type: 'Bug',
+      },
+    ];
+    const trends = computeTrends(rows, 'month', nowIso);
+    const n = trends.labels.length;
+    for (const key of ['created', 'resolved', 'net', 'backlog'] as const) {
+      expect(trends[key]).toBeInstanceOf(Array);
+      expect(trends[key]).toHaveLength(n);
+    }
   });
 
   it('exports KPI threshold defaults and period-detail shape', () => {

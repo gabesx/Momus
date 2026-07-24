@@ -11,6 +11,7 @@ import type {
 import { apiJson } from '@/lib/api-client';
 import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
 import { AnalyticsFilters } from './analytics-filters';
+import { InflowOutflowChart } from './inflow-outflow-chart';
 import { CostQualityPanel } from './cost-quality-panel';
 import { DistributionPanel } from './distribution-panel';
 import { MttrPanel } from './mttr-panel';
@@ -241,6 +242,15 @@ export function DefectAnalyticsDashboard() {
       <section className="bb-analytics-chart-card">
         <h2>{grainTitle(grain)}</h2>
         <TrendChart
+          trends={data?.trends ?? null}
+          loading={loading}
+          onPeriodSelect={onPeriodSelect}
+        />
+      </section>
+
+      <section className="bb-analytics-chart-card">
+        <h2>Inflow vs Outflow</h2>
+        <InflowOutflowChart
           trends={data?.trends ?? null}
           loading={loading}
           onPeriodSelect={onPeriodSelect}
