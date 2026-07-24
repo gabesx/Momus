@@ -1,7 +1,8 @@
 'use client';
 
 import { useState } from 'react';
-import type { AnalyticsSummaryResult } from '@momus/domain';
+import type { AnalyticsSquadHeat, AnalyticsSummaryResult } from '@momus/domain';
+import { ListModal } from './list-modal';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
@@ -23,8 +24,71 @@ function cellStyle(count: number, max: number): React.CSSProperties {
   };
 }
 
+/** Render the heat table for a given subset of squads (footer totals are always all-squads). */
+function HeatTable({ heat, squads }: { heat: AnalyticsSquadHeat; squads: string[] }) {
+  const cell = { textAlign: 'center', padding: '0.4rem 0.6rem' } as const;
+  return (
+    <div style={{ overflowX: 'auto' }}>
+      <table className="bb-analytics-heat" style={{ borderCollapse: 'collapse', width: '100%' }}>
+        <thead>
+          <tr>
+            <th scope="col" style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>
+              Squad
+            </th>
+            {heat.severities.map((sev) => (
+              <th key={sev} scope="col" style={cell}>
+                {sev}
+              </th>
+            ))}
+            <th scope="col" style={cell}>
+              Total
+            </th>
+          </tr>
+        </thead>
+        <tbody>
+          {squads.map((squad) => (
+            <tr key={squad}>
+              <th scope="row" style={{ textAlign: 'left', padding: '0.4rem 0.6rem', fontWeight: 500 }}>
+                {squad}
+              </th>
+              {heat.severities.map((sev) => {
+                const count = heat.open[squad]?.[sev] ?? 0;
+                return (
+                  <td
+                    key={sev}
+                    style={{ ...cell, ...cellStyle(count, heat.max) }}
+                    title={`${squad} · ${sev}: ${count} open`}
+                  >
+                    {count || ''}
+                  </td>
+                );
+              })}
+              <td style={{ ...cell, fontWeight: 600 }}>{heat.row_totals[squad] ?? 0}</td>
+            </tr>
+          ))}
+        </tbody>
+        <tfoot>
+          <tr>
+            <th scope="row" style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>
+              Total (all squads)
+            </th>
+            {heat.severities.map((sev) => (
+              <td key={sev} style={{ ...cell, fontWeight: 600 }}>
+                {heat.col_totals[sev] ?? 0}
+              </td>
+            ))}
+            <td style={{ ...cell, fontWeight: 700 }}>
+              {Object.values(heat.col_totals).reduce((a, b) => a + b, 0)}
+            </td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+  );
+}
+
 export function SquadHeatPanel({ summary, loading }: Props) {
-  const [expanded, setExpanded] = useState(false);
+  const [open, setOpen] = useState(false);
 
   if (loading && !summary) {
     return (
@@ -48,85 +112,22 @@ export function SquadHeatPanel({ summary, loading }: Props) {
       {!hasData ? (
         <p className="muted">No open issues in scope.</p>
       ) : (
-        (() => {
-          const rows = expanded ? heat!.squads : heat!.squads.slice(0, TOP_N);
-          const hidden = heat!.squads.length - TOP_N;
-          return (
-            <div style={{ overflowX: 'auto' }}>
-              <table className="bb-analytics-heat" style={{ borderCollapse: 'collapse', width: '100%' }}>
-                <thead>
-                  <tr>
-                    <th scope="col" style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>
-                      Squad
-                    </th>
-                    {heat!.severities.map((sev) => (
-                      <th key={sev} scope="col" style={{ textAlign: 'center', padding: '0.4rem 0.6rem' }}>
-                        {sev}
-                      </th>
-                    ))}
-                    <th scope="col" style={{ textAlign: 'center', padding: '0.4rem 0.6rem' }}>
-                      Total
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {rows.map((squad) => (
-                    <tr key={squad}>
-                      <th scope="row" style={{ textAlign: 'left', padding: '0.4rem 0.6rem', fontWeight: 500 }}>
-                        {squad}
-                      </th>
-                      {heat!.severities.map((sev) => {
-                        const count = heat!.open[squad]?.[sev] ?? 0;
-                        return (
-                          <td
-                            key={sev}
-                            style={{
-                              textAlign: 'center',
-                              padding: '0.4rem 0.6rem',
-                              ...cellStyle(count, heat!.max),
-                            }}
-                            title={`${squad} · ${sev}: ${count} open`}
-                          >
-                            {count || ''}
-                          </td>
-                        );
-                      })}
-                      <td style={{ textAlign: 'center', padding: '0.4rem 0.6rem', fontWeight: 600 }}>
-                        {heat!.row_totals[squad] ?? 0}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-                <tfoot>
-                  <tr>
-                    <th scope="row" style={{ textAlign: 'left', padding: '0.4rem 0.6rem' }}>
-                      Total (all squads)
-                    </th>
-                    {heat!.severities.map((sev) => (
-                      <td key={sev} style={{ textAlign: 'center', padding: '0.4rem 0.6rem', fontWeight: 600 }}>
-                        {heat!.col_totals[sev] ?? 0}
-                      </td>
-                    ))}
-                    <td style={{ textAlign: 'center', padding: '0.4rem 0.6rem', fontWeight: 700 }}>
-                      {Object.values(heat!.col_totals).reduce((a, b) => a + b, 0)}
-                    </td>
-                  </tr>
-                </tfoot>
-              </table>
-              {hidden > 0 ? (
-                <button
-                  type="button"
-                  className="btn btn-ghost bb-analytics-dist__more"
-                  aria-expanded={expanded}
-                  style={{ marginTop: '0.5rem' }}
-                  onClick={() => setExpanded((v) => !v)}
-                >
-                  {expanded ? 'Show fewer' : `+${hidden} more squads`}
-                </button>
-              ) : null}
-            </div>
-          );
-        })()
+        <>
+          <HeatTable heat={heat!} squads={heat!.squads.slice(0, TOP_N)} />
+          {heat!.squads.length > TOP_N ? (
+            <button
+              type="button"
+              className="btn btn-ghost bb-analytics-dist__more"
+              style={{ marginTop: '0.5rem' }}
+              onClick={() => setOpen(true)}
+            >
+              +{heat!.squads.length - TOP_N} more squads
+            </button>
+          ) : null}
+          <ListModal open={open} title="Squad heat map — all squads" onClose={() => setOpen(false)}>
+            <HeatTable heat={heat!} squads={heat!.squads} />
+          </ListModal>
+        </>
       )}
     </section>
   );
