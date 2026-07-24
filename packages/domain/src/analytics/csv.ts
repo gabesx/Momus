@@ -67,6 +67,7 @@ export function buildAnalyticsCsv(
   lines.push('');
 
   const hasCost = trends.cost != null;
+  const hasFlow = trends.created != null;
   lines.push(
     line(
       'Period',
@@ -75,6 +76,7 @@ export function buildAnalyticsCsv(
       'Total',
       'Resolution rate (%)',
       ...(hasCost ? ['Cost'] : []),
+      ...(hasFlow ? ['Created', 'Resolved', 'Net', 'Backlog'] : []),
     ),
   );
   trends.labels.forEach((label, i) => {
@@ -86,6 +88,14 @@ export function buildAnalyticsCsv(
         trends.total[i] ?? 0,
         trends.resolution_rate[i] ?? 0,
         ...(hasCost ? [trends.cost?.[i] ?? 0] : []),
+        ...(hasFlow
+          ? [
+              trends.created?.[i] ?? 0,
+              trends.resolved?.[i] ?? 0,
+              trends.net?.[i] ?? 0,
+              trends.backlog?.[i] ?? 0,
+            ]
+          : []),
       ),
     );
   });
