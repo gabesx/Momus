@@ -198,6 +198,7 @@ export function DefectAnalyticsDashboard() {
   const filterOptions = data?.filter_options ?? { projects: [], years: [] };
   const scopeHint = data?.meta.scope_hint;
   const grain = state.trend_grain ?? data?.meta.trend_grain ?? 'month';
+  const thresholds = data?.meta.thresholds;
 
   return (
     <main className="bb-analytics">
@@ -271,10 +272,10 @@ export function DefectAnalyticsDashboard() {
         onClose={clearPeriod}
       />
 
-      <SummaryCards summary={data?.summary ?? null} loading={loading} />
-      <RiskPanel summary={data?.summary ?? null} loading={loading} />
-      <MttrPanel summary={data?.summary ?? null} loading={loading} />
-      <TriagePanel summary={data?.summary ?? null} loading={loading} />
+      <SummaryCards summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
+      <RiskPanel summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
+      <MttrPanel summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
+      <TriagePanel summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
       <DistributionPanel
         summary={data?.summary ?? null}
         loading={loading}
@@ -286,6 +287,7 @@ export function DefectAnalyticsDashboard() {
         summary={data?.summary ?? null}
         trends={data?.trends ?? null}
         loading={loading}
+        thresholds={thresholds}
       />
     </main>
   );

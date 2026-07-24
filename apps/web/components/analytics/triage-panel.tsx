@@ -6,10 +6,12 @@ import {
   type AnalyticsSlaCompliance,
   type AnalyticsSummaryResult,
 } from '@momus/domain';
+import type { AnalyticsThresholds } from '@momus/infra';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
   loading?: boolean;
+  thresholds?: AnalyticsThresholds;
 };
 
 function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
@@ -19,10 +21,18 @@ function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
   return '';
 }
 
-function SlaCard({ label, sla }: { label: string; sla: AnalyticsSlaCompliance }) {
+function SlaCard({
+  label,
+  sla,
+  healthy,
+}: {
+  label: string;
+  sla: AnalyticsSlaCompliance;
+  healthy?: number;
+}) {
   return (
     <div
-      className={`bb-analytics-metric-card ${thresholdClass(slaComplianceTone(sla.pct))}`.trim()}
+      className={`bb-analytics-metric-card ${thresholdClass(slaComplianceTone(sla.pct, healthy))}`.trim()}
     >
       <div className="bb-analytics-metric-card__label">{label}</div>
       <div className="bb-analytics-metric-card__value">
@@ -35,7 +45,7 @@ function SlaCard({ label, sla }: { label: string; sla: AnalyticsSlaCompliance })
   );
 }
 
-export function TriagePanel({ summary, loading }: Props) {
+export function TriagePanel({ summary, loading, thresholds }: Props) {
   if (loading && !summary) {
     return (
       <div className="bb-analytics-risk">
@@ -47,6 +57,7 @@ export function TriagePanel({ summary, loading }: Props) {
 
   const { response } = summary;
   const hasResponses = response.responded_count > 0;
+  const slaHealthy = thresholds?.sla_compliance_healthy_pct;
 
   return (
     <section className="bb-analytics-risk" aria-label="Triage and SLA">
@@ -89,14 +100,17 @@ export function TriagePanel({ summary, loading }: Props) {
         <SlaCard
           label={`First response ≤ ${response.sla_first_response.threshold_days}d`}
           sla={response.sla_first_response}
+          healthy={slaHealthy}
         />
         <SlaCard
           label={`Critical resolved ≤ ${response.sla_critical_resolution.threshold_days}d`}
           sla={response.sla_critical_resolution}
+          healthy={slaHealthy}
         />
         <SlaCard
           label={`Major resolved ≤ ${response.sla_major_resolution.threshold_days}d`}
           sla={response.sla_major_resolution}
+          healthy={slaHealthy}
         />
       </div>
     </section>

@@ -6,10 +6,12 @@ import {
   type AnalyticsMttrStats,
   type AnalyticsSummaryResult,
 } from '@momus/domain';
+import type { AnalyticsThresholds } from '@momus/infra';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
   loading?: boolean;
+  thresholds?: AnalyticsThresholds;
 };
 
 const SEV_ORDER = ['Critical', 'Major', 'Minor', 'Low', 'Unknown'];
@@ -39,7 +41,7 @@ function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
   return '';
 }
 
-export function MttrPanel({ summary, loading }: Props) {
+export function MttrPanel({ summary, loading, thresholds }: Props) {
   if (loading && !summary) {
     return (
       <div className="bb-analytics-risk">
@@ -61,8 +63,11 @@ export function MttrPanel({ summary, loading }: Props) {
   ];
   const sevMax = Math.max(0, ...sevEntries.map(([, s]) => s.avg_hours));
 
+  const mttrW =
+    thresholds?.mttr_critical_major_warning_hours ??
+    ANALYTICS_KPI_THRESHOLDS.mttr_critical_major_warning_hours;
   const overallMom = formatMom(resolution.mom.avg_hours);
-  const cmTone = mttrCriticalMajorTone(resolution.critical_major.avg_hours);
+  const cmTone = mttrCriticalMajorTone(resolution.critical_major.avg_hours, mttrW);
 
   return (
     <section className="bb-analytics-risk" aria-label="Resolution speed">
@@ -94,7 +99,7 @@ export function MttrPanel({ summary, loading }: Props) {
               </div>
               {resolution.critical_major.resolved_count > 0 && cmTone !== 'ok' ? (
                 <div className="muted" style={{ fontSize: '0.75rem', marginTop: 4 }}>
-                  ≥ {ANALYTICS_KPI_THRESHOLDS.mttr_critical_major_warning_hours}h warning
+                  ≥ {mttrW}h warning
                 </div>
               ) : null}
             </div>
