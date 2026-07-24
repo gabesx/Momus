@@ -9,6 +9,7 @@ import {
 import {
   BugBudgetQueryRepository,
   createServerClient,
+  effectiveThresholds,
   loadAnalyticsSettings,
   loadSummaryConfig,
   RosterRepository,
@@ -78,7 +79,12 @@ export async function GET(request: Request) {
       trends,
       qa_slip,
       filter_options,
-      meta: { last_updated, scope_hint, trend_grain: grain },
+      meta: {
+        last_updated,
+        scope_hint,
+        trend_grain: grain,
+        thresholds: effectiveThresholds(settings),
+      },
     };
     setCachedAnalytics(cacheKey, version, payload);
     return jsonOk(payload);

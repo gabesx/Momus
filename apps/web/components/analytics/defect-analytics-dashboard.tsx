@@ -8,6 +8,7 @@ import type {
   AnalyticsTrendsResult,
   QaSlipRow,
 } from '@momus/domain';
+import type { AnalyticsThresholds } from '@momus/infra';
 import { apiJson } from '@/lib/api-client';
 import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
 import { AnalyticsFilters } from './analytics-filters';
@@ -29,7 +30,12 @@ type AnalyticsResponse = {
   trends: AnalyticsTrendsResult;
   qa_slip: QaSlipRow[];
   filter_options: { projects: string[]; years: number[] };
-  meta: { last_updated: string | null; scope_hint: string; trend_grain?: string };
+  meta: {
+    last_updated: string | null;
+    scope_hint: string;
+    trend_grain?: string;
+    thresholds?: AnalyticsThresholds;
+  };
 };
 
 type PeriodDetailResponse = {

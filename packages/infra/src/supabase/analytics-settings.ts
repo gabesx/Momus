@@ -43,6 +43,21 @@ export const DEFAULT_ANALYTICS_SETTINGS: AnalyticsSettings = {
   escape_rate_warning_pct: ANALYTICS_KPI_THRESHOLDS.escape_rate_warning_pct,
 };
 
+/** Effective tone thresholds the dashboard needs — the 8 KPI values plus the
+ *  first-response SLA day used by the first-response tile. */
+export type AnalyticsThresholds = Record<KpiThresholdKey, number> & {
+  sla_first_response_days: number;
+};
+
+/** Pull the dashboard-facing threshold subset out of full settings. */
+export function effectiveThresholds(settings: AnalyticsSettings): AnalyticsThresholds {
+  const out = { sla_first_response_days: settings.sla_first_response_days } as AnalyticsThresholds;
+  for (const key of Object.keys(KPI_THRESHOLD_BOUNDS) as KpiThresholdKey[]) {
+    out[key] = settings[key];
+  }
+  return out;
+}
+
 function positiveDays(value: unknown, fallback: number): number {
   const n = Number(value);
   return Number.isFinite(n) && n > 0 && n <= 365 ? n : fallback;

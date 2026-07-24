@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest';
 import {
   DEFAULT_ANALYTICS_SETTINGS,
   KPI_THRESHOLD_BOUNDS,
+  effectiveThresholds,
   normalizeAnalyticsSettings,
   parseAnalyticsSettings,
 } from '../supabase/analytics-settings';
@@ -65,5 +66,26 @@ describe('parseAnalyticsSettings — KPI thresholds', () => {
 
   it('bounds spec covers all eight configurable KPI thresholds', () => {
     expect(Object.keys(KPI_THRESHOLD_BOUNDS)).toHaveLength(8);
+  });
+});
+
+describe('effectiveThresholds', () => {
+  it('extracts the 8 KPI thresholds plus first-response SLA from settings', () => {
+    const t = effectiveThresholds(DEFAULT_ANALYTICS_SETTINGS);
+    expect(Object.keys(t).sort()).toEqual(
+      [...Object.keys(KPI_THRESHOLD_BOUNDS), 'sla_first_response_days'].sort(),
+    );
+    expect(t.open_warning).toBe(DEFAULT_ANALYTICS_SETTINGS.open_warning);
+    expect(t.sla_first_response_days).toBe(DEFAULT_ANALYTICS_SETTINGS.sla_first_response_days);
+  });
+
+  it('reflects overridden values', () => {
+    const t = effectiveThresholds({
+      ...DEFAULT_ANALYTICS_SETTINGS,
+      open_warning: 42,
+      escape_rate_warning_pct: 3,
+    });
+    expect(t.open_warning).toBe(42);
+    expect(t.escape_rate_warning_pct).toBe(3);
   });
 });
