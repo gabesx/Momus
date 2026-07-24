@@ -79,7 +79,9 @@ export function CostQualityPanel({ summary, trends, loading, thresholds }: Props
           <div className="bb-analytics-metric-card__label">Escape rate (prod)</div>
           <div className="bb-analytics-metric-card__value">{escape.pct}%</div>
           <div className="bb-analytics-risk__meta">
-            {escape.prod}/{escape.total} labeled {escape.labels_used.join(', ')}
+            {escape.prod}/{escape.total}{' '}
+            {escape.mode === 'issue_type' ? 'of type' : 'labeled'}{' '}
+            {escape.labels_used.join(', ') || '—'}
           </div>
         </div>
       </div>

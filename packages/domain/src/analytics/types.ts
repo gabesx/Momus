@@ -144,12 +144,17 @@ export type AnalyticsDistributionEntry = {
   open_critical_major: number;
 };
 
+/** How an issue is judged "found in production" for the escape-rate metric. */
+export type AnalyticsEscapeMode = 'labels' | 'issue_type';
+
 export type AnalyticsEscapeResult = {
-  /** Issues labeled as found in production */
+  /** Issues found in production (by label or issue type, per mode) */
   prod: number;
   total: number;
   pct: number;
+  /** The signals used — prod labels, or issue-type names, depending on mode */
   labels_used: string[];
+  mode: AnalyticsEscapeMode;
 };
 
 /** SLA day thresholds — overridable via bug_budget_config.analytics_settings. */
@@ -162,6 +167,10 @@ export type AnalyticsSlaSettings = {
 export type AnalyticsSummaryOptions = {
   sla?: AnalyticsSlaSettings;
   prod_labels?: readonly string[];
+  /** Escape detection mode (default 'labels') */
+  escape_mode?: AnalyticsEscapeMode;
+  /** Issue-type names counted as escapes when escape_mode is 'issue_type' */
+  prod_issue_types?: readonly string[];
 };
 
 export type AnalyticsDistributionResult = {

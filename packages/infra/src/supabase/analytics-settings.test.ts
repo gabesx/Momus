@@ -69,6 +69,43 @@ describe('parseAnalyticsSettings — KPI thresholds', () => {
   });
 });
 
+describe('escape detection settings', () => {
+  it('defaults to labels mode with no issue types', () => {
+    const s = normalizeAnalyticsSettings({});
+    expect(s.escape_mode).toBe('labels');
+    expect(s.prod_issue_types).toEqual([]);
+  });
+
+  it('normalizes issue-type mode and dedupes/trims the type list', () => {
+    const s = normalizeAnalyticsSettings({
+      escape_mode: 'issue_type',
+      prod_issue_types: ['Bug', ' Bug ', 'Defect Task'],
+    });
+    expect(s.escape_mode).toBe('issue_type');
+    expect(s.prod_issue_types).toEqual(['Bug', 'Defect Task']);
+  });
+
+  it('coerces an unknown escape_mode back to labels', () => {
+    expect(normalizeAnalyticsSettings({ escape_mode: 'nonsense' }).escape_mode).toBe('labels');
+  });
+
+  it('parse rejects issue_type mode with no types selected', () => {
+    expect(() =>
+      parseAnalyticsSettings({ ...validSla, escape_mode: 'issue_type', prod_issue_types: [] }),
+    ).toThrow(/at least one issue type/i);
+  });
+
+  it('parse accepts issue_type mode with types', () => {
+    const s = parseAnalyticsSettings({
+      ...validSla,
+      escape_mode: 'issue_type',
+      prod_issue_types: ['Bug'],
+    });
+    expect(s.escape_mode).toBe('issue_type');
+    expect(s.prod_issue_types).toEqual(['Bug']);
+  });
+});
+
 describe('effectiveThresholds', () => {
   it('extracts the 8 KPI thresholds plus first-response SLA from settings', () => {
     const t = effectiveThresholds(DEFAULT_ANALYTICS_SETTINGS);

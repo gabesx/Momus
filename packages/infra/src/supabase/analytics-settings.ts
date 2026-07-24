@@ -1,5 +1,9 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { ANALYTICS_KPI_THRESHOLDS, DEFAULT_PROD_LABELS } from '@momus/domain';
+import {
+  ANALYTICS_KPI_THRESHOLDS,
+  DEFAULT_PROD_LABELS,
+  type AnalyticsEscapeMode,
+} from '@momus/domain';
 
 const CONFIG_KEY = 'analytics_settings';
 
@@ -22,6 +26,10 @@ export type AnalyticsSettings = {
   sla_critical_resolution_days: number;
   sla_major_resolution_days: number;
   prod_labels: string[];
+  /** How escape rate detects prod issues: by Jira label or by issue type. */
+  escape_mode: AnalyticsEscapeMode;
+  /** Issue-type names counted as escapes when escape_mode is 'issue_type'. */
+  prod_issue_types: string[];
   digest_enabled: boolean;
   digest_webhook_url: string;
 } & Record<KpiThresholdKey, number>;
@@ -31,6 +39,8 @@ export const DEFAULT_ANALYTICS_SETTINGS: AnalyticsSettings = {
   sla_critical_resolution_days: ANALYTICS_KPI_THRESHOLDS.sla_critical_resolution_days,
   sla_major_resolution_days: ANALYTICS_KPI_THRESHOLDS.sla_major_resolution_days,
   prod_labels: [...DEFAULT_PROD_LABELS],
+  escape_mode: 'labels',
+  prod_issue_types: [],
   digest_enabled: false,
   digest_webhook_url: '',
   open_warning: ANALYTICS_KPI_THRESHOLDS.open_warning,
@@ -97,6 +107,8 @@ export function normalizeAnalyticsSettings(raw: unknown): AnalyticsSettings {
       d.sla_major_resolution_days,
     ),
     prod_labels: labelList(value.prod_labels, d.prod_labels),
+    escape_mode: value.escape_mode === 'issue_type' ? 'issue_type' : 'labels',
+    prod_issue_types: labelList(value.prod_issue_types, d.prod_issue_types),
     digest_enabled: value.digest_enabled === true,
     digest_webhook_url: webhook,
     ...kpi,
@@ -124,6 +136,19 @@ export function parseAnalyticsSettings(body: unknown): AnalyticsSettings {
     if (!Number.isFinite(n) || n < min || n > max) {
       throw new Error(`${key} must be a number between ${min} and ${max}`);
     }
+  }
+  if (value.escape_mode !== undefined && value.escape_mode !== 'labels' && value.escape_mode !== 'issue_type') {
+    throw new Error("escape_mode must be 'labels' or 'issue_type'");
+  }
+  if (value.prod_issue_types !== undefined && !Array.isArray(value.prod_issue_types)) {
+    throw new Error('prod_issue_types must be an array of issue-type names');
+  }
+  if (
+    value.escape_mode === 'issue_type' &&
+    (!Array.isArray(value.prod_issue_types) ||
+      value.prod_issue_types.filter((t) => typeof t === 'string' && t.trim()).length === 0)
+  ) {
+    throw new Error('Select at least one issue type when escape detection is by issue type');
   }
   const webhook =
     typeof value.digest_webhook_url === 'string' ? value.digest_webhook_url.trim() : '';

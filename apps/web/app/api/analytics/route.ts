@@ -59,6 +59,8 @@ export async function GET(request: Request) {
     const summary = computeAnalyticsSummary(filtered, nowIso, {
       sla: settings,
       prod_labels: settings.prod_labels,
+      escape_mode: settings.escape_mode,
+      prod_issue_types: settings.prod_issue_types,
     });
     const trends = computeTrends(filtered, grain, nowIso, config.multipliers);
     const qa_slip = buildQaSlipRows(roster, filtered);

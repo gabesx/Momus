@@ -1,8 +1,13 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ANALYTICS_KPI_THRESHOLDS } from '@momus/domain';
+import { ANALYTICS_KPI_THRESHOLDS, BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
+
+type EscapeMode = 'labels' | 'issue_type';
+
+/** Canonical Jira issue types (default sync scope) offered for issue-type escape mode. */
+const ESCAPE_TYPE_OPTIONS: string[] = [...BUG_GROUP_TYPES, ...DEFECT_GROUP_TYPES];
 
 type KpiThresholdKey =
   | 'open_warning'
@@ -19,6 +24,8 @@ type AnalyticsSettings = {
   sla_critical_resolution_days: number;
   sla_major_resolution_days: number;
   prod_labels: string[];
+  escape_mode: EscapeMode;
+  prod_issue_types: string[];
   digest_enabled: boolean;
   digest_webhook_url: string;
 } & Record<KpiThresholdKey, number>;
@@ -172,20 +179,66 @@ export function AnalyticsTab({ onAlert }: Props) {
         </section>
 
         <section className="settings-card">
-          <h2>Defect escape labels</h2>
+          <h2>Defect escape detection</h2>
           <p className="muted">
-            Jira labels marking an issue as found in production. Comma-separated;
-            drives the escape-rate metric.
+            How an issue is judged found in production, driving the escape-rate metric.
           </p>
           <label className="field">
-            Production labels
-            <input
-              type="text"
-              value={prodLabelsText}
-              placeholder="found-in-prod"
-              onChange={(e) => setProdLabelsText(e.target.value)}
-            />
+            Detect escapes by
+            <select
+              value={settings.escape_mode}
+              onChange={(e) =>
+                setSettings({ ...settings, escape_mode: e.target.value as EscapeMode })
+              }
+            >
+              <option value="labels">Jira labels</option>
+              <option value="issue_type">Issue type</option>
+            </select>
           </label>
+
+          {settings.escape_mode === 'labels' ? (
+            <label className="field">
+              Production labels
+              <input
+                type="text"
+                value={prodLabelsText}
+                placeholder="found-in-prod"
+                onChange={(e) => setProdLabelsText(e.target.value)}
+              />
+              <span className="muted" style={{ fontSize: '0.75rem' }}>
+                Comma-separated Jira labels.
+              </span>
+            </label>
+          ) : (
+            <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
+              <legend>Escape issue types</legend>
+              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem 1.25rem' }}>
+                {ESCAPE_TYPE_OPTIONS.map((t) => (
+                  <label
+                    key={t}
+                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                  >
+                    <input
+                      type="checkbox"
+                      checked={settings.prod_issue_types.includes(t)}
+                      onChange={(e) =>
+                        setSettings({
+                          ...settings,
+                          prod_issue_types: e.target.checked
+                            ? [...settings.prod_issue_types, t]
+                            : settings.prod_issue_types.filter((x) => x !== t),
+                        })
+                      }
+                    />
+                    {t}
+                  </label>
+                ))}
+              </div>
+              <span className="muted" style={{ display: 'block', fontSize: '0.75rem', marginTop: 4 }}>
+                Issues of the selected types count as escapes. Pick at least one.
+              </span>
+            </fieldset>
+          )}
         </section>
 
         <section className="settings-card">

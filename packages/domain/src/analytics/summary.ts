@@ -84,6 +84,10 @@ export function computeAnalyticsSummary(
     },
     response: computeAnalyticsResponse(rows, options.sla),
     distribution: computeAnalyticsDistribution(rows),
-    escape: computeAnalyticsEscape(rows, options.prod_labels),
+    escape: computeAnalyticsEscape(rows, {
+      mode: options.escape_mode,
+      prodLabels: options.prod_labels,
+      prodIssueTypes: options.prod_issue_types,
+    }),
   };
 }
