@@ -1,7 +1,18 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { ANALYTICS_KPI_THRESHOLDS } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
+
+type KpiThresholdKey =
+  | 'open_warning'
+  | 'avg_age_warning_days'
+  | 'resolution_rate_healthy_pct'
+  | 'open_critical_major_pct_warning'
+  | 'open_long_overdue_pct_warning'
+  | 'mttr_critical_major_warning_hours'
+  | 'sla_compliance_healthy_pct'
+  | 'escape_rate_warning_pct';
 
 type AnalyticsSettings = {
   sla_first_response_days: number;
@@ -10,7 +21,24 @@ type AnalyticsSettings = {
   prod_labels: string[];
   digest_enabled: boolean;
   digest_webhook_url: string;
-};
+} & Record<KpiThresholdKey, number>;
+
+/** Mirrors infra KPI_THRESHOLD_BOUNDS; drives the inputs + client-side validation. */
+const KPI_FIELDS: Array<{ key: KpiThresholdKey; label: string; min: number; max: number }> = [
+  { key: 'open_warning', label: 'Open backlog warning (count)', min: 1, max: 100000 },
+  { key: 'avg_age_warning_days', label: 'Avg age warning (days)', min: 1, max: 3650 },
+  { key: 'resolution_rate_healthy_pct', label: 'Resolution rate healthy (%)', min: 0, max: 100 },
+  { key: 'open_critical_major_pct_warning', label: 'Critical/Major % warning', min: 0, max: 100 },
+  { key: 'open_long_overdue_pct_warning', label: 'Long-overdue % warning', min: 0, max: 100 },
+  {
+    key: 'mttr_critical_major_warning_hours',
+    label: 'MTTR Critical/Major warning (hours)',
+    min: 1,
+    max: 100000,
+  },
+  { key: 'sla_compliance_healthy_pct', label: 'SLA compliance healthy (%)', min: 0, max: 100 },
+  { key: 'escape_rate_warning_pct', label: 'Escape rate warning (%)', min: 0, max: 100 },
+];
 
 type Props = {
   onAlert: (type: 'success' | 'error' | 'info', text: string) => void;
@@ -105,6 +133,41 @@ export function AnalyticsTab({ onAlert }: Props) {
                 onChange={setNum('sla_major_resolution_days')}
               />
             </label>
+          </div>
+        </section>
+
+        <section className="settings-card">
+          <h2>KPI thresholds</h2>
+          <p className="muted">
+            Tune when Defect Analytics KPI tiles turn warning/danger. Percentages are 0–100.
+          </p>
+          <div className="field-row" style={{ flexWrap: 'wrap' }}>
+            {KPI_FIELDS.map(({ key, label, min, max }) => (
+              <label className="field" key={key}>
+                {label}
+                <input
+                  type="number"
+                  min={min}
+                  max={max}
+                  value={settings[key]}
+                  onChange={setNum(key)}
+                />
+              </label>
+            ))}
+          </div>
+          <div className="btn-row" style={{ marginTop: '0.75rem' }}>
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={() => {
+                const resetKpis = Object.fromEntries(
+                  KPI_FIELDS.map(({ key }) => [key, ANALYTICS_KPI_THRESHOLDS[key]]),
+                ) as Record<KpiThresholdKey, number>;
+                setSettings((s) => (s ? { ...s, ...resetKpis } : s));
+              }}
+            >
+              Reset thresholds to defaults
+            </button>
           </div>
         </section>
 
