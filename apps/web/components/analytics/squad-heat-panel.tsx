@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import type { AnalyticsSummaryResult } from '@momus/domain';
 
 type Props = {
@@ -23,6 +24,8 @@ function cellStyle(count: number, max: number): React.CSSProperties {
 }
 
 export function SquadHeatPanel({ summary, loading }: Props) {
+  const [expanded, setExpanded] = useState(false);
+
   if (loading && !summary) {
     return (
       <div className="bb-analytics-risk">
@@ -46,8 +49,8 @@ export function SquadHeatPanel({ summary, loading }: Props) {
         <p className="muted">No open issues in scope.</p>
       ) : (
         (() => {
-          const rows = heat!.squads.slice(0, TOP_N);
-          const rest = heat!.squads.length - rows.length;
+          const rows = expanded ? heat!.squads : heat!.squads.slice(0, TOP_N);
+          const hidden = heat!.squads.length - TOP_N;
           return (
             <div style={{ overflowX: 'auto' }}>
               <table className="bb-analytics-heat" style={{ borderCollapse: 'collapse', width: '100%' }}>
@@ -110,7 +113,17 @@ export function SquadHeatPanel({ summary, loading }: Props) {
                   </tr>
                 </tfoot>
               </table>
-              {rest > 0 ? <p className="muted bb-analytics-dist__more">+{rest} more squads</p> : null}
+              {hidden > 0 ? (
+                <button
+                  type="button"
+                  className="btn btn-ghost bb-analytics-dist__more"
+                  aria-expanded={expanded}
+                  style={{ marginTop: '0.5rem' }}
+                  onClick={() => setExpanded((v) => !v)}
+                >
+                  {expanded ? 'Show fewer' : `+${hidden} more squads`}
+                </button>
+              ) : null}
             </div>
           );
         })()
