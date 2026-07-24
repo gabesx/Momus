@@ -14,6 +14,7 @@ import { AnalyticsFilters } from './analytics-filters';
 import { InflowOutflowChart } from './inflow-outflow-chart';
 import { CostQualityPanel } from './cost-quality-panel';
 import { DistributionPanel } from './distribution-panel';
+import { SquadHeatPanel } from './squad-heat-panel';
 import { MttrPanel } from './mttr-panel';
 import { PeriodDetailPanel } from './period-detail-panel';
 import { RiskPanel } from './risk-panel';
@@ -274,6 +275,7 @@ export function DefectAnalyticsDashboard() {
         loading={loading}
         year={state.year ? String(state.year) : 'all'}
       />
+      <SquadHeatPanel summary={data?.summary ?? null} loading={loading} />
       <QaSlipPanel rows={data?.qa_slip ?? []} loading={loading} />
 
       <CostQualityPanel
