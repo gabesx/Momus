@@ -30,10 +30,10 @@ export async function POST(request: Request) {
       entityType: 'bug_budget_config',
       entityKey: 'analytics_settings',
       beforeValue: null,
-      afterValue: { provider: settings.digest_provider, status: result.status },
+      afterValue: { provider: settings.digest_provider, messages: result.messages },
     });
 
-    return jsonOk({ status: result.status, message: 'Digest sent' });
+    return jsonOk({ messages: result.messages, message: `Digest sent (${result.messages} messages)` });
   } catch (err) {
     return jsonFail(err instanceof Error ? err.message : 'Failed to send digest', 502);
   }

@@ -1,6 +1,14 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import { buildWeeklyDigest, computeWeeklyDigest } from '@momus/domain';
+import {
+  buildExecutiveDigestMessage,
+  buildProductDigestMessage,
+  computeExecutiveSummary,
+  computeProductHealth,
+  DIGEST_TOP_PRODUCTS,
+  listProductsByRisk,
+} from '@momus/domain';
 import { BugBudgetQueryRepository } from '../supabase/bug-budget-query';
+import { getJiraSettings } from '../supabase/settings';
 import type { AnalyticsSettings } from '../supabase/analytics-settings';
 
 /**
@@ -19,12 +27,13 @@ export function digestScheduleMatches(settings: AnalyticsSettings, nowIso: strin
   return weekday === settings.digest_day && hour === settings.digest_hour;
 }
 
-export type DigestRunResult = { status: number };
+export type DigestRunResult = { messages: number };
 
 /**
- * Build the weekly analytics digest for the default window and POST it to the
- * configured webhook (Slack or Google Chat). Shared by the cron and the manual
- * send-now route. Throws on a missing webhook or a non-2xx response.
+ * Send the executive weekly digest to the configured webhook (Slack or Google
+ * Chat): an Executive Summary message followed by one Product Health message
+ * per top-risk product. Shared by the cron and the manual send-now route.
+ * Throws on a missing webhook or any non-2xx response.
  */
 export async function runAnalyticsDigest(
   db: SupabaseClient,
@@ -37,25 +46,41 @@ export async function runAnalyticsDigest(
   const repo = new BugBudgetQueryRepository(db);
   const all = await repo.listAllForFilters();
   const nowIso = new Date().toISOString();
-  const weekly = computeWeeklyDigest(all, nowIso);
+  const linkStyle = settings.digest_provider === 'google_chat' ? 'plain' : 'slack';
 
-  const dashboardUrl =
-    opts.dashboardUrl ??
-    (process.env.NEXT_PUBLIC_APP_URL
-      ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/`
-      : undefined);
+  const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
+  const dashboardUrl = opts.dashboardUrl ?? (appUrl ? `${appUrl}/reports/executive` : undefined);
 
-  const text = buildWeeklyDigest(weekly, {
-    dateLabel: nowIso.slice(0, 10),
-    dashboardUrl,
-    linkStyle: settings.digest_provider === 'google_chat' ? 'plain' : 'slack',
-  });
+  let jiraBase: string | undefined;
+  try {
+    const jira = await getJiraSettings();
+    jiraBase = jira.url ? `${jira.url.replace(/\/$/, '')}/browse` : undefined;
+  } catch {
+    jiraBase = undefined;
+  }
 
-  const res = await fetch(webhook, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ text }),
-  });
-  if (!res.ok) throw new Error(`digest webhook responded ${res.status}`);
-  return { status: res.status };
+  const summary = computeExecutiveSummary(all, nowIso);
+  const products = listProductsByRisk(all)
+    .slice(0, DIGEST_TOP_PRODUCTS)
+    .map((p) => computeProductHealth(all, p, nowIso));
+
+  const messages = [
+    buildExecutiveDigestMessage(summary, {
+      dateLabel: nowIso.slice(0, 10),
+      jiraBase,
+      dashboardUrl,
+      linkStyle,
+    }),
+    ...products.map((h) => buildProductDigestMessage(h, { jiraBase, linkStyle })),
+  ];
+
+  for (const text of messages) {
+    const res = await fetch(webhook, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ text }),
+    });
+    if (!res.ok) throw new Error(`digest webhook responded ${res.status}`);
+  }
+  return { messages: messages.length };
 }
