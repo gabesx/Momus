@@ -15,6 +15,11 @@ type MeUser = {
 const NAV = [
   { href: '/', label: 'Defect Analytics', match: (p: string) => p === '/' },
   {
+    href: '/reports/executive',
+    label: 'Executive Report',
+    match: (p: string) => p.startsWith('/reports'),
+  },
+  {
     href: '/tracker',
     label: 'Defect Tracker',
     match: (p: string) => p.startsWith('/tracker'),
