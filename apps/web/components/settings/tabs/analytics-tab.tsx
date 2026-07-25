@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { ANALYTICS_KPI_THRESHOLDS, BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
 
@@ -84,6 +84,7 @@ export function AnalyticsTab({ onAlert }: Props) {
   const [prodLabelsText, setProdLabelsText] = useState('');
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
+  const sendingRef = useRef(false);
 
   useEffect(() => {
     void (async () => {
@@ -131,6 +132,10 @@ export function AnalyticsTab({ onAlert }: Props) {
   };
 
   const sendDigestNow = async () => {
+    // Synchronous in-flight lock: blocks a double-fire before React re-renders
+    // the disabled button.
+    if (sendingRef.current) return;
+    sendingRef.current = true;
     setSending(true);
     try {
       const res = await apiJson<{ status?: number }>('/api/settings/analytics/send-digest', {
@@ -145,6 +150,7 @@ export function AnalyticsTab({ onAlert }: Props) {
     } catch (err) {
       onAlert('error', err instanceof Error ? err.message : 'Failed to send digest');
     } finally {
+      sendingRef.current = false;
       setSending(false);
     }
   };
