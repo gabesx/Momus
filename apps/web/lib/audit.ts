@@ -4,7 +4,7 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 export async function writeSettingsAudit(input: {
   db?: SupabaseClient;
   userId: number;
-  action: 'create' | 'update';
+  action: 'create' | 'update' | 'digest_test';
   entityType: string;
   entityKey: string;
   beforeValue: Record<string, unknown> | null;
