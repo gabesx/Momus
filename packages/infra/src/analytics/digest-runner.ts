@@ -29,6 +29,23 @@ export function digestScheduleMatches(settings: AnalyticsSettings, nowIso: strin
 
 export type DigestRunResult = { messages: number };
 
+const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+
+/** Chat webhooks rate-limit (~1 msg/sec); throttle between posts and back off on 429. */
+async function postMessage(webhook: string, text: string, attempt = 0): Promise<void> {
+  const res = await fetch(webhook, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ text }),
+  });
+  if (res.status === 429 && attempt < 3) {
+    const retryAfter = Number(res.headers.get('retry-after'));
+    await sleep((Number.isFinite(retryAfter) && retryAfter > 0 ? retryAfter : 2 ** attempt) * 1000);
+    return postMessage(webhook, text, attempt + 1);
+  }
+  if (!res.ok) throw new Error(`digest webhook responded ${res.status}`);
+}
+
 /**
  * Send the executive weekly digest to the configured webhook (Slack or Google
  * Chat): an Executive Summary message followed by one Product Health message
@@ -74,13 +91,9 @@ export async function runAnalyticsDigest(
     ...products.map((h) => buildProductDigestMessage(h, { jiraBase, linkStyle })),
   ];
 
-  for (const text of messages) {
-    const res = await fetch(webhook, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ text }),
-    });
-    if (!res.ok) throw new Error(`digest webhook responded ${res.status}`);
+  for (let i = 0; i < messages.length; i++) {
+    if (i > 0) await sleep(1200); // stay under the ~1 msg/sec chat webhook limit
+    await postMessage(webhook, messages[i]!);
   }
   return { messages: messages.length };
 }
