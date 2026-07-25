@@ -1,13 +1,15 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import type { ExecutiveSummary as ExecutiveSummaryData } from '@momus/domain';
+import type { ExecutiveSummary as ExecutiveSummaryData, ProductHealth } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
+import { ProductHealthSection } from './product-health-section';
 
 type ReportResponse = {
   success: boolean;
   message?: string;
   summary: ExecutiveSummaryData;
+  products: ProductHealth[];
   meta: { last_updated: string | null; generated_at: string; jira_browse_base: string };
 };
 
@@ -161,6 +163,31 @@ export function ExecutiveSummary() {
               </tbody>
             </table>
           </div>
+        )}
+      </section>
+
+      <section aria-label="Product health" style={{ marginTop: '1.5rem' }}>
+        <h2 className="bb-analytics-risk__section-title">Product Health</h2>
+        {data.products.length === 0 ? (
+          <p className="muted">No products in scope.</p>
+        ) : (
+          <>
+            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem', marginBottom: '0.75rem' }}>
+              {data.products.map((p) => (
+                <a
+                  key={p.product}
+                  href={`#product-${p.product}`}
+                  className="btn btn-ghost"
+                  style={{ fontSize: '0.8rem' }}
+                >
+                  {p.product} ({p.open_total})
+                </a>
+              ))}
+            </div>
+            {data.products.map((p) => (
+              <ProductHealthSection key={p.product} health={p} base={base} />
+            ))}
+          </>
         )}
       </section>
     </main>
