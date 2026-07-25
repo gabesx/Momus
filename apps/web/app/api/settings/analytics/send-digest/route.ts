@@ -3,6 +3,9 @@ import { writeSettingsAudit } from '@/lib/audit';
 import { assertCsrf, requireAccessSettings } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
+// One throttled message per product (~1.2s apart) — the full send takes ~20-30s.
+export const maxDuration = 120;
+
 /**
  * Manual "send digest now" — builds and posts the weekly digest immediately
  * using the saved analytics settings. Bypasses the schedule (explicit action)
@@ -30,10 +33,10 @@ export async function POST(request: Request) {
       entityType: 'bug_budget_config',
       entityKey: 'analytics_settings',
       beforeValue: null,
-      afterValue: { provider: settings.digest_provider, status: result.status },
+      afterValue: { provider: settings.digest_provider, messages: result.messages },
     });
 
-    return jsonOk({ status: result.status, message: 'Digest sent' });
+    return jsonOk({ messages: result.messages, message: `Digest sent (${result.messages} messages)` });
   } catch (err) {
     return jsonFail(err instanceof Error ? err.message : 'Failed to send digest', 502);
   }

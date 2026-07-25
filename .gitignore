@@ -45,3 +45,7 @@ test-results/
 
 # Git worktrees
 .worktrees/
+
+# Generated tooling output
+graphify-out/
+.claude/
