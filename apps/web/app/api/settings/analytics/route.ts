@@ -1,4 +1,5 @@
 import {
+  bumpBugBudgetCacheVersion,
   createServerClient,
   loadAnalyticsSettings,
   parseAnalyticsSettings,
@@ -31,6 +32,9 @@ export async function POST(request: Request) {
     const db = createServerClient();
     const before = await loadAnalyticsSettings(db);
     await saveAnalyticsSettings(db, settings);
+    // Analytics output (thresholds, escape mode, SLA) is cached against the
+    // bug_budget cache version — bump it so the dashboard reflects the change.
+    await bumpBugBudgetCacheVersion(db);
     await writeSettingsAudit({
       db,
       userId: auth.user.id,
