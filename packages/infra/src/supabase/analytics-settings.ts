@@ -21,6 +21,15 @@ export const KPI_THRESHOLD_BOUNDS = {
 
 export type KpiThresholdKey = keyof typeof KPI_THRESHOLD_BOUNDS;
 
+/** Chat provider the weekly digest webhook targets. */
+export type DigestProvider = 'slack' | 'google_chat';
+
+/** Expected webhook host per provider, used to validate the configured URL. */
+export const DIGEST_PROVIDER_HOSTS: Record<DigestProvider, string> = {
+  slack: 'hooks.slack.com',
+  google_chat: 'chat.googleapis.com',
+};
+
 export type AnalyticsSettings = {
   sla_first_response_days: number;
   sla_critical_resolution_days: number;
@@ -31,6 +40,7 @@ export type AnalyticsSettings = {
   /** Issue-type names counted as escapes when escape_mode is 'issue_type'. */
   prod_issue_types: string[];
   digest_enabled: boolean;
+  digest_provider: DigestProvider;
   digest_webhook_url: string;
 } & Record<KpiThresholdKey, number>;
 
@@ -42,6 +52,7 @@ export const DEFAULT_ANALYTICS_SETTINGS: AnalyticsSettings = {
   escape_mode: 'labels',
   prod_issue_types: [],
   digest_enabled: false,
+  digest_provider: 'slack',
   digest_webhook_url: '',
   open_warning: ANALYTICS_KPI_THRESHOLDS.open_warning,
   avg_age_warning_days: ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days,
@@ -110,6 +121,7 @@ export function normalizeAnalyticsSettings(raw: unknown): AnalyticsSettings {
     escape_mode: value.escape_mode === 'issue_type' ? 'issue_type' : 'labels',
     prod_issue_types: labelList(value.prod_issue_types, d.prod_issue_types),
     digest_enabled: value.digest_enabled === true,
+    digest_provider: value.digest_provider === 'google_chat' ? 'google_chat' : 'slack',
     digest_webhook_url: webhook,
     ...kpi,
   };
@@ -150,6 +162,13 @@ export function parseAnalyticsSettings(body: unknown): AnalyticsSettings {
   ) {
     throw new Error('Select at least one issue type when escape detection is by issue type');
   }
+  if (
+    value.digest_provider !== undefined &&
+    value.digest_provider !== 'slack' &&
+    value.digest_provider !== 'google_chat'
+  ) {
+    throw new Error("digest_provider must be 'slack' or 'google_chat'");
+  }
   const webhook =
     typeof value.digest_webhook_url === 'string' ? value.digest_webhook_url.trim() : '';
   if (webhook && !/^https:\/\//.test(webhook)) {
@@ -157,6 +176,21 @@ export function parseAnalyticsSettings(body: unknown): AnalyticsSettings {
   }
   if (value.digest_enabled === true && !webhook) {
     throw new Error('digest_webhook_url is required when the digest is enabled');
+  }
+  // When enabled, the webhook host must match the selected provider.
+  if (value.digest_enabled === true && webhook) {
+    const provider: DigestProvider =
+      value.digest_provider === 'google_chat' ? 'google_chat' : 'slack';
+    const expectedHost = DIGEST_PROVIDER_HOSTS[provider];
+    let host = '';
+    try {
+      host = new URL(webhook).hostname;
+    } catch {
+      throw new Error('digest_webhook_url must be a valid URL');
+    }
+    if (host !== expectedHost && !host.endsWith(`.${expectedHost}`)) {
+      throw new Error(`Webhook URL host must be ${expectedHost} for the ${provider} provider`);
+    }
   }
   return normalizeAnalyticsSettings(body);
 }

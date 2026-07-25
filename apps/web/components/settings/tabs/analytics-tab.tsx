@@ -5,6 +5,20 @@ import { ANALYTICS_KPI_THRESHOLDS, BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '@
 import { apiJson } from '@/lib/api-client';
 
 type EscapeMode = 'labels' | 'issue_type';
+type DigestProvider = 'slack' | 'google_chat';
+
+const DIGEST_PROVIDERS: Array<{ value: DigestProvider; label: string; placeholder: string }> = [
+  {
+    value: 'slack',
+    label: 'Slack',
+    placeholder: 'https://hooks.slack.com/services/…',
+  },
+  {
+    value: 'google_chat',
+    label: 'Google Chat',
+    placeholder: 'https://chat.googleapis.com/v1/spaces/…',
+  },
+];
 
 /** Canonical Jira issue types (default sync scope) offered for issue-type escape mode. */
 const ESCAPE_TYPE_OPTIONS: string[] = [...BUG_GROUP_TYPES, ...DEFECT_GROUP_TYPES];
@@ -27,6 +41,7 @@ type AnalyticsSettings = {
   escape_mode: EscapeMode;
   prod_issue_types: string[];
   digest_enabled: boolean;
+  digest_provider: DigestProvider;
   digest_webhook_url: string;
 } & Record<KpiThresholdKey, number>;
 
@@ -244,8 +259,8 @@ export function AnalyticsTab({ onAlert }: Props) {
         <section className="settings-card">
           <h2>Weekly digest</h2>
           <p className="muted">
-            Posts a weekly analytics summary (KPIs, deltas, top offenders) to a
-            Slack incoming-webhook URL every Monday morning.
+            Posts a weekly analytics summary (KPIs, deltas, top offenders) to a Slack or Google
+            Chat incoming-webhook URL every Monday morning.
           </p>
           <label className="field">
             <span>
@@ -258,13 +273,33 @@ export function AnalyticsTab({ onAlert }: Props) {
             </span>
           </label>
           <label className="field">
-            Slack webhook URL
+            Provider
+            <select
+              value={settings.digest_provider}
+              onChange={(e) =>
+                setSettings({ ...settings, digest_provider: e.target.value as DigestProvider })
+              }
+            >
+              {DIGEST_PROVIDERS.map((p) => (
+                <option key={p.value} value={p.value}>
+                  {p.label}
+                </option>
+              ))}
+            </select>
+          </label>
+          <label className="field">
+            Webhook URL
             <input
               type="url"
               value={settings.digest_webhook_url}
-              placeholder="https://hooks.slack.com/services/…"
+              placeholder={
+                DIGEST_PROVIDERS.find((p) => p.value === settings.digest_provider)?.placeholder
+              }
               onChange={(e) => setSettings({ ...settings, digest_webhook_url: e.target.value })}
             />
+            <span className="muted" style={{ fontSize: '0.75rem' }}>
+              Incoming-webhook URL for the selected provider.
+            </span>
           </label>
         </section>
 

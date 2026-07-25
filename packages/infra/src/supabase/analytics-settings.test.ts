@@ -106,6 +106,60 @@ describe('escape detection settings', () => {
   });
 });
 
+describe('weekly digest provider', () => {
+  const slackHook = 'https://hooks.slack.com/services/T/B/x';
+  const chatHook = 'https://chat.googleapis.com/v1/spaces/AAA/messages?key=k&token=t';
+
+  it('defaults provider to slack and coerces unknown values', () => {
+    expect(normalizeAnalyticsSettings({}).digest_provider).toBe('slack');
+    expect(normalizeAnalyticsSettings({ digest_provider: 'nope' }).digest_provider).toBe('slack');
+    expect(normalizeAnalyticsSettings({ digest_provider: 'google_chat' }).digest_provider).toBe(
+      'google_chat',
+    );
+  });
+
+  it('accepts a matching provider/host pair when enabled', () => {
+    expect(
+      parseAnalyticsSettings({
+        ...validSla,
+        digest_enabled: true,
+        digest_provider: 'google_chat',
+        digest_webhook_url: chatHook,
+      }).digest_provider,
+    ).toBe('google_chat');
+    expect(() =>
+      parseAnalyticsSettings({
+        ...validSla,
+        digest_enabled: true,
+        digest_provider: 'slack',
+        digest_webhook_url: slackHook,
+      }),
+    ).not.toThrow();
+  });
+
+  it('rejects a webhook host that does not match the selected provider', () => {
+    expect(() =>
+      parseAnalyticsSettings({
+        ...validSla,
+        digest_enabled: true,
+        digest_provider: 'google_chat',
+        digest_webhook_url: slackHook,
+      }),
+    ).toThrow(/host must be chat\.googleapis\.com/);
+  });
+
+  it('skips host validation when the digest is disabled', () => {
+    expect(() =>
+      parseAnalyticsSettings({
+        ...validSla,
+        digest_enabled: false,
+        digest_provider: 'google_chat',
+        digest_webhook_url: '',
+      }),
+    ).not.toThrow();
+  });
+});
+
 describe('effectiveThresholds', () => {
   it('extracts the 8 KPI thresholds plus first-response SLA from settings', () => {
     const t = effectiveThresholds(DEFAULT_ANALYTICS_SETTINGS);

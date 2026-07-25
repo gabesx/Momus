@@ -49,6 +49,18 @@ describe('buildAnalyticsDigest', () => {
     expect(text).toContain('<https://momus.example.com/|Open the dashboard>');
   });
 
+  it('renders a plain dashboard link for non-Slack providers', () => {
+    const summary = computeAnalyticsSummary(rows, nowIso);
+    const trends = computeTrends(rows, 'month', nowIso);
+    const text = buildAnalyticsDigest(summary, trends, {
+      dateLabel: '2026-07-14',
+      dashboardUrl: 'https://momus.example.com/',
+      linkStyle: 'plain',
+    });
+    expect(text).toContain('Open the dashboard: https://momus.example.com/');
+    expect(text).not.toContain('<https://momus.example.com/|Open the dashboard>');
+  });
+
   it('omits offender lines when scope is empty', () => {
     const summary = computeAnalyticsSummary([], nowIso);
     const trends = computeTrends([], 'month', nowIso);
