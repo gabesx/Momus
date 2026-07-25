@@ -26,8 +26,8 @@ export type AnalyticsIssueRow = {
   jira_key?: string | null;
   /** Issue title/summary. */
   summary?: string | null;
-  /** Resolved assignee (fallback engineer_assignee). */
-  assignee?: string | null;
+  /** Resolved assignee (bug_budget.assignee_final; fallback engineer_assignee). */
+  assignee_final?: string | null;
   created_date?: string | null;
   created_year?: number | null;
   created_num_month?: number | null;

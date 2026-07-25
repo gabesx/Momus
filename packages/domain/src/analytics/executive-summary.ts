@@ -59,7 +59,7 @@ export function computeExecutiveSummary(
       summary: r.summary ?? null,
       severity: r.severity_issue ?? null,
       priority: r.priority ?? null,
-      assignee: nonEmpty(r.assignee, r.engineer_assignee),
+      assignee: nonEmpty(r.assignee_final, r.engineer_assignee),
       reporter: r.reporter ?? null,
       age_days: r.defect_age_days ?? null,
     }))

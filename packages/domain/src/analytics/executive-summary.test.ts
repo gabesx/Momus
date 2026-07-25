@@ -21,7 +21,7 @@ describe('isReleaseBlocking', () => {
 describe('computeExecutiveSummary', () => {
   const rows: AnalyticsIssueRow[] = [
     // open release-blocker, older
-    row({ project: 'AL', real_project: 'AL', is_open: true, priority: 'Highest', severity_issue: 'Critical', jira_key: 'AL-1', summary: 'Checkout down', assignee: 'Dewi', reporter: 'Budi', defect_age_days: 40, created_date: '2026-06-01T00:00:00Z' }),
+    row({ project: 'AL', real_project: 'AL', is_open: true, priority: 'Highest', severity_issue: 'Critical', jira_key: 'AL-1', summary: 'Checkout down', assignee_final: 'Dewi', reporter: 'Budi', defect_age_days: 40, created_date: '2026-06-01T00:00:00Z' }),
     // open release-blocker, newer (created this week)
     row({ project: 'AL', real_project: 'AL', is_open: true, priority: 'Highest', severity_issue: 'Critical', jira_key: 'AL-2', summary: 'Payment fails', engineer_assignee: 'Sari', reporter: 'Budi', defect_age_days: 3, created_date: '2026-07-20T00:00:00Z' }),
     // open, not blocking, other squad
