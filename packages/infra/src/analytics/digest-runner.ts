@@ -1,11 +1,6 @@
 import type { SupabaseClient } from '@supabase/supabase-js';
-import {
-  applyAnalyticsFilters,
-  buildAnalyticsDigest,
-  computeAnalyticsSummary,
-  computeTrends,
-} from '@momus/domain';
-import { BugBudgetQueryRepository, loadSummaryConfig } from '../supabase/bug-budget-query';
+import { buildWeeklyDigest, computeWeeklyDigest } from '@momus/domain';
+import { BugBudgetQueryRepository } from '../supabase/bug-budget-query';
 import type { AnalyticsSettings } from '../supabase/analytics-settings';
 
 /**
@@ -40,16 +35,9 @@ export async function runAnalyticsDigest(
   if (!webhook) throw new Error('No digest webhook URL configured');
 
   const repo = new BugBudgetQueryRepository(db);
-  const [all, config] = await Promise.all([repo.listAllForFilters(), loadSummaryConfig(db)]);
+  const all = await repo.listAllForFilters();
   const nowIso = new Date().toISOString();
-  const filtered = applyAnalyticsFilters(all, {}, nowIso);
-  const summary = computeAnalyticsSummary(filtered, nowIso, {
-    sla: settings,
-    prod_labels: settings.prod_labels,
-    escape_mode: settings.escape_mode,
-    prod_issue_types: settings.prod_issue_types,
-  });
-  const trends = computeTrends(filtered, 'month', nowIso, config.multipliers);
+  const weekly = computeWeeklyDigest(all, nowIso);
 
   const dashboardUrl =
     opts.dashboardUrl ??
@@ -57,7 +45,7 @@ export async function runAnalyticsDigest(
       ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/`
       : undefined);
 
-  const text = buildAnalyticsDigest(summary, trends, {
+  const text = buildWeeklyDigest(weekly, {
     dateLabel: nowIso.slice(0, 10),
     dashboardUrl,
     linkStyle: settings.digest_provider === 'google_chat' ? 'plain' : 'slack',
