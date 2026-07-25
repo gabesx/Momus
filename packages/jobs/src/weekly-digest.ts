@@ -32,6 +32,6 @@ export const weeklyAnalyticsDigest = inngest.createFunction(
       runAnalyticsDigest(createServerClient(), settings),
     );
 
-    return { skipped: false, status: result.status };
+    return { skipped: false, messages: result.messages };
   },
 );
