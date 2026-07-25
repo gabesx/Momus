@@ -25,7 +25,7 @@ export default function PendingApprovalPage() {
   };
 
   return (
-    <main className="bb-sign-in">
+    <main className="bb-sign-in bb-sign-in--centered">
       <div className="settings-card bb-sign-in__card">
         <h1 style={{ marginTop: 0 }}>Pending approval</h1>
         <p className="muted">

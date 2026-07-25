@@ -30,6 +30,31 @@ function authErrorMessage(error: string | null): string | null {
   }
 }
 
+function MomusStory() {
+  return (
+    <aside className="bb-sign-in__story" aria-label="About Momus">
+      <p className="bb-sign-in__eyebrow">Quality assurance</p>
+      <h1 className="bb-sign-in__brand">Momus</h1>
+      <p className="bb-sign-in__tagline">
+        Defect documentation and metrics — watched with a critical eye.
+      </p>
+
+      <div className="bb-sign-in__infobar" role="note">
+        <p className="bb-sign-in__infobar-title">Why “Momus”?</p>
+        <p>
+          Momus is a figure from ancient Greek mythology — the god (or personification) of satire,
+          mockery, and criticism. Son of Nyx (Night), he was known for finding fault with everyone
+          and everything — even the gods.
+        </p>
+        <p>
+          This page is for defect documentation and metrics. Momus guards it the same way: by
+          noticing what slips through.
+        </p>
+      </div>
+    </aside>
+  );
+}
+
 function SignInFormInner() {
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -118,97 +143,105 @@ function SignInFormInner() {
   };
 
   return (
-    <div className="settings-card bb-sign-in__card">
-      <h1 style={{ marginTop: 0 }}>Sign in to Momus</h1>
-      <p className="muted">
-        Use your work email to access Defect Analytics, Tracker, and Bug Budget.
-      </p>
+    <div className="bb-sign-in__layout">
+      <MomusStory />
 
-      {authError ? (
-        <div className="settings-alert settings-alert--error">{authError}</div>
-      ) : null}
-      {message ? (
-        <div className="settings-alert settings-alert--error">{message}</div>
-      ) : null}
+      <div className="bb-sign-in__panel">
+        <div className="settings-card bb-sign-in__card">
+          <h2 className="bb-sign-in__form-title">
+            {mode === 'sign-up' ? 'Create your account' : 'Sign in'}
+          </h2>
+          <p className="muted bb-sign-in__form-lead">
+            Use your work email to access Defect Analytics, Tracker, and Bug Budget.
+          </p>
 
-      <div className="btn-row">
-        <button
-          type="button"
-          className="btn btn-outline bb-sign-in__google"
-          disabled={busy}
-          onClick={() => void onGoogleSignIn()}
-        >
-          Continue with Google
-        </button>
-      </div>
+          {authError ? (
+            <div className="settings-alert settings-alert--error">{authError}</div>
+          ) : null}
+          {message ? (
+            <div className="settings-alert settings-alert--error">{message}</div>
+          ) : null}
 
-      <div className="bb-sign-in__divider" aria-hidden="true">
-        <span>or</span>
-      </div>
+          <div className="btn-row">
+            <button
+              type="button"
+              className="btn btn-outline bb-sign-in__google"
+              disabled={busy}
+              onClick={() => void onGoogleSignIn()}
+            >
+              Continue with Google
+            </button>
+          </div>
 
-      <form onSubmit={(e) => void onSubmit(e)}>
-        <label className="field">
-          <span>Email</span>
-          <input
-            type="email"
-            name="email"
-            autoComplete="email"
-            required
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-          />
-        </label>
+          <div className="bb-sign-in__divider" aria-hidden="true">
+            <span>or</span>
+          </div>
 
-        <label className="field">
-          <span>Password</span>
-          <input
-            type="password"
-            name="password"
-            autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
-            required
-            value={password}
-            onChange={(e) => setPassword(e.target.value)}
-          />
-        </label>
+          <form onSubmit={(e) => void onSubmit(e)}>
+            <label className="field">
+              <span>Email</span>
+              <input
+                type="email"
+                name="email"
+                autoComplete="email"
+                required
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+            </label>
 
-        <div className="btn-row">
-          <button type="submit" className="btn btn-primary" disabled={busy}>
-            {busy ? 'Please wait…' : mode === 'sign-up' ? 'Create account' : 'Sign in'}
-          </button>
+            <label className="field">
+              <span>Password</span>
+              <input
+                type="password"
+                name="password"
+                autoComplete={mode === 'sign-up' ? 'new-password' : 'current-password'}
+                required
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
+            </label>
+
+            <div className="btn-row">
+              <button type="submit" className="btn btn-primary bb-sign-in__submit" disabled={busy}>
+                {busy ? 'Please wait…' : mode === 'sign-up' ? 'Create account' : 'Sign in'}
+              </button>
+            </div>
+          </form>
+
+          <p className="muted bb-sign-in__switch">
+            {mode === 'sign-in' ? (
+              <>
+                Need an account?{' '}
+                <button
+                  type="button"
+                  className="linkish"
+                  onClick={() => {
+                    setMode('sign-up');
+                    setMessage(null);
+                  }}
+                >
+                  Sign up with email
+                </button>
+              </>
+            ) : (
+              <>
+                Already have an account?{' '}
+                <button
+                  type="button"
+                  className="linkish"
+                  onClick={() => {
+                    setMode('sign-in');
+                    setMessage(null);
+                  }}
+                >
+                  Sign in
+                </button>
+              </>
+            )}
+          </p>
         </div>
-      </form>
-
-      <p className="muted" style={{ marginTop: '1rem' }}>
-        {mode === 'sign-in' ? (
-          <>
-            Need an account?{' '}
-            <button
-              type="button"
-              className="linkish"
-              onClick={() => {
-                setMode('sign-up');
-                setMessage(null);
-              }}
-            >
-              Sign up with email
-            </button>
-          </>
-        ) : (
-          <>
-            Already have an account?{' '}
-            <button
-              type="button"
-              className="linkish"
-              onClick={() => {
-                setMode('sign-in');
-                setMessage(null);
-              }}
-            >
-              Sign in
-            </button>
-          </>
-        )}
-      </p>
+      </div>
     </div>
   );
 }
@@ -217,8 +250,13 @@ export function SignInForm() {
   return (
     <Suspense
       fallback={
-        <div className="settings-card bb-sign-in__card">
-          <p className="muted">Loading…</p>
+        <div className="bb-sign-in__layout">
+          <MomusStory />
+          <div className="bb-sign-in__panel">
+            <div className="settings-card bb-sign-in__card">
+              <p className="muted">Loading…</p>
+            </div>
+          </div>
         </div>
       }
     >

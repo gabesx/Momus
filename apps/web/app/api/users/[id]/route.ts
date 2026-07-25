@@ -2,6 +2,7 @@ import {
   UserNotFoundError,
   UsersRepository,
   createServerClient,
+  type UserRecord,
 } from '@momus/infra';
 import { assertCsrf, requireManageUsers } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
@@ -24,6 +25,7 @@ export async function PATCH(request: Request, context: RouteContext) {
 
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const input: { permissions?: unknown; is_candidate?: boolean } = {};
+    const password = typeof body.password === 'string' ? body.password : '';
 
     if (body.permissions !== undefined) {
       input.permissions = body.permissions;
@@ -35,15 +37,35 @@ export async function PATCH(request: Request, context: RouteContext) {
       input.is_candidate = body.is_candidate;
     }
 
+    const hasProfileChange =
+      input.permissions !== undefined || input.is_candidate !== undefined;
+    if (!password && !hasProfileChange) {
+      return jsonFail('No changes provided', 422);
+    }
+
     const repo = new UsersRepository(createServerClient());
-    const user = await repo.updateUser(id, input);
+    let user: UserRecord | null = null;
+
+    if (password) {
+      user = await repo.updateUserPassword(id, password);
+    }
+    if (hasProfileChange) {
+      user = await repo.updateUser(id, input);
+    }
+
     return jsonOk({ user });
   } catch (err) {
     if (err instanceof UserNotFoundError) {
       return jsonFail(err.message, 404);
     }
     const message = err instanceof Error ? err.message : 'Failed to update user';
-    if (message === 'Invalid permissions') return jsonFail(message, 422);
+    if (
+      message === 'Invalid permissions' ||
+      message.startsWith('Password must') ||
+      message.includes('no linked auth')
+    ) {
+      return jsonFail(message, 422);
+    }
     return jsonFail(message, 500);
   }
 }

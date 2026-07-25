@@ -33,6 +33,11 @@ export async function GET(request: Request) {
   }
 }
 
+/**
+ * Create/invite a user.
+ * - With `password`: creates email+password Auth user (confirmed) + approved Momus row.
+ * - Without `password`: sends Supabase invite email + approved Momus row.
+ */
 export async function POST(request: Request) {
   const csrf = assertCsrf(request);
   if (csrf) return csrf;
@@ -44,6 +49,7 @@ export async function POST(request: Request) {
     const body = (await request.json().catch(() => ({}))) as Record<string, unknown>;
     const email = typeof body.email === 'string' ? body.email.trim() : '';
     const name = typeof body.name === 'string' ? body.name.trim() : '';
+    const password = typeof body.password === 'string' ? body.password : '';
     const permissions = body.permissions;
 
     if (!email || !email.includes('@')) {
@@ -51,14 +57,18 @@ export async function POST(request: Request) {
     }
 
     const repo = new UsersRepository(createServerClient());
-    const user = await repo.inviteUser({ email, name, permissions });
+    const user = password
+      ? await repo.createUserWithPassword({ email, name, password, permissions })
+      : await repo.inviteUser({ email, name, permissions });
     return jsonOk({ user });
   } catch (err) {
     if (err instanceof UserConflictError) {
       return jsonFail(err.message, 409);
     }
-    const message = err instanceof Error ? err.message : 'Failed to invite user';
-    if (message === 'Invalid permissions') return jsonFail(message, 422);
+    const message = err instanceof Error ? err.message : 'Failed to create user';
+    if (message === 'Invalid permissions' || message.startsWith('Password must')) {
+      return jsonFail(message, 422);
+    }
     return jsonFail(message, 500);
   }
 }

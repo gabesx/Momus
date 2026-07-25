@@ -41,6 +41,7 @@ export * from './tracker/patch';
 export * from './tracker/linked-test';
 export * from './auth/allowlist';
 export * from './auth/approval';
+export * from './auth/sign-in-method';
 export * from './leaderboard/types';
 export * from './leaderboard/period';
 export * from './leaderboard/compute';

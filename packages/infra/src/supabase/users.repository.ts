@@ -1,9 +1,11 @@
 import {
+  classifyAuthSignInMethod,
   isEmailAllowlisted,
   normalizeEmail,
   type ApprovalStatus,
+  type AuthSignInMethod,
 } from '@momus/domain';
-import type { SupabaseClient } from '@supabase/supabase-js';
+import type { SupabaseClient, User as AuthUser } from '@supabase/supabase-js';
 import { AuthAllowlistRepository } from './auth-allowlist.repository';
 
 const ALLOWED_PERMISSIONS = new Set([
@@ -11,6 +13,8 @@ const ALLOWED_PERMISSIONS = new Set([
   'access_settings',
   'manage_users',
 ]);
+
+const MIN_PASSWORD_LENGTH = 8;
 
 export function normalizePermissions(input: unknown): string[] | null {
   if (!Array.isArray(input)) return null;
@@ -20,6 +24,33 @@ export function normalizePermissions(input: unknown): string[] | null {
     ),
   ];
   return out;
+}
+
+export function validatePassword(password: string): string | null {
+  if (password.length < MIN_PASSWORD_LENGTH) {
+    return `Password must be at least ${MIN_PASSWORD_LENGTH} characters`;
+  }
+  return null;
+}
+
+/** Provider names from a Supabase Auth user (`google`, `email`, …). */
+export function authProvidersFromUser(user: AuthUser | null | undefined): string[] {
+  if (!user) return [];
+  const fromIdentities = (user.identities ?? [])
+    .map((i) => i.provider)
+    .filter((p): p is string => typeof p === 'string' && p.trim().length > 0);
+  if (fromIdentities.length) return [...new Set(fromIdentities)];
+
+  const metaProviders = user.app_metadata?.providers;
+  if (Array.isArray(metaProviders)) {
+    return [
+      ...new Set(
+        metaProviders.filter((p): p is string => typeof p === 'string' && p.trim().length > 0),
+      ),
+    ];
+  }
+  const single = user.app_metadata?.provider;
+  return typeof single === 'string' && single.trim() ? [single] : [];
 }
 
 export class UserConflictError extends Error {
@@ -44,11 +75,22 @@ export type UserRecord = {
   auth_user_id: string | null;
   approval_status: ApprovalStatus;
   permissions: string[];
+  /** Supabase Auth identity providers (e.g. google, email). */
+  auth_providers: string[];
+  /** Derived sign-in method for admin UI. */
+  auth_method: AuthSignInMethod;
 };
 
 export type InviteUserInput = {
   email: string;
   name: string;
+  permissions: unknown;
+};
+
+export type CreatePasswordUserInput = {
+  email: string;
+  name: string;
+  password: string;
   permissions: unknown;
 };
 
@@ -77,7 +119,13 @@ type UserRow = {
   user_permissions?: { permission: string }[];
 };
 
-function mapUserRow(row: UserRow): UserRecord {
+function mapUserRow(
+  row: UserRow,
+  auth: { providers: string[]; method: AuthSignInMethod } = {
+    providers: [],
+    method: 'unknown',
+  },
+): UserRecord {
   const permissions = (row.user_permissions ?? []).map((p) => p.permission);
   return {
     id: Number(row.id),
@@ -87,6 +135,8 @@ function mapUserRow(row: UserRow): UserRecord {
     auth_user_id: row.auth_user_id,
     approval_status: row.approval_status,
     permissions,
+    auth_providers: auth.providers,
+    auth_method: auth.method,
   };
 }
 
@@ -125,7 +175,17 @@ export class UsersRepository {
     }
     const { data, error } = await query;
     if (error) throw new Error(`listUsers failed: ${error.message}`);
-    return (data ?? []).map((row) => mapUserRow(row as UserRow));
+    const rows = (data ?? []) as UserRow[];
+    const authMap = await this.loadAuthProviderMap(
+      rows.map((r) => r.auth_user_id).filter((id): id is string => !!id),
+    );
+    return rows.map((row) => {
+      const providers = row.auth_user_id ? (authMap.get(row.auth_user_id) ?? []) : [];
+      return mapUserRow(row, {
+        providers,
+        method: classifyAuthSignInMethod(providers),
+      });
+    });
   }
 
   async ensureUser(
@@ -154,7 +214,6 @@ export class UsersRepository {
       .single();
 
     if (error) {
-      // Concurrent ensureUser: another request won the insert race.
       if (isUniqueViolation(error)) {
         const raced = await this.getUserByAuthUserId(input.authUserId);
         if (raced) return { ok: true, user: raced };
@@ -162,7 +221,7 @@ export class UsersRepository {
       throw new Error(`ensureUser insert failed: ${error.message}`);
     }
 
-    return { ok: true, user: mapUserRow(data as UserRow) };
+    return { ok: true, user: await this.enrichUser(mapUserRow(data as UserRow)) };
   }
 
   async approveUser(id: number, permissions: unknown): Promise<UserRecord> {
@@ -227,29 +286,68 @@ export class UsersRepository {
       throw new Error('inviteUser failed: missing auth user id');
     }
 
-    const { data: userRow, error: upsertError } = await this.db
-      .from('users')
-      .upsert(
-        {
-          auth_user_id: authUserId,
-          email: input.email,
-          name: input.name,
-          is_candidate: false,
-          approval_status: 'approved',
-        },
-        { onConflict: 'auth_user_id' },
-      )
-      .select('id, email, name, is_candidate, auth_user_id, approval_status')
-      .single();
+    return this.upsertApprovedMomusUser({
+      authUserId,
+      email: input.email,
+      name: input.name,
+      permissions,
+    });
+  }
 
-    if (upsertError) throw new Error(`inviteUser upsert failed: ${upsertError.message}`);
+  /**
+   * Create an approved user with email + password (no invite email).
+   * Confirms the email immediately so they can sign in right away.
+   */
+  async createUserWithPassword(input: CreatePasswordUserInput): Promise<UserRecord> {
+    const permissions = normalizePermissions(input.permissions);
+    if (permissions === null) {
+      throw new Error('Invalid permissions');
+    }
+    const passwordError = validatePassword(input.password);
+    if (passwordError) throw new Error(passwordError);
 
-    const userId = Number(userRow.id);
-    await this.replacePermissions(userId, permissions);
+    const { data: created, error: createError } = await this.db.auth.admin.createUser({
+      email: input.email,
+      password: input.password,
+      email_confirm: true,
+      user_metadata: { name: input.name },
+    });
 
-    const user = await this.getUserById(userId);
-    if (!user) throw new Error(`inviteUser failed: user ${userId} not found after insert`);
-    return user;
+    if (createError) {
+      if (isAuthUserConflict(createError)) {
+        throw new UserConflictError(createError.message);
+      }
+      throw new Error(`createUserWithPassword failed: ${createError.message}`);
+    }
+
+    const authUserId = created.user?.id;
+    if (!authUserId) {
+      throw new Error('createUserWithPassword failed: missing auth user id');
+    }
+
+    return this.upsertApprovedMomusUser({
+      authUserId,
+      email: input.email,
+      name: input.name,
+      permissions,
+    });
+  }
+
+  async updateUserPassword(id: number, password: string): Promise<UserRecord> {
+    const existing = await this.getUserById(id);
+    if (!existing) throw new UserNotFoundError(`User ${id} not found`);
+    if (!existing.auth_user_id) {
+      throw new Error('User has no linked auth account');
+    }
+    const passwordError = validatePassword(password);
+    if (passwordError) throw new Error(passwordError);
+
+    const { error } = await this.db.auth.admin.updateUserById(existing.auth_user_id, {
+      password,
+    });
+    if (error) throw new Error(`updateUserPassword failed: ${error.message}`);
+
+    return existing;
   }
 
   async updateUser(id: number, input: UpdateUserInput): Promise<UserRecord> {
@@ -277,6 +375,37 @@ export class UsersRepository {
     return updated;
   }
 
+  private async upsertApprovedMomusUser(input: {
+    authUserId: string;
+    email: string;
+    name: string;
+    permissions: string[];
+  }): Promise<UserRecord> {
+    const { data: userRow, error: upsertError } = await this.db
+      .from('users')
+      .upsert(
+        {
+          auth_user_id: input.authUserId,
+          email: input.email,
+          name: input.name,
+          is_candidate: false,
+          approval_status: 'approved',
+        },
+        { onConflict: 'auth_user_id' },
+      )
+      .select('id, email, name, is_candidate, auth_user_id, approval_status')
+      .single();
+
+    if (upsertError) throw new Error(`upsertApprovedMomusUser failed: ${upsertError.message}`);
+
+    const userId = Number(userRow.id);
+    await this.replacePermissions(userId, input.permissions);
+
+    const user = await this.getUserById(userId);
+    if (!user) throw new Error(`upsertApprovedMomusUser failed: user ${userId} not found`);
+    return user;
+  }
+
   private async getUserById(id: number): Promise<UserRecord | null> {
     const { data, error } = await this.db
       .from('users')
@@ -284,7 +413,8 @@ export class UsersRepository {
       .eq('id', id)
       .maybeSingle();
     if (error) throw new Error(`getUserById failed: ${error.message}`);
-    return data ? mapUserRow(data as UserRow) : null;
+    if (!data) return null;
+    return this.enrichUser(mapUserRow(data as UserRow));
   }
 
   private async getUserByAuthUserId(authUserId: string): Promise<UserRecord | null> {
@@ -294,7 +424,41 @@ export class UsersRepository {
       .eq('auth_user_id', authUserId)
       .maybeSingle();
     if (error) throw new Error(`getUserByAuthUserId failed: ${error.message}`);
-    return data ? mapUserRow(data as UserRow) : null;
+    if (!data) return null;
+    return this.enrichUser(mapUserRow(data as UserRow));
+  }
+
+  private async enrichUser(user: UserRecord): Promise<UserRecord> {
+    if (!user.auth_user_id) return user;
+    const map = await this.loadAuthProviderMap([user.auth_user_id]);
+    const providers = map.get(user.auth_user_id) ?? [];
+    return {
+      ...user,
+      auth_providers: providers,
+      auth_method: classifyAuthSignInMethod(providers),
+    };
+  }
+
+  private async loadAuthProviderMap(authUserIds: string[]): Promise<Map<string, string[]>> {
+    const unique = [...new Set(authUserIds)];
+    const out = new Map<string, string[]>();
+    if (unique.length === 0) return out;
+
+    await Promise.all(
+      unique.map(async (id) => {
+        try {
+          const { data, error } = await this.db.auth.admin.getUserById(id);
+          if (error || !data.user) {
+            out.set(id, []);
+            return;
+          }
+          out.set(id, authProvidersFromUser(data.user));
+        } catch {
+          out.set(id, []);
+        }
+      }),
+    );
+    return out;
   }
 
   private async replacePermissions(userId: number, permissions: string[]): Promise<void> {
