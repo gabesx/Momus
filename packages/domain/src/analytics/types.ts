@@ -22,6 +22,12 @@ export type AnalyticsFilterParams = {
 
 export type AnalyticsIssueRow = {
   project: string;
+  /** Jira issue key (for issue-level lists + browse links). */
+  jira_key?: string | null;
+  /** Issue title/summary. */
+  summary?: string | null;
+  /** Resolved assignee (fallback engineer_assignee). */
+  assignee?: string | null;
   created_date?: string | null;
   created_year?: number | null;
   created_num_month?: number | null;
