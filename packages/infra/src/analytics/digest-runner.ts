@@ -4,7 +4,7 @@ import {
   buildProductDigestMessage,
   computeExecutiveSummary,
   computeProductHealth,
-  DIGEST_TOP_PRODUCTS,
+  hasDigestContent,
   listProductsByRisk,
 } from '@momus/domain';
 import { BugBudgetQueryRepository } from '../supabase/bug-budget-query';
@@ -49,7 +49,8 @@ async function postMessage(webhook: string, text: string, attempt = 0): Promise<
 /**
  * Send the executive weekly digest to the configured webhook (Slack or Google
  * Chat): an Executive Summary message followed by one Product Health message
- * per top-risk product. Shared by the cron and the manual send-now route.
+ * per product (riskiest first; products with no open bugs and no activity
+ * this week are skipped). Shared by the cron and the manual send-now route.
  * Throws on a missing webhook or any non-2xx response.
  */
 export async function runAnalyticsDigest(
@@ -78,8 +79,8 @@ export async function runAnalyticsDigest(
 
   const summary = computeExecutiveSummary(all, nowIso);
   const products = listProductsByRisk(all)
-    .slice(0, DIGEST_TOP_PRODUCTS)
-    .map((p) => computeProductHealth(all, p, nowIso));
+    .map((p) => computeProductHealth(all, p, nowIso))
+    .filter(hasDigestContent);
 
   const messages = [
     buildExecutiveDigestMessage(summary, {

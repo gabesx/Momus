@@ -1,9 +1,6 @@
 import type { ExecutiveSummary } from './executive-summary';
 import type { ProductHealth, ProductIssueRef } from './product-health';
 
-/** How many products (by risk) get a dedicated message; tunable. */
-export const DIGEST_TOP_PRODUCTS = 5;
-
 export type DigestLinkStyle = 'slack' | 'plain';
 
 export type DigestMessageOptions = {

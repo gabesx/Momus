@@ -3,6 +3,9 @@ import { writeSettingsAudit } from '@/lib/audit';
 import { assertCsrf, requireAccessSettings } from '@/lib/auth';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
+// One throttled message per product (~1.2s apart) — the full send takes ~20-30s.
+export const maxDuration = 120;
+
 /**
  * Manual "send digest now" — builds and posts the weekly digest immediately
  * using the saved analytics settings. Bypasses the schedule (explicit action)

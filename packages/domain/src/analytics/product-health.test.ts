@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeProductHealth, listProductsByRisk, weeklySeries } from './product-health';
+import { computeProductHealth, hasDigestContent, listProductsByRisk, weeklySeries } from './product-health';
 import type { AnalyticsIssueRow } from './types';
 
 const now = '2026-07-25T00:00:00Z'; // this week: 07-18..07-25
@@ -63,5 +63,22 @@ describe('computeProductHealth', () => {
     expect(empty.open_total).toBe(0);
     expect(empty.top_open).toEqual([]);
     expect(empty.release_blockers).toEqual([]);
+  });
+});
+
+describe('hasDigestContent', () => {
+  it('includes products with open bugs even when nothing happened this week', () => {
+    expect(hasDigestContent(computeProductHealth(rows, 'AO', now))).toBe(true);
+  });
+
+  it('includes products with only this-week activity (e.g. all resolved)', () => {
+    const resolvedOnly: AnalyticsIssueRow[] = [
+      row({ project: 'FIN', real_project: 'FIN', is_open: false, created_date: '2026-07-19T00:00:00Z', resolved_date: '2026-07-21T00:00:00Z' }),
+    ];
+    expect(hasDigestContent(computeProductHealth(resolvedOnly, 'FIN', now))).toBe(true);
+  });
+
+  it('excludes products with no open bugs and no activity this week', () => {
+    expect(hasDigestContent(computeProductHealth(rows, 'NOPE', now))).toBe(false);
   });
 });

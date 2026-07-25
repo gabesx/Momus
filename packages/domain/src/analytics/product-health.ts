@@ -81,6 +81,14 @@ export function listProductsByRisk(rows: AnalyticsIssueRow[]): string[] {
   );
 }
 
+/**
+ * Whether a product has anything worth a digest message: open bugs or
+ * created/resolved activity this week. Keeps quiet products out of the send.
+ */
+export function hasDigestContent(h: ProductHealth): boolean {
+  return h.open_total > 0 || h.this_week.created > 0 || h.this_week.resolved > 0;
+}
+
 /** Weekly created/resolved series for the last `weeks` rolling 7-day windows (oldest first). */
 export function weeklySeries(
   rows: AnalyticsIssueRow[],
