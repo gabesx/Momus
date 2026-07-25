@@ -1,10 +1,24 @@
 import type { AnalyticsFilterParams, AnalyticsTrendGrain } from '@momus/domain';
+import { TIMEZONE } from '@momus/domain';
+
+/** Current calendar year in Asia/Jakarta. */
+export function analyticsDefaultYear(now = new Date()): number {
+  return Number(
+    new Intl.DateTimeFormat('en-CA', { timeZone: TIMEZONE, year: 'numeric' }).format(now),
+  );
+}
+
+function parseYear(raw: string | null): string {
+  if (raw === 'all') return 'all';
+  if (raw != null && raw !== '' && Number.isFinite(Number(raw))) return String(Number(raw));
+  return String(analyticsDefaultYear());
+}
 
 export function analyticsParamsFromUrl(url: URL): AnalyticsFilterParams {
   const sp = url.searchParams;
   const grain = sp.get('trend_grain') as AnalyticsTrendGrain | null;
   return {
-    year: sp.get('year') || undefined,
+    year: parseYear(sp.get('year')),
     project: sp.get('project') || undefined,
     issue_type: (sp.get('issue_type') as AnalyticsFilterParams['issue_type']) || undefined,
     status: (sp.get('status') as AnalyticsFilterParams['status']) || undefined,
@@ -20,7 +34,12 @@ export function analyticsParamsFromUrl(url: URL): AnalyticsFilterParams {
 
 export function analyticsParamsToQuery(state: AnalyticsFilterParams): string {
   const sp = new URLSearchParams();
-  if (state.year) sp.set('year', String(state.year));
+  const year =
+    state.year == null || state.year === ''
+      ? String(analyticsDefaultYear())
+      : String(state.year);
+  // Always emit year so "all" is distinct from the default (this year).
+  sp.set('year', year);
   if (state.project) sp.set('project', state.project);
   if (state.issue_type) sp.set('issue_type', state.issue_type);
   if (state.status) sp.set('status', state.status);

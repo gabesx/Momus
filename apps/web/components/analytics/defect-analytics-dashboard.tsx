@@ -10,7 +10,11 @@ import type {
 } from '@momus/domain';
 import type { AnalyticsThresholds } from '@momus/infra';
 import { apiJson } from '@/lib/api-client';
-import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
+import {
+  analyticsDefaultYear,
+  analyticsParamsFromUrl,
+  analyticsParamsToQuery,
+} from '@/lib/analytics-params';
 import { AnalyticsFilters } from './analytics-filters';
 import { InflowOutflowChart } from './inflow-outflow-chart';
 import { CostQualityPanel } from './cost-quality-panel';
@@ -61,7 +65,10 @@ function grainTitle(grain: string | undefined): string {
 }
 
 export function DefectAnalyticsDashboard() {
-  const [state, setState] = useState<AnalyticsFilterParams>({ trend_grain: 'month' });
+  const [state, setState] = useState<AnalyticsFilterParams>({
+    trend_grain: 'month',
+    year: String(analyticsDefaultYear()),
+  });
   const [data, setData] = useState<AnalyticsResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -184,7 +191,7 @@ export function DefectAnalyticsDashboard() {
   };
 
   const resetFilters = () => {
-    replaceState({ trend_grain: 'month' });
+    replaceState({ trend_grain: 'month', year: String(analyticsDefaultYear()) });
   };
 
   const onRefresh = () => {
@@ -280,7 +287,7 @@ export function DefectAnalyticsDashboard() {
       <DistributionPanel
         summary={data?.summary ?? null}
         loading={loading}
-        year={state.year ? String(state.year) : 'all'}
+        year={state.year != null && state.year !== '' ? String(state.year) : 'all'}
       />
       <SquadHeatPanel summary={data?.summary ?? null} loading={loading} />
       <QaSlipPanel rows={data?.qa_slip ?? []} loading={loading} />

@@ -1,0 +1,1 @@
+{"nodes": [{"id": "bug_budget_repository", "label": "Bug Budget Repository", "file_type": "code", "source_file": "packages/infra/src/supabase/bug-budget.repository.ts"}], "edges": [], "hyperedges": []}
