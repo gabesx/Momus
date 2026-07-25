@@ -1,4 +1,4 @@
-import { computeExecutiveSummary } from '@momus/domain';
+import { computeExecutiveSummary, computeProductHealth, listProductsByRisk } from '@momus/domain';
 import { BugBudgetQueryRepository, createServerClient, getJiraSettings } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
 import {
@@ -24,6 +24,7 @@ export async function GET() {
     const repo = new BugBudgetQueryRepository(db);
     const all = await repo.listAllForFilters();
     const summary = computeExecutiveSummary(all, nowIso);
+    const products = listProductsByRisk(all).map((p) => computeProductHealth(all, p, nowIso));
 
     let jira_browse_base = '';
     try {
@@ -42,6 +43,7 @@ export async function GET() {
 
     const payload = {
       summary,
+      products,
       meta: { last_updated, generated_at: nowIso, jira_browse_base },
     };
     setCachedAnalytics(CACHE_KEY, version, payload);
