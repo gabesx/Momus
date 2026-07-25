@@ -18,6 +18,7 @@ export * from './analytics/types';
 export * from './analytics/filter';
 export * from './analytics/csv';
 export * from './analytics/digest';
+export * from './analytics/weekly-digest';
 export * from './analytics/distribution';
 export * from './analytics/escape';
 export * from './analytics/resolution';
