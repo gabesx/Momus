@@ -20,7 +20,7 @@ import {
   getCachedAnalytics,
   setCachedAnalytics,
 } from '@/lib/analytics-cache';
-import { analyticsParamsFromUrl } from '@/lib/analytics-params';
+import { analyticsDefaultYear, analyticsParamsFromUrl } from '@/lib/analytics-params';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 function cacheKeyFromUrl(url: URL): string {
@@ -51,9 +51,11 @@ export async function GET(request: Request) {
       new RosterRepository(db).list(),
     ]);
     const opts = extractFilterOptions(all);
+    const defaultYear = analyticsDefaultYear();
+    const yearsDesc = [...new Set([...opts.years, defaultYear])].sort((a, b) => b - a);
     const filter_options = {
       projects: opts.projects,
-      years: opts.years,
+      years: yearsDesc,
     };
     const filtered = applyAnalyticsFilters(all, params, nowIso);
     const summary = computeAnalyticsSummary(filtered, nowIso, {

@@ -26,10 +26,10 @@ export function AnalyticsFilters({ state, options, scope_hint, onChange, onReset
         <label className="field">
           Year
           <select
-            value={state.year ? String(state.year) : ''}
-            onChange={(e) => onChange({ year: e.target.value || undefined })}
+            value={state.year != null && state.year !== '' ? String(state.year) : 'all'}
+            onChange={(e) => onChange({ year: e.target.value || 'all' })}
           >
-            <option value="">All</option>
+            <option value="all">All</option>
             {years.map((y) => (
               <option key={y} value={String(y)}>
                 {y}

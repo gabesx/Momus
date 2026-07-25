@@ -1,0 +1,1 @@
+{"nodes": [{"id": "src_legacy_config", "label": "Legacy Config Shape & Migrate Keys", "file_type": "code", "source_file": "packages/migration/src/legacy-config.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}

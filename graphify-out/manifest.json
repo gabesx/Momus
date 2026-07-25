@@ -1,0 +1,2967 @@
+{
+  ".claude/settings.local.json": {
+    "mtime": 1783991145.4887476,
+    "ast_hash": "d632b949e0a53d88ce6973f32162d6d9",
+    "semantic_hash": "d632b949e0a53d88ce6973f32162d6d9"
+  },
+  "apps/web/app/analytics/page.tsx": {
+    "mtime": 1783768398.697814,
+    "ast_hash": "49a3868124cf50fbe5eed31b49cf4c60",
+    "semantic_hash": "49a3868124cf50fbe5eed31b49cf4c60"
+  },
+  "apps/web/app/api/analytics/export/csv/route.ts": {
+    "mtime": 1783964158.0764868,
+    "ast_hash": "9de750c469870e33005a9d801d256cd0",
+    "semantic_hash": "9de750c469870e33005a9d801d256cd0"
+  },
+  "apps/web/app/api/analytics/period-detail/route.ts": {
+    "mtime": 1783825167.9445536,
+    "ast_hash": "f47fd3436ac9c0cab9f9ac79317b1dd9",
+    "semantic_hash": "f47fd3436ac9c0cab9f9ac79317b1dd9"
+  },
+  "apps/web/app/api/analytics/route.ts": {
+    "mtime": 1784806090.5892456,
+    "ast_hash": "b7f321432dd9e2bf4513dc5096c8521c",
+    "semantic_hash": "b7f321432dd9e2bf4513dc5096c8521c"
+  },
+  "apps/web/app/api/auth/ensure-user/route.ts": {
+    "mtime": 1783862424.0362341,
+    "ast_hash": "8f592ead6b7adf4804f42768f46b4e2e",
+    "semantic_hash": "8f592ead6b7adf4804f42768f46b4e2e"
+  },
+  "apps/web/app/api/auth/sign-in/route.ts": {
+    "mtime": 1783853918.0128708,
+    "ast_hash": "78c23a3f36acb7e83aa837133473b78d",
+    "semantic_hash": "78c23a3f36acb7e83aa837133473b78d"
+  },
+  "apps/web/app/api/auth/sign-out/route.ts": {
+    "mtime": 1783853918.0130377,
+    "ast_hash": "f21d7dc4432b3e58097ee8cd16ad1851",
+    "semantic_hash": "f21d7dc4432b3e58097ee8cd16ad1851"
+  },
+  "apps/web/app/api/bug-budget/[id]/route.ts": {
+    "mtime": 1783759061.5871358,
+    "ast_hash": "16e3afd3565df03e0f5b3316a3f55da6",
+    "semantic_hash": "16e3afd3565df03e0f5b3316a3f55da6"
+  },
+  "apps/web/app/api/bug-budget/export/csv/route.ts": {
+    "mtime": 1783759061.587428,
+    "ast_hash": "f1a5462d8c75364b85df1857b4252c4f",
+    "semantic_hash": "f1a5462d8c75364b85df1857b4252c4f"
+  },
+  "apps/web/app/api/bug-budget/open-bug-summary/route.ts": {
+    "mtime": 1783768398.6991813,
+    "ast_hash": "93e35ac3afee2d8ccb745a13f85f6a34",
+    "semantic_hash": "93e35ac3afee2d8ccb745a13f85f6a34"
+  },
+  "apps/web/app/api/bug-budget/open-defect-summary/route.ts": {
+    "mtime": 1783768398.699558,
+    "ast_hash": "6eeff4368f7de9502d93fbd3a7ff79c1",
+    "semantic_hash": "6eeff4368f7de9502d93fbd3a7ff79c1"
+  },
+  "apps/web/app/api/bug-budget/route.ts": {
+    "mtime": 1783768398.6998434,
+    "ast_hash": "c545cad9357b9a0a0b1c82f58599e842",
+    "semantic_hash": "c545cad9357b9a0a0b1c82f58599e842"
+  },
+  "apps/web/app/api/health/route.ts": {
+    "mtime": 1783759061.5882337,
+    "ast_hash": "1a0e6c96da4ceeee6c784ee8b21e32e4",
+    "semantic_hash": "1a0e6c96da4ceeee6c784ee8b21e32e4"
+  },
+  "apps/web/app/api/health/worker/route.ts": {
+    "mtime": 1783815888.1023414,
+    "ast_hash": "1fd9a38737a84b5507881e48eaa5cc79",
+    "semantic_hash": "1fd9a38737a84b5507881e48eaa5cc79"
+  },
+  "apps/web/app/api/inngest/route.ts": {
+    "mtime": 1783954901.778078,
+    "ast_hash": "373854e0df7475ced19041b0b5fccef2",
+    "semantic_hash": "373854e0df7475ced19041b0b5fccef2"
+  },
+  "apps/web/app/api/leaderboard/reporter-issues/route.ts": {
+    "mtime": 1783954901.7784283,
+    "ast_hash": "ca92cd624a5b442b562d11164a22d298",
+    "semantic_hash": "ca92cd624a5b442b562d11164a22d298"
+  },
+  "apps/web/app/api/leaderboard/route.ts": {
+    "mtime": 1783954901.7787461,
+    "ast_hash": "c1c2ae02788ac7d51c0bcbf62d8138d6",
+    "semantic_hash": "c1c2ae02788ac7d51c0bcbf62d8138d6"
+  },
+  "apps/web/app/api/me/route.ts": {
+    "mtime": 1783768398.7001266,
+    "ast_hash": "99f345a80b52d375a701779248c4888b",
+    "semantic_hash": "99f345a80b52d375a701779248c4888b"
+  },
+  "apps/web/app/api/settings/analytics/route.ts": {
+    "mtime": 1783964158.0778046,
+    "ast_hash": "69ebf1cb01f439febb145c5038d61df0",
+    "semantic_hash": "69ebf1cb01f439febb145c5038d61df0"
+  },
+  "apps/web/app/api/settings/auth-allowlist/route.ts": {
+    "mtime": 1783862424.036961,
+    "ast_hash": "7622638d22471d8193a83cd81f0510a7",
+    "semantic_hash": "7622638d22471d8193a83cd81f0510a7"
+  },
+  "apps/web/app/api/settings/bug-budget/config/route.ts": {
+    "mtime": 1783759061.5887127,
+    "ast_hash": "4f4bee60e6e1c66982b184ec57531053",
+    "semantic_hash": "4f4bee60e6e1c66982b184ec57531053"
+  },
+  "apps/web/app/api/settings/bug-budget/connection/route.ts": {
+    "mtime": 1783759061.5889153,
+    "ast_hash": "f06683fd801c1534d6d313e9dcb755ca",
+    "semantic_hash": "f06683fd801c1534d6d313e9dcb755ca"
+  },
+  "apps/web/app/api/settings/bug-budget/cron-schedule/route.ts": {
+    "mtime": 1783815888.102774,
+    "ast_hash": "e2f9939ebe911c2ca1abe702b688b33e",
+    "semantic_hash": "e2f9939ebe911c2ca1abe702b688b33e"
+  },
+  "apps/web/app/api/settings/bug-budget/fetch-from-jira/route.ts": {
+    "mtime": 1783759061.5893621,
+    "ast_hash": "c877eeaf72933d072b78d0dcbeaad712",
+    "semantic_hash": "c877eeaf72933d072b78d0dcbeaad712"
+  },
+  "apps/web/app/api/settings/bug-budget/fetch-projects/route.ts": {
+    "mtime": 1783759061.5895705,
+    "ast_hash": "b5991b97e7af74bbbc9b48134cc1d3ab",
+    "semantic_hash": "b5991b97e7af74bbbc9b48134cc1d3ab"
+  },
+  "apps/web/app/api/settings/bug-budget/get-issue-count/route.ts": {
+    "mtime": 1783759061.5897746,
+    "ast_hash": "05f76cc7ffbc0058be2ed2f950addaa7",
+    "semantic_hash": "05f76cc7ffbc0058be2ed2f950addaa7"
+  },
+  "apps/web/app/api/settings/bug-budget/save-connection/route.ts": {
+    "mtime": 1783815888.1030211,
+    "ast_hash": "45d42b8707e1bf0b8c9bc600d7bacc30",
+    "semantic_hash": "45d42b8707e1bf0b8c9bc600d7bacc30"
+  },
+  "apps/web/app/api/settings/bug-budget/save-multipliers/route.ts": {
+    "mtime": 1783815888.1032965,
+    "ast_hash": "d1b6aece24ebba2490c3e8453e21ce4f",
+    "semantic_hash": "d1b6aece24ebba2490c3e8453e21ce4f"
+  },
+  "apps/web/app/api/settings/bug-budget/save-project-settings/route.ts": {
+    "mtime": 1783815888.1034808,
+    "ast_hash": "72c3e4ee7a4eee2e95c1e033d6d23b25",
+    "semantic_hash": "72c3e4ee7a4eee2e95c1e033d6d23b25"
+  },
+  "apps/web/app/api/settings/bug-budget/save-sync-query/route.ts": {
+    "mtime": 1783815888.103668,
+    "ast_hash": "be4d4c260d243b1cf90c3168fd1c2ccd",
+    "semantic_hash": "be4d4c260d243b1cf90c3168fd1c2ccd"
+  },
+  "apps/web/app/api/settings/bug-budget/sync-activity/route.ts": {
+    "mtime": 1783759061.5916035,
+    "ast_hash": "e0b011720eca36abaf31d9051cd236b2",
+    "semantic_hash": "e0b011720eca36abaf31d9051cd236b2"
+  },
+  "apps/web/app/api/settings/bug-budget/sync-status/[id]/route.ts": {
+    "mtime": 1783759061.5920968,
+    "ast_hash": "3e8fc6a6d0e7d21d630481fdcfee662b",
+    "semantic_hash": "3e8fc6a6d0e7d21d630481fdcfee662b"
+  },
+  "apps/web/app/api/settings/bug-budget/sync-with-database/route.ts": {
+    "mtime": 1783759061.5923662,
+    "ast_hash": "98ddc473f0d2ac6d59c473248aa89e9d",
+    "semantic_hash": "98ddc473f0d2ac6d59c473248aa89e9d"
+  },
+  "apps/web/app/api/settings/bug-budget/sync-with-progress/route.ts": {
+    "mtime": 1783759061.5926762,
+    "ast_hash": "5c330d9ca9535a5f5a908e1e32e1080f",
+    "semantic_hash": "5c330d9ca9535a5f5a908e1e32e1080f"
+  },
+  "apps/web/app/api/settings/bug-budget/test-connection/route.ts": {
+    "mtime": 1783759061.5929427,
+    "ast_hash": "77e29a00476441d18aa8edd06f256028",
+    "semantic_hash": "77e29a00476441d18aa8edd06f256028"
+  },
+  "apps/web/app/api/settings/confluence/route.ts": {
+    "mtime": 1783815888.1039047,
+    "ast_hash": "1d2ae8dd1851a157b36bd76332219a88",
+    "semantic_hash": "1d2ae8dd1851a157b36bd76332219a88"
+  },
+  "apps/web/app/api/tracker/[jiraKey]/route.ts": {
+    "mtime": 1783853851.3374991,
+    "ast_hash": "077265d026aa63c6a49aa6d4dea43cd5",
+    "semantic_hash": "077265d026aa63c6a49aa6d4dea43cd5"
+  },
+  "apps/web/app/api/tracker/field-options/route.ts": {
+    "mtime": 1783862424.037128,
+    "ast_hash": "4aee155e050aa00fb73fb955588d24e7",
+    "semantic_hash": "4aee155e050aa00fb73fb955588d24e7"
+  },
+  "apps/web/app/api/tracker/field-settings/route.ts": {
+    "mtime": 1783862424.0372746,
+    "ast_hash": "a97030010bf51d46dc6d83d61bbf0ed2",
+    "semantic_hash": "a97030010bf51d46dc6d83d61bbf0ed2"
+  },
+  "apps/web/app/api/tracker/route.ts": {
+    "mtime": 1783862424.0374324,
+    "ast_hash": "61aba8af71c7fbd6528c0103ac85aa04",
+    "semantic_hash": "61aba8af71c7fbd6528c0103ac85aa04"
+  },
+  "apps/web/app/api/users/[id]/approve/route.ts": {
+    "mtime": 1783862424.0375776,
+    "ast_hash": "0b3a60d683a5e4f0ee8e2ac14989c6be",
+    "semantic_hash": "0b3a60d683a5e4f0ee8e2ac14989c6be"
+  },
+  "apps/web/app/api/users/[id]/reject/route.ts": {
+    "mtime": 1783862424.0377202,
+    "ast_hash": "4dec2ad0215d273c38da87490df3e68d",
+    "semantic_hash": "4dec2ad0215d273c38da87490df3e68d"
+  },
+  "apps/web/app/api/users/[id]/route.ts": {
+    "mtime": 1783853918.1352093,
+    "ast_hash": "4ce46db6904a6e7a89f00378d8929c95",
+    "semantic_hash": "4ce46db6904a6e7a89f00378d8929c95"
+  },
+  "apps/web/app/api/users/route.ts": {
+    "mtime": 1783862424.0379977,
+    "ast_hash": "c9bb150a00b78b421fb152000f715fa8",
+    "semantic_hash": "c9bb150a00b78b421fb152000f715fa8"
+  },
+  "apps/web/app/auth/callback/route.ts": {
+    "mtime": 1783862424.038287,
+    "ast_hash": "f4dcee8cb0f94d2cc130522d7812f652",
+    "semantic_hash": "f4dcee8cb0f94d2cc130522d7812f652"
+  },
+  "apps/web/app/bug-budget/[id]/page.tsx": {
+    "mtime": 1783768398.700601,
+    "ast_hash": "245b643806b75832d0c4631dfa87c466",
+    "semantic_hash": "245b643806b75832d0c4631dfa87c466"
+  },
+  "apps/web/app/bug-budget/export/csv/route.ts": {
+    "mtime": 1783759061.5935771,
+    "ast_hash": "3a462703e324253be874629aff44917c",
+    "semantic_hash": "3a462703e324253be874629aff44917c"
+  },
+  "apps/web/app/bug-budget/page.tsx": {
+    "mtime": 1783768398.7009463,
+    "ast_hash": "0dd2f51bef7bfdb6854ca6f515e0ba9e",
+    "semantic_hash": "0dd2f51bef7bfdb6854ca6f515e0ba9e"
+  },
+  "apps/web/app/layout.tsx": {
+    "mtime": 1783862424.0386808,
+    "ast_hash": "2593dddd199aa3409db88e65eef7f530",
+    "semantic_hash": "2593dddd199aa3409db88e65eef7f530"
+  },
+  "apps/web/app/leaderboard/page.tsx": {
+    "mtime": 1783954901.7789552,
+    "ast_hash": "f5bd215290f87a88635b60eb46ab3067",
+    "semantic_hash": "f5bd215290f87a88635b60eb46ab3067"
+  },
+  "apps/web/app/page.tsx": {
+    "mtime": 1783768398.7018418,
+    "ast_hash": "4cffaa248e0dc36e532792aa0bb543f2",
+    "semantic_hash": "4cffaa248e0dc36e532792aa0bb543f2"
+  },
+  "apps/web/app/pending-approval/page.tsx": {
+    "mtime": 1783862424.0389953,
+    "ast_hash": "a95d777edd5959bd99db99e0d654030e",
+    "semantic_hash": "a95d777edd5959bd99db99e0d654030e"
+  },
+  "apps/web/app/settings/atlassian/page.tsx": {
+    "mtime": 1784806090.5902133,
+    "ast_hash": "7ab1f8e03a0d1726f75cc47efbbb42c7",
+    "semantic_hash": "7ab1f8e03a0d1726f75cc47efbbb42c7"
+  },
+  "apps/web/app/settings/users/page.tsx": {
+    "mtime": 1783853918.146335,
+    "ast_hash": "4e3a2bf0609bc8412ab7b7c8f8e21469",
+    "semantic_hash": "4e3a2bf0609bc8412ab7b7c8f8e21469"
+  },
+  "apps/web/app/sign-in/page.tsx": {
+    "mtime": 1783853918.013952,
+    "ast_hash": "c7bf40ebdc3bde8fca6c3ce0745401f0",
+    "semantic_hash": "c7bf40ebdc3bde8fca6c3ce0745401f0"
+  },
+  "apps/web/app/signed-out/page.tsx": {
+    "mtime": 1783853918.01411,
+    "ast_hash": "07e1b9a64f1d773ee6878ec54a763971",
+    "semantic_hash": "07e1b9a64f1d773ee6878ec54a763971"
+  },
+  "apps/web/app/tracker/page.tsx": {
+    "mtime": 1783853851.3395705,
+    "ast_hash": "7d9a7161cddcc68155eb98ddb81dccb8",
+    "semantic_hash": "7d9a7161cddcc68155eb98ddb81dccb8"
+  },
+  "apps/web/components/analytics/analytics-filters.tsx": {
+    "mtime": 1783825167.9449844,
+    "ast_hash": "73f87fdd6c436e8d11f95e0cb63c03ee",
+    "semantic_hash": "73f87fdd6c436e8d11f95e0cb63c03ee"
+  },
+  "apps/web/components/analytics/cost-quality-panel.tsx": {
+    "mtime": 1783964158.0795207,
+    "ast_hash": "af09353a9552c0cc22766c7ca8cc0581",
+    "semantic_hash": "af09353a9552c0cc22766c7ca8cc0581"
+  },
+  "apps/web/components/analytics/defect-analytics-dashboard.tsx": {
+    "mtime": 1784806090.5906632,
+    "ast_hash": "230e5b3384112af97c7a970a2c976ec7",
+    "semantic_hash": "230e5b3384112af97c7a970a2c976ec7"
+  },
+  "apps/web/components/analytics/distribution-panel.tsx": {
+    "mtime": 1783964158.0803611,
+    "ast_hash": "394fd3c61d9617c9cf06fa03be156184",
+    "semantic_hash": "394fd3c61d9617c9cf06fa03be156184"
+  },
+  "apps/web/components/analytics/mttr-panel.tsx": {
+    "mtime": 1783964158.0816886,
+    "ast_hash": "40fd62af4cadd06232d13e9c9d94eae1",
+    "semantic_hash": "40fd62af4cadd06232d13e9c9d94eae1"
+  },
+  "apps/web/components/analytics/period-detail-panel.tsx": {
+    "mtime": 1783825167.94523,
+    "ast_hash": "2d9aa0b72ee7095389d1409b1145f2ca",
+    "semantic_hash": "2d9aa0b72ee7095389d1409b1145f2ca"
+  },
+  "apps/web/components/analytics/risk-panel.tsx": {
+    "mtime": 1783958561.7244291,
+    "ast_hash": "bd715ebbb3b7187a2ba332d74c5f34b4",
+    "semantic_hash": "bd715ebbb3b7187a2ba332d74c5f34b4"
+  },
+  "apps/web/components/analytics/summary-cards.tsx": {
+    "mtime": 1783825167.9453814,
+    "ast_hash": "7255a07c37e9c992368ede2f6622208b",
+    "semantic_hash": "7255a07c37e9c992368ede2f6622208b"
+  },
+  "apps/web/components/analytics/trend-chart.tsx": {
+    "mtime": 1783964158.0824983,
+    "ast_hash": "fb0ba3b347b0c213b64fc978c82a248c",
+    "semantic_hash": "fb0ba3b347b0c213b64fc978c82a248c"
+  },
+  "apps/web/components/analytics/triage-panel.tsx": {
+    "mtime": 1783964158.0830972,
+    "ast_hash": "b018f6f2b464c08efb3a661ebaa67450",
+    "semantic_hash": "b018f6f2b464c08efb3a661ebaa67450"
+  },
+  "apps/web/components/auth/sign-in-form.tsx": {
+    "mtime": 1783862424.0395093,
+    "ast_hash": "5ee6f2bcdf9fa01c483b331bf8007151",
+    "semantic_hash": "5ee6f2bcdf9fa01c483b331bf8007151"
+  },
+  "apps/web/components/bug-budget/bug-budget-dashboard.tsx": {
+    "mtime": 1783865873.651191,
+    "ast_hash": "ae876ce62dd1c7bd2bf3e98e398d4286",
+    "semantic_hash": "ae876ce62dd1c7bd2bf3e98e398d4286"
+  },
+  "apps/web/components/bug-budget/column-visibility-modal.tsx": {
+    "mtime": 1783768398.703884,
+    "ast_hash": "47d34bf567b5d1f0641306d4b928a38b",
+    "semantic_hash": "47d34bf567b5d1f0641306d4b928a38b"
+  },
+  "apps/web/components/bug-budget/dashboard-header.tsx": {
+    "mtime": 1783768398.7041357,
+    "ast_hash": "9613499a9e874e9a87fce5fb1fcf8f11",
+    "semantic_hash": "9613499a9e874e9a87fce5fb1fcf8f11"
+  },
+  "apps/web/components/bug-budget/filter-panel.tsx": {
+    "mtime": 1783768398.7043784,
+    "ast_hash": "e9b36ded2d058523e3e4ea51d0ba138d",
+    "semantic_hash": "e9b36ded2d058523e3e4ea51d0ba138d"
+  },
+  "apps/web/components/bug-budget/issue-detail.tsx": {
+    "mtime": 1783768398.7046487,
+    "ast_hash": "e0426bb03c83b1450125c38816f12f6c",
+    "semantic_hash": "e0426bb03c83b1450125c38816f12f6c"
+  },
+  "apps/web/components/bug-budget/issues-table.tsx": {
+    "mtime": 1783768398.7049243,
+    "ast_hash": "978901b666ff30fa229fea797e813576",
+    "semantic_hash": "978901b666ff30fa229fea797e813576"
+  },
+  "apps/web/components/bug-budget/scope-banner.tsx": {
+    "mtime": 1783768398.705199,
+    "ast_hash": "e3d071f868e09e7b365fcb082d4cb667",
+    "semantic_hash": "e3d071f868e09e7b365fcb082d4cb667"
+  },
+  "apps/web/components/bug-budget/severity-panel.tsx": {
+    "mtime": 1783768398.7054455,
+    "ast_hash": "96f5ca4c4cdcc9d72642f4b36e9b9da1",
+    "semantic_hash": "96f5ca4c4cdcc9d72642f4b36e9b9da1"
+  },
+  "apps/web/components/bug-budget/stat-cards.tsx": {
+    "mtime": 1783768398.7056656,
+    "ast_hash": "703916488ee6df37ecb71ee219938fee",
+    "semantic_hash": "703916488ee6df37ecb71ee219938fee"
+  },
+  "apps/web/components/bug-budget/summary-modal.tsx": {
+    "mtime": 1783865873.6513503,
+    "ast_hash": "d85ed2d680b7bd123f963ba4668d68c8",
+    "semantic_hash": "d85ed2d680b7bd123f963ba4668d68c8"
+  },
+  "apps/web/components/layout/app-header.tsx": {
+    "mtime": 1783867049.5687413,
+    "ast_hash": "8b801db1d3c4e412f72e2aa18cb8300f",
+    "semantic_hash": "8b801db1d3c4e412f72e2aa18cb8300f"
+  },
+  "apps/web/components/leaderboard/leaderboard-dashboard.tsx": {
+    "mtime": 1784806090.5912883,
+    "ast_hash": "0476acd43af9ca6d9d673a8b0f6571c9",
+    "semantic_hash": "0476acd43af9ca6d9d673a8b0f6571c9"
+  },
+  "apps/web/components/settings/atlassian-settings.tsx": {
+    "mtime": 1784806090.5917013,
+    "ast_hash": "012162a98c7d4557c20576090f643a31",
+    "semantic_hash": "012162a98c7d4557c20576090f643a31"
+  },
+  "apps/web/components/settings/tabs/analytics-tab.tsx": {
+    "mtime": 1783964158.0846956,
+    "ast_hash": "45f671a8fe859bc163f134d5450aefad",
+    "semantic_hash": "45f671a8fe859bc163f134d5450aefad"
+  },
+  "apps/web/components/settings/tabs/atlassian-tab.tsx": {
+    "mtime": 1783759061.5953078,
+    "ast_hash": "1f9b6e7d16b05199f7cc95648edfafd8",
+    "semantic_hash": "1f9b6e7d16b05199f7cc95648edfafd8"
+  },
+  "apps/web/components/settings/tabs/bug-budget-tab.tsx": {
+    "mtime": 1783759061.5955317,
+    "ast_hash": "6dcb757a83e346b81ae8181273d3cf0a",
+    "semantic_hash": "6dcb757a83e346b81ae8181273d3cf0a"
+  },
+  "apps/web/components/settings/users-admin.tsx": {
+    "mtime": 1783862424.0403032,
+    "ast_hash": "27d0f303aadf0bf02099308f202d2cbf",
+    "semantic_hash": "27d0f303aadf0bf02099308f202d2cbf"
+  },
+  "apps/web/components/tracker/defect-tracker-dashboard.tsx": {
+    "mtime": 1783964158.0852094,
+    "ast_hash": "f9c1e671caa82c920e52607063ccab2a",
+    "semantic_hash": "f9c1e671caa82c920e52607063ccab2a"
+  },
+  "apps/web/components/tracker/tracker-field-settings-modal.tsx": {
+    "mtime": 1783862424.0408509,
+    "ast_hash": "dac5ce629ac9723d12549f5ab9015e67",
+    "semantic_hash": "dac5ce629ac9723d12549f5ab9015e67"
+  },
+  "apps/web/components/tracker/tracker-filters.tsx": {
+    "mtime": 1783964158.086133,
+    "ast_hash": "eea6b32870fda1e259ade6eda61dd70e",
+    "semantic_hash": "eea6b32870fda1e259ade6eda61dd70e"
+  },
+  "apps/web/components/tracker/tracker-table.tsx": {
+    "mtime": 1783862424.0412908,
+    "ast_hash": "15d197ca55ba55c15e73b581dccd5b6f",
+    "semantic_hash": "15d197ca55ba55c15e73b581dccd5b6f"
+  },
+  "apps/web/components/tracker/tracker-tabs.tsx": {
+    "mtime": 1783862424.0414512,
+    "ast_hash": "d9cd4e0b63ab2ddf86ac8127c2621856",
+    "semantic_hash": "d9cd4e0b63ab2ddf86ac8127c2621856"
+  },
+  "apps/web/lib/analytics-cache.ts": {
+    "mtime": 1783964158.087074,
+    "ast_hash": "34e309da9763573dcff877a0808586bb",
+    "semantic_hash": "34e309da9763573dcff877a0808586bb"
+  },
+  "apps/web/lib/analytics-params.ts": {
+    "mtime": 1783825167.9456475,
+    "ast_hash": "4bdc27085e072fe212133cbe44153e1d",
+    "semantic_hash": "4bdc27085e072fe212133cbe44153e1d"
+  },
+  "apps/web/lib/api-client.ts": {
+    "mtime": 1783759061.595732,
+    "ast_hash": "1fb1ef0c9368fbe17dfa20a5b1423485",
+    "semantic_hash": "1fb1ef0c9368fbe17dfa20a5b1423485"
+  },
+  "apps/web/lib/audit.ts": {
+    "mtime": 1783815888.1040905,
+    "ast_hash": "32562b4f399989a8623cfacbec377e32",
+    "semantic_hash": "32562b4f399989a8623cfacbec377e32"
+  },
+  "apps/web/lib/auth-map.test.ts": {
+    "mtime": 1783862424.0417259,
+    "ast_hash": "72229b22ab68bd583e45acc72d58eeb3",
+    "semantic_hash": "72229b22ab68bd583e45acc72d58eeb3"
+  },
+  "apps/web/lib/auth-map.ts": {
+    "mtime": 1783862424.04188,
+    "ast_hash": "77288d0b547dcfb13f4866fac7aeec73",
+    "semantic_hash": "77288d0b547dcfb13f4866fac7aeec73"
+  },
+  "apps/web/lib/auth.ts": {
+    "mtime": 1783862424.042134,
+    "ast_hash": "c3093c289976a8095f3e607a422aa2f0",
+    "semantic_hash": "c3093c289976a8095f3e607a422aa2f0"
+  },
+  "apps/web/lib/bug-budget-columns.ts": {
+    "mtime": 1783768398.707291,
+    "ast_hash": "c5f15948a386c458acd0d0e1d46d7da2",
+    "semantic_hash": "c5f15948a386c458acd0d0e1d46d7da2"
+  },
+  "apps/web/lib/bug-budget-params.ts": {
+    "mtime": 1783759061.5960176,
+    "ast_hash": "2efb37e8c45b0c300fa68cc0e4c1b5a0",
+    "semantic_hash": "2efb37e8c45b0c300fa68cc0e4c1b5a0"
+  },
+  "apps/web/lib/bug-budget-types.ts": {
+    "mtime": 1783768398.7074988,
+    "ast_hash": "1ee8e15e5acd797d5b1953322b745ef1",
+    "semantic_hash": "1ee8e15e5acd797d5b1953322b745ef1"
+  },
+  "apps/web/lib/bug-budget-url.ts": {
+    "mtime": 1783768398.7076643,
+    "ast_hash": "b9e2acdaae4d9bede24d096a0c4d6bbd",
+    "semantic_hash": "b9e2acdaae4d9bede24d096a0c4d6bbd"
+  },
+  "apps/web/lib/health.ts": {
+    "mtime": 1783815888.1042595,
+    "ast_hash": "7c13e4ec8f47a151e4bb5ea02f9e32d9",
+    "semantic_hash": "7c13e4ec8f47a151e4bb5ea02f9e32d9"
+  },
+  "apps/web/lib/leaderboard-map.ts": {
+    "mtime": 1784806090.592067,
+    "ast_hash": "7596afa1bc92be2b36c04550f484467e",
+    "semantic_hash": "7596afa1bc92be2b36c04550f484467e"
+  },
+  "apps/web/lib/leaderboard-params.ts": {
+    "mtime": 1783862424.0423877,
+    "ast_hash": "df56f2c66dad489f669e315f5aefc5d8",
+    "semantic_hash": "df56f2c66dad489f669e315f5aefc5d8"
+  },
+  "apps/web/lib/load-leaderboard.ts": {
+    "mtime": 1783954901.7797234,
+    "ast_hash": "a31bf24a8c83fc80f3c68c8f1c349219",
+    "semantic_hash": "a31bf24a8c83fc80f3c68c8f1c349219"
+  },
+  "apps/web/lib/supabase/browser.ts": {
+    "mtime": 1783853917.979098,
+    "ast_hash": "eb26768a3d31f1f213ff14331e0b242f",
+    "semantic_hash": "eb26768a3d31f1f213ff14331e0b242f"
+  },
+  "apps/web/lib/supabase/env.ts": {
+    "mtime": 1783853917.979209,
+    "ast_hash": "aa67df5460db6f1b460d81f4e948d5dc",
+    "semantic_hash": "aa67df5460db6f1b460d81f4e948d5dc"
+  },
+  "apps/web/lib/supabase/middleware.ts": {
+    "mtime": 1783853917.9793036,
+    "ast_hash": "26c58f29c9cc311a262a1f60341884ee",
+    "semantic_hash": "26c58f29c9cc311a262a1f60341884ee"
+  },
+  "apps/web/lib/supabase/server.ts": {
+    "mtime": 1783853917.9793959,
+    "ast_hash": "c600db46b0f60ca82ea1f48d6f56a124",
+    "semantic_hash": "c600db46b0f60ca82ea1f48d6f56a124"
+  },
+  "apps/web/lib/sync-params.ts": {
+    "mtime": 1783759061.5961332,
+    "ast_hash": "eaba91d2abae67175e5001ff56e5693e",
+    "semantic_hash": "eaba91d2abae67175e5001ff56e5693e"
+  },
+  "apps/web/lib/tracker-params.ts": {
+    "mtime": 1783964158.0877278,
+    "ast_hash": "300aca1328e71bcdc7b46999824f3880",
+    "semantic_hash": "300aca1328e71bcdc7b46999824f3880"
+  },
+  "apps/web/middleware.ts": {
+    "mtime": 1783862424.0426915,
+    "ast_hash": "616ede56a6bdf17da7498bc3ec47f2ab",
+    "semantic_hash": "616ede56a6bdf17da7498bc3ec47f2ab"
+  },
+  "apps/web/next-env.d.ts": {
+    "mtime": 1783733211.995775,
+    "ast_hash": "ba64ff7d54714a8f64db89b1003207d8",
+    "semantic_hash": "ba64ff7d54714a8f64db89b1003207d8"
+  },
+  "apps/web/next.config.ts": {
+    "mtime": 1783862424.042831,
+    "ast_hash": "f80dec197236989895362241f4d15544",
+    "semantic_hash": "f80dec197236989895362241f4d15544"
+  },
+  "apps/web/package.json": {
+    "mtime": 1783853917.9632256,
+    "ast_hash": "b01ec7633f5f155a8f583273bf941ddd",
+    "semantic_hash": "b01ec7633f5f155a8f583273bf941ddd"
+  },
+  "apps/web/tsconfig.json": {
+    "mtime": 1783759061.5966947,
+    "ast_hash": "077abbf51cf72f481dcc93fee93c8bd0",
+    "semantic_hash": "077abbf51cf72f481dcc93fee93c8bd0"
+  },
+  "apps/web/vercel.json": {
+    "mtime": 1783862424.0429363,
+    "ast_hash": "4188dd8d6b745cca5d443108639b1fe2",
+    "semantic_hash": "4188dd8d6b745cca5d443108639b1fe2"
+  },
+  "apps/web/vitest.config.ts": {
+    "mtime": 1783853917.9633281,
+    "ast_hash": "edf5c836b6bdf35cacefddb14f18aa0e",
+    "semantic_hash": "edf5c836b6bdf35cacefddb14f18aa0e"
+  },
+  "package.json": {
+    "mtime": 1783821691.4210238,
+    "ast_hash": "88b62405d5c7728dfed0f9452eeec581",
+    "semantic_hash": "88b62405d5c7728dfed0f9452eeec581"
+  },
+  "packages/domain/package.json": {
+    "mtime": 1783733097.9285545,
+    "ast_hash": "90bc30f1da817a0368595644d44b2902",
+    "semantic_hash": "90bc30f1da817a0368595644d44b2902"
+  },
+  "packages/domain/src/age/business-days.test.ts": {
+    "mtime": 1783759061.5972204,
+    "ast_hash": "6e98d6bcac7f150947471908501c01ff",
+    "semantic_hash": "6e98d6bcac7f150947471908501c01ff"
+  },
+  "packages/domain/src/age/business-days.ts": {
+    "mtime": 1783759061.5973666,
+    "ast_hash": "d23a9ea3a1b2dd3befca6a7d2dea5c3f",
+    "semantic_hash": "d23a9ea3a1b2dd3befca6a7d2dea5c3f"
+  },
+  "packages/domain/src/analytics/contract.test.ts": {
+    "mtime": 1783964158.0882382,
+    "ast_hash": "5fb9f23943db2a320a76cc49efe7a0e7",
+    "semantic_hash": "5fb9f23943db2a320a76cc49efe7a0e7"
+  },
+  "packages/domain/src/analytics/csv.test.ts": {
+    "mtime": 1783964158.0889204,
+    "ast_hash": "79fe21491d017b29c43530cdc99594ff",
+    "semantic_hash": "79fe21491d017b29c43530cdc99594ff"
+  },
+  "packages/domain/src/analytics/csv.ts": {
+    "mtime": 1783964158.0891213,
+    "ast_hash": "6ffe5c47ea86ad285e86896d9f88d07b",
+    "semantic_hash": "6ffe5c47ea86ad285e86896d9f88d07b"
+  },
+  "packages/domain/src/analytics/digest.test.ts": {
+    "mtime": 1784806090.5925927,
+    "ast_hash": "d8d4264d185e9b2b358c4ac3c6071cd8",
+    "semantic_hash": "d8d4264d185e9b2b358c4ac3c6071cd8"
+  },
+  "packages/domain/src/analytics/digest.ts": {
+    "mtime": 1783964158.0895274,
+    "ast_hash": "89b5fb13ca7ac1ac2320cd73a7485583",
+    "semantic_hash": "89b5fb13ca7ac1ac2320cd73a7485583"
+  },
+  "packages/domain/src/analytics/distribution.test.ts": {
+    "mtime": 1783964158.0898435,
+    "ast_hash": "aa7b15710bf8d19b62e16c87e818af39",
+    "semantic_hash": "aa7b15710bf8d19b62e16c87e818af39"
+  },
+  "packages/domain/src/analytics/distribution.ts": {
+    "mtime": 1783964158.0904148,
+    "ast_hash": "0f7f4523099375495c34df4ab48eb5bc",
+    "semantic_hash": "0f7f4523099375495c34df4ab48eb5bc"
+  },
+  "packages/domain/src/analytics/escape.test.ts": {
+    "mtime": 1783964158.091019,
+    "ast_hash": "993e7e4ad3c918297a15df4e00e03410",
+    "semantic_hash": "993e7e4ad3c918297a15df4e00e03410"
+  },
+  "packages/domain/src/analytics/escape.ts": {
+    "mtime": 1783964158.0913558,
+    "ast_hash": "ba6bfe7dad8342af18aa17e8ba15d60b",
+    "semantic_hash": "ba6bfe7dad8342af18aa17e8ba15d60b"
+  },
+  "packages/domain/src/analytics/filter.test.ts": {
+    "mtime": 1783864385.516481,
+    "ast_hash": "5eef921efa4951d8edc2ec04b17187d7",
+    "semantic_hash": "5eef921efa4951d8edc2ec04b17187d7"
+  },
+  "packages/domain/src/analytics/filter.ts": {
+    "mtime": 1783864385.5168266,
+    "ast_hash": "f32590b7f0826a9e46ca3d17ef65d612",
+    "semantic_hash": "f32590b7f0826a9e46ca3d17ef65d612"
+  },
+  "packages/domain/src/analytics/m2.test.ts": {
+    "mtime": 1783825167.9471054,
+    "ast_hash": "b0a8da29df594ea0d885813945df56b9",
+    "semantic_hash": "b0a8da29df594ea0d885813945df56b9"
+  },
+  "packages/domain/src/analytics/period-detail.ts": {
+    "mtime": 1783825167.9471853,
+    "ast_hash": "0a1a31465b36a1911ac0d5826131ffe3",
+    "semantic_hash": "0a1a31465b36a1911ac0d5826131ffe3"
+  },
+  "packages/domain/src/analytics/resolution.test.ts": {
+    "mtime": 1783964158.0918245,
+    "ast_hash": "27fdc1516466d99580c0cc459671c606",
+    "semantic_hash": "27fdc1516466d99580c0cc459671c606"
+  },
+  "packages/domain/src/analytics/resolution.ts": {
+    "mtime": 1783964158.0922341,
+    "ast_hash": "150622f4517361af6777d65df757d5a3",
+    "semantic_hash": "150622f4517361af6777d65df757d5a3"
+  },
+  "packages/domain/src/analytics/response.test.ts": {
+    "mtime": 1783964158.0926733,
+    "ast_hash": "99e1107bc6a67e717cb9e5f709149630",
+    "semantic_hash": "99e1107bc6a67e717cb9e5f709149630"
+  },
+  "packages/domain/src/analytics/response.ts": {
+    "mtime": 1783964158.0929332,
+    "ast_hash": "319175ca71e1c73620bd8334c42a899c",
+    "semantic_hash": "319175ca71e1c73620bd8334c42a899c"
+  },
+  "packages/domain/src/analytics/risk.test.ts": {
+    "mtime": 1783958561.7259164,
+    "ast_hash": "531524954b0e7b8f06c67dd2874c7a16",
+    "semantic_hash": "531524954b0e7b8f06c67dd2874c7a16"
+  },
+  "packages/domain/src/analytics/risk.ts": {
+    "mtime": 1783958561.7261019,
+    "ast_hash": "ff4a95e6960d6628757cd75f678adca7",
+    "semantic_hash": "ff4a95e6960d6628757cd75f678adca7"
+  },
+  "packages/domain/src/analytics/summary.test.ts": {
+    "mtime": 1783768398.7102003,
+    "ast_hash": "00608a7f62409de341c36c1c521f0963",
+    "semantic_hash": "00608a7f62409de341c36c1c521f0963"
+  },
+  "packages/domain/src/analytics/summary.ts": {
+    "mtime": 1783964158.0933995,
+    "ast_hash": "de3700b23970e5dcfd7e1b92e7d79df9",
+    "semantic_hash": "de3700b23970e5dcfd7e1b92e7d79df9"
+  },
+  "packages/domain/src/analytics/thresholds.test.ts": {
+    "mtime": 1783958561.7273674,
+    "ast_hash": "bc6804b06a4f755365917ee21b6d53c6",
+    "semantic_hash": "bc6804b06a4f755365917ee21b6d53c6"
+  },
+  "packages/domain/src/analytics/thresholds.ts": {
+    "mtime": 1783964158.0937495,
+    "ast_hash": "6381368154b255fc86129bdd4d5f618a",
+    "semantic_hash": "6381368154b255fc86129bdd4d5f618a"
+  },
+  "packages/domain/src/analytics/trends-cost.test.ts": {
+    "mtime": 1783964158.0942767,
+    "ast_hash": "4c82059cb10bede07269d66f491b1c41",
+    "semantic_hash": "4c82059cb10bede07269d66f491b1c41"
+  },
+  "packages/domain/src/analytics/trends.test.ts": {
+    "mtime": 1783768398.7106984,
+    "ast_hash": "844f4b8f3c74cc5dc8e3dd7a1afe6616",
+    "semantic_hash": "844f4b8f3c74cc5dc8e3dd7a1afe6616"
+  },
+  "packages/domain/src/analytics/trends.ts": {
+    "mtime": 1783964158.0952263,
+    "ast_hash": "bbc1ca3441247f57401e19e80ba7201e",
+    "semantic_hash": "bbc1ca3441247f57401e19e80ba7201e"
+  },
+  "packages/domain/src/analytics/types.ts": {
+    "mtime": 1784806090.5930076,
+    "ast_hash": "e1df7f311fb226bd1ed35ea29939813e",
+    "semantic_hash": "e1df7f311fb226bd1ed35ea29939813e"
+  },
+  "packages/domain/src/auth/allowlist.test.ts": {
+    "mtime": 1783862424.0444074,
+    "ast_hash": "9f178e40b814754e84cbec6fda927203",
+    "semantic_hash": "9f178e40b814754e84cbec6fda927203"
+  },
+  "packages/domain/src/auth/allowlist.ts": {
+    "mtime": 1783862424.04452,
+    "ast_hash": "4157b2f0a10aa75759b117589bd15e23",
+    "semantic_hash": "4157b2f0a10aa75759b117589bd15e23"
+  },
+  "packages/domain/src/auth/approval.test.ts": {
+    "mtime": 1783862424.0446799,
+    "ast_hash": "b3e05b06bb039d1c1640a23878fa9540",
+    "semantic_hash": "b3e05b06bb039d1c1640a23878fa9540"
+  },
+  "packages/domain/src/auth/approval.ts": {
+    "mtime": 1783862424.0448136,
+    "ast_hash": "727bda0e38fc154346522e783d409859",
+    "semantic_hash": "727bda0e38fc154346522e783d409859"
+  },
+  "packages/domain/src/badges/colors.ts": {
+    "mtime": 1783759061.5975306,
+    "ast_hash": "cf5d513fb53d083253495c6022d73ef9",
+    "semantic_hash": "cf5d513fb53d083253495c6022d73ef9"
+  },
+  "packages/domain/src/budget/cost.test.ts": {
+    "mtime": 1783759061.5977128,
+    "ast_hash": "764815ebf71a7f916fe1176a87f8046c",
+    "semantic_hash": "764815ebf71a7f916fe1176a87f8046c"
+  },
+  "packages/domain/src/budget/cost.ts": {
+    "mtime": 1783759061.5978866,
+    "ast_hash": "ec8ff52f345e7c5337dd38b0db93eace",
+    "semantic_hash": "ec8ff52f345e7c5337dd38b0db93eace"
+  },
+  "packages/domain/src/budget/is-open.ts": {
+    "mtime": 1783759061.598049,
+    "ast_hash": "139eaa1e9ad917a89ca957dbe4cd928a",
+    "semantic_hash": "139eaa1e9ad917a89ca957dbe4cd928a"
+  },
+  "packages/domain/src/budget/status.ts": {
+    "mtime": 1783759061.5981634,
+    "ast_hash": "1b184bcdd0798316568bc35ae9985ec1",
+    "semantic_hash": "1b184bcdd0798316568bc35ae9985ec1"
+  },
+  "packages/domain/src/budget/summary.ts": {
+    "mtime": 1783759061.5983284,
+    "ast_hash": "daa2a8ed028a83abfeeb377f30c2aafa",
+    "semantic_hash": "daa2a8ed028a83abfeeb377f30c2aafa"
+  },
+  "packages/domain/src/constants/defaults.ts": {
+    "mtime": 1783759061.5985265,
+    "ast_hash": "0b77f32b47a453c03417a142112f87eb",
+    "semantic_hash": "0b77f32b47a453c03417a142112f87eb"
+  },
+  "packages/domain/src/export/csv-export.test.ts": {
+    "mtime": 1783759061.5986967,
+    "ast_hash": "7cad2123861530aa8e6991568a39722b",
+    "semantic_hash": "7cad2123861530aa8e6991568a39722b"
+  },
+  "packages/domain/src/export/csv-export.ts": {
+    "mtime": 1783759061.5988414,
+    "ast_hash": "a7bef5d73080ddabbce6a021b3ef172e",
+    "semantic_hash": "a7bef5d73080ddabbce6a021b3ef172e"
+  },
+  "packages/domain/src/filters/filter-options.test.ts": {
+    "mtime": 1783768398.7113562,
+    "ast_hash": "c12a4892e65c24ba38e7cda9b2898e63",
+    "semantic_hash": "c12a4892e65c24ba38e7cda9b2898e63"
+  },
+  "packages/domain/src/filters/filter-options.ts": {
+    "mtime": 1783768398.7116385,
+    "ast_hash": "e09f87373a578510746bb6626012a717",
+    "semantic_hash": "e09f87373a578510746bb6626012a717"
+  },
+  "packages/domain/src/filters/parse.ts": {
+    "mtime": 1783759061.5990307,
+    "ast_hash": "d57f8de2843689240445d5cdc36ab903",
+    "semantic_hash": "d57f8de2843689240445d5cdc36ab903"
+  },
+  "packages/domain/src/filters/stat-card-patches.test.ts": {
+    "mtime": 1783768398.711833,
+    "ast_hash": "a0feccdd2d767e7e96cf8c150418e9a0",
+    "semantic_hash": "a0feccdd2d767e7e96cf8c150418e9a0"
+  },
+  "packages/domain/src/filters/stat-card-patches.ts": {
+    "mtime": 1783768398.71201,
+    "ast_hash": "c7974e913f0c28d86e10632ea4bafef2",
+    "semantic_hash": "c7974e913f0c28d86e10632ea4bafef2"
+  },
+  "packages/domain/src/filters/stats.ts": {
+    "mtime": 1783759061.5991714,
+    "ast_hash": "fb9ff82753c2538ab7421ae81107073b",
+    "semantic_hash": "fb9ff82753c2538ab7421ae81107073b"
+  },
+  "packages/domain/src/fixtures/appendix-a1.test.ts": {
+    "mtime": 1783759061.599337,
+    "ast_hash": "5cb2bde54371210fca571d0ebe6b2b9d",
+    "semantic_hash": "5cb2bde54371210fca571d0ebe6b2b9d"
+  },
+  "packages/domain/src/fixtures/appendix-a2.test.ts": {
+    "mtime": 1783759061.5995345,
+    "ast_hash": "e58eda98972c935f25668ac340607027",
+    "semantic_hash": "e58eda98972c935f25668ac340607027"
+  },
+  "packages/domain/src/fixtures/appendix-a3.test.ts": {
+    "mtime": 1783759061.5996468,
+    "ast_hash": "dbda784f668c6753266a84b2c36043de",
+    "semantic_hash": "dbda784f668c6753266a84b2c36043de"
+  },
+  "packages/domain/src/index.ts": {
+    "mtime": 1784806090.5933151,
+    "ast_hash": "e972fd7ab9b8d8d22b97a1abf91a93ad",
+    "semantic_hash": "e972fd7ab9b8d8d22b97a1abf91a93ad"
+  },
+  "packages/domain/src/jql/builders.ts": {
+    "mtime": 1783759061.6000943,
+    "ast_hash": "3f45bf59cf4e182d977decf2d14430c8",
+    "semantic_hash": "3f45bf59cf4e182d977decf2d14430c8"
+  },
+  "packages/domain/src/leaderboard/compute.test.ts": {
+    "mtime": 1783862424.0452425,
+    "ast_hash": "92f721602cf333f1e334a613a01e9f31",
+    "semantic_hash": "92f721602cf333f1e334a613a01e9f31"
+  },
+  "packages/domain/src/leaderboard/compute.ts": {
+    "mtime": 1784806090.593677,
+    "ast_hash": "f6ed4ae3b78ac0fb156aa5a2f5492cf8",
+    "semantic_hash": "f6ed4ae3b78ac0fb156aa5a2f5492cf8"
+  },
+  "packages/domain/src/leaderboard/period.ts": {
+    "mtime": 1783862424.0455606,
+    "ast_hash": "5fa0d016dd431b1c4740ccf6319e7aca",
+    "semantic_hash": "5fa0d016dd431b1c4740ccf6319e7aca"
+  },
+  "packages/domain/src/leaderboard/types.ts": {
+    "mtime": 1784806090.5940063,
+    "ast_hash": "9510add6294bcd1065141cc7021345ca",
+    "semantic_hash": "9510add6294bcd1065141cc7021345ca"
+  },
+  "packages/domain/src/schedule/next-run-at.test.ts": {
+    "mtime": 1783815888.107642,
+    "ast_hash": "3ce61ccc56be25bcc710a19fba63be2a",
+    "semantic_hash": "3ce61ccc56be25bcc710a19fba63be2a"
+  },
+  "packages/domain/src/schedule/next-run-at.ts": {
+    "mtime": 1783815888.107838,
+    "ast_hash": "a3aad843a2e7d7ec467e0b185ea205f8",
+    "semantic_hash": "a3aad843a2e7d7ec467e0b185ea205f8"
+  },
+  "packages/domain/src/sync/ac-labels.ts": {
+    "mtime": 1783759061.6002634,
+    "ast_hash": "ad4ceee2cfbea5f5626a897d799cdd09",
+    "semantic_hash": "ad4ceee2cfbea5f5626a897d799cdd09"
+  },
+  "packages/domain/src/sync/sync-run-retention.test.ts": {
+    "mtime": 1783815888.1080015,
+    "ast_hash": "38dff3fbc72597138036afd97eac13e9",
+    "semantic_hash": "38dff3fbc72597138036afd97eac13e9"
+  },
+  "packages/domain/src/sync/sync-run-retention.ts": {
+    "mtime": 1783815888.1082425,
+    "ast_hash": "1ecfe714c320011ff6c12ccdf5bd4124",
+    "semantic_hash": "1ecfe714c320011ff6c12ccdf5bd4124"
+  },
+  "packages/domain/src/sync/transform.ts": {
+    "mtime": 1783853851.3483171,
+    "ast_hash": "64ac788d244399de34a9a5a2819b45f3",
+    "semantic_hash": "64ac788d244399de34a9a5a2819b45f3"
+  },
+  "packages/domain/src/tracker/drill.test.ts": {
+    "mtime": 1783964158.0967126,
+    "ast_hash": "5fbafac292164ca004ecc7f8d47e7121",
+    "semantic_hash": "5fbafac292164ca004ecc7f8d47e7121"
+  },
+  "packages/domain/src/tracker/filter.ts": {
+    "mtime": 1783964158.0971713,
+    "ast_hash": "840d53f86593185a762ed907ceaba04b",
+    "semantic_hash": "840d53f86593185a762ed907ceaba04b"
+  },
+  "packages/domain/src/tracker/linked-test.test.ts": {
+    "mtime": 1783853851.3490732,
+    "ast_hash": "64b6b57d0c16e534ac751b8766e5372b",
+    "semantic_hash": "64b6b57d0c16e534ac751b8766e5372b"
+  },
+  "packages/domain/src/tracker/linked-test.ts": {
+    "mtime": 1783853851.349409,
+    "ast_hash": "94f948d063cf1a04e2b796496bdc266c",
+    "semantic_hash": "94f948d063cf1a04e2b796496bdc266c"
+  },
+  "packages/domain/src/tracker/m2.test.ts": {
+    "mtime": 1783862424.0461414,
+    "ast_hash": "b5cde301edb7c4c8cb8bf5b03c4a5acb",
+    "semantic_hash": "b5cde301edb7c4c8cb8bf5b03c4a5acb"
+  },
+  "packages/domain/src/tracker/missing-fields.ts": {
+    "mtime": 1783862424.046971,
+    "ast_hash": "b1591c967dad792d6875d893fc20e3d5",
+    "semantic_hash": "b1591c967dad792d6875d893fc20e3d5"
+  },
+  "packages/domain/src/tracker/overrides.test.ts": {
+    "mtime": 1783853851.3503795,
+    "ast_hash": "45ba757944bdd6365907dd290f0c0bd1",
+    "semantic_hash": "45ba757944bdd6365907dd290f0c0bd1"
+  },
+  "packages/domain/src/tracker/overrides.ts": {
+    "mtime": 1783853851.3505962,
+    "ast_hash": "8e2e452f506df8ee813bc4d3d8def636",
+    "semantic_hash": "8e2e452f506df8ee813bc4d3d8def636"
+  },
+  "packages/domain/src/tracker/patch.test.ts": {
+    "mtime": 1783853851.3507771,
+    "ast_hash": "af0fa69c5676e9bea44db8bba0f0b9e3",
+    "semantic_hash": "af0fa69c5676e9bea44db8bba0f0b9e3"
+  },
+  "packages/domain/src/tracker/patch.ts": {
+    "mtime": 1783853851.3509557,
+    "ast_hash": "bb25225b825eca7afac5c6d130745b42",
+    "semantic_hash": "bb25225b825eca7afac5c6d130745b42"
+  },
+  "packages/domain/src/tracker/types.ts": {
+    "mtime": 1783964158.0979488,
+    "ast_hash": "073c7b54c29918f991494ac109c6ec76",
+    "semantic_hash": "073c7b54c29918f991494ac109c6ec76"
+  },
+  "packages/domain/tsconfig.json": {
+    "mtime": 1783759061.6006174,
+    "ast_hash": "e16d001475e81affc15414bc72802f32",
+    "semantic_hash": "e16d001475e81affc15414bc72802f32"
+  },
+  "packages/domain/vitest.config.ts": {
+    "mtime": 1783759061.6007607,
+    "ast_hash": "6949c54a5fcac9310ea6aae62df9e2b7",
+    "semantic_hash": "6949c54a5fcac9310ea6aae62df9e2b7"
+  },
+  "packages/infra/package.json": {
+    "mtime": 1783759061.600978,
+    "ast_hash": "780dd3d25e3c4f032b0d1749e47701cf",
+    "semantic_hash": "780dd3d25e3c4f032b0d1749e47701cf"
+  },
+  "packages/infra/src/index.ts": {
+    "mtime": 1783759061.601178,
+    "ast_hash": "419ff5d37a01a9ee6675fe7d4e4b3a3e",
+    "semantic_hash": "419ff5d37a01a9ee6675fe7d4e4b3a3e"
+  },
+  "packages/infra/src/jira/client.ts": {
+    "mtime": 1784806090.5944412,
+    "ast_hash": "f603fa6b98e90cb8cca97648d0942dbf",
+    "semantic_hash": "f603fa6b98e90cb8cca97648d0942dbf"
+  },
+  "packages/infra/src/jira/index.ts": {
+    "mtime": 1783759061.6015747,
+    "ast_hash": "6be1dd54d348d685663fd0bbc476ef87",
+    "semantic_hash": "6be1dd54d348d685663fd0bbc476ef87"
+  },
+  "packages/infra/src/jira/projects.test.ts": {
+    "mtime": 1783759061.6016908,
+    "ast_hash": "821b6d53875166c643c77e39a7ca8c00",
+    "semantic_hash": "821b6d53875166c643c77e39a7ca8c00"
+  },
+  "packages/infra/src/jira/projects.ts": {
+    "mtime": 1783759061.6018395,
+    "ast_hash": "d9edf79ac4846f4892f4ffb73956990d",
+    "semantic_hash": "d9edf79ac4846f4892f4ffb73956990d"
+  },
+  "packages/infra/src/supabase/analytics-settings.ts": {
+    "mtime": 1783964158.0983896,
+    "ast_hash": "4184773656e22f4dfabbb481ca2135e4",
+    "semantic_hash": "4184773656e22f4dfabbb481ca2135e4"
+  },
+  "packages/infra/src/supabase/audit-logs.repository.ts": {
+    "mtime": 1783815888.108453,
+    "ast_hash": "ba18a2191a6e33a6e4b75750a39f52a1",
+    "semantic_hash": "ba18a2191a6e33a6e4b75750a39f52a1"
+  },
+  "packages/infra/src/supabase/auth-allowlist.repository.test.ts": {
+    "mtime": 1783862424.0476596,
+    "ast_hash": "bb0f0406840c8a35198a3d8287c4f0cd",
+    "semantic_hash": "bb0f0406840c8a35198a3d8287c4f0cd"
+  },
+  "packages/infra/src/supabase/auth-allowlist.repository.ts": {
+    "mtime": 1783862424.0477848,
+    "ast_hash": "e3455652bafd6b00af7728089e8b8512",
+    "semantic_hash": "e3455652bafd6b00af7728089e8b8512"
+  },
+  "packages/infra/src/supabase/bug-budget-query.leaderboard.test.ts": {
+    "mtime": 1784806090.5950139,
+    "ast_hash": "06f9f7b61bf62c854160d0d75e1fc90a",
+    "semantic_hash": "06f9f7b61bf62c854160d0d75e1fc90a"
+  },
+  "packages/infra/src/supabase/bug-budget-query.ts": {
+    "mtime": 1784806090.5958698,
+    "ast_hash": "be21d55d31c24ed3946b3b70ac1f39a7",
+    "semantic_hash": "be21d55d31c24ed3946b3b70ac1f39a7"
+  },
+  "packages/infra/src/supabase/bug-budget.repository.overrides.test.ts": {
+    "mtime": 1783853851.3525174,
+    "ast_hash": "71a49a8a318ce9c2b75b609f77ce6064",
+    "semantic_hash": "71a49a8a318ce9c2b75b609f77ce6064"
+  },
+  "packages/infra/src/supabase/bug-budget.repository.ts": {
+    "mtime": 1783853851.3529758,
+    "ast_hash": "25911737ca40b586e9e79cb6e39c47dc",
+    "semantic_hash": "25911737ca40b586e9e79cb6e39c47dc"
+  },
+  "packages/infra/src/supabase/cache.ts": {
+    "mtime": 1783853851.3532395,
+    "ast_hash": "576e7530e04376507eda228b65d4ab27",
+    "semantic_hash": "576e7530e04376507eda228b65d4ab27"
+  },
+  "packages/infra/src/supabase/client.ts": {
+    "mtime": 1783759061.60252,
+    "ast_hash": "615ad768fb22f175ac9562af2418aad4",
+    "semantic_hash": "615ad768fb22f175ac9562af2418aad4"
+  },
+  "packages/infra/src/supabase/config.ts": {
+    "mtime": 1783815888.1087394,
+    "ast_hash": "ffd280b48bbfaa44921101ba92d2cc85",
+    "semantic_hash": "ffd280b48bbfaa44921101ba92d2cc85"
+  },
+  "packages/infra/src/supabase/confluence-settings.test.ts": {
+    "mtime": 1783759061.6028223,
+    "ast_hash": "d779078812344aa4bb597288b9c21ae6",
+    "semantic_hash": "d779078812344aa4bb597288b9c21ae6"
+  },
+  "packages/infra/src/supabase/index.ts": {
+    "mtime": 1784806090.5961883,
+    "ast_hash": "c45f005e69a31819c91a9b252250c8be",
+    "semantic_hash": "c45f005e69a31819c91a9b252250c8be"
+  },
+  "packages/infra/src/supabase/settings-config.ts": {
+    "mtime": 1783759061.6031995,
+    "ast_hash": "f48bb9ed6e05f5e14fab5bf9cff88ef3",
+    "semantic_hash": "f48bb9ed6e05f5e14fab5bf9cff88ef3"
+  },
+  "packages/infra/src/supabase/settings.test.ts": {
+    "mtime": 1783759061.6033812,
+    "ast_hash": "0cf834b565bb09ecb858a9503f66dc88",
+    "semantic_hash": "0cf834b565bb09ecb858a9503f66dc88"
+  },
+  "packages/infra/src/supabase/settings.ts": {
+    "mtime": 1783862424.048879,
+    "ast_hash": "cb8cd3e277a767f6612ec8dea4f9866a",
+    "semantic_hash": "cb8cd3e277a767f6612ec8dea4f9866a"
+  },
+  "packages/infra/src/supabase/sync-query.test.ts": {
+    "mtime": 1783759061.6039488,
+    "ast_hash": "86e844bf301cf0eec2f93eb870243e76",
+    "semantic_hash": "86e844bf301cf0eec2f93eb870243e76"
+  },
+  "packages/infra/src/supabase/sync-runs.repository.ts": {
+    "mtime": 1783815888.1097016,
+    "ast_hash": "0a9e31b75d19f01a976f774c6db5c173",
+    "semantic_hash": "0a9e31b75d19f01a976f774c6db5c173"
+  },
+  "packages/infra/src/supabase/system-user.ts": {
+    "mtime": 1783815888.109957,
+    "ast_hash": "14c1980b08ffac99e560161f391f58e9",
+    "semantic_hash": "14c1980b08ffac99e560161f391f58e9"
+  },
+  "packages/infra/src/supabase/tracker-field-settings.ts": {
+    "mtime": 1783862424.0490534,
+    "ast_hash": "3cde3376986075873311088a878257e7",
+    "semantic_hash": "3cde3376986075873311088a878257e7"
+  },
+  "packages/infra/src/supabase/tracker.repository.ts": {
+    "mtime": 1783964158.0996242,
+    "ast_hash": "6bde1dc8b28cb4d661150cbe60a9f32d",
+    "semantic_hash": "6bde1dc8b28cb4d661150cbe60a9f32d"
+  },
+  "packages/infra/src/supabase/users.repository.test.ts": {
+    "mtime": 1783862424.0494814,
+    "ast_hash": "ab2483b3bb2c196057290fc605b62bce",
+    "semantic_hash": "ab2483b3bb2c196057290fc605b62bce"
+  },
+  "packages/infra/src/supabase/users.repository.ts": {
+    "mtime": 1783862424.0496666,
+    "ast_hash": "b1a09f5348a332bb4f83165f4a87ef79",
+    "semantic_hash": "b1a09f5348a332bb4f83165f4a87ef79"
+  },
+  "packages/infra/src/sync/index.ts": {
+    "mtime": 1783759061.604441,
+    "ast_hash": "9fd5ce60b470098e91979dbf87450375",
+    "semantic_hash": "9fd5ce60b470098e91979dbf87450375"
+  },
+  "packages/infra/src/sync/inline-policy.test.ts": {
+    "mtime": 1783759061.604577,
+    "ast_hash": "22360a20ae2c1bddc46f6d90f93beace",
+    "semantic_hash": "22360a20ae2c1bddc46f6d90f93beace"
+  },
+  "packages/infra/src/sync/inline-policy.ts": {
+    "mtime": 1783759061.6047468,
+    "ast_hash": "d07ffeaeb9586bc309799e3a8aa1d1e7",
+    "semantic_hash": "d07ffeaeb9586bc309799e3a8aa1d1e7"
+  },
+  "packages/infra/src/sync/orchestrator.test.ts": {
+    "mtime": 1783815888.1102083,
+    "ast_hash": "7ce489efdabe61d75757eada6ad31652",
+    "semantic_hash": "7ce489efdabe61d75757eada6ad31652"
+  },
+  "packages/infra/src/sync/orchestrator.ts": {
+    "mtime": 1783815888.1104171,
+    "ast_hash": "105c34904761528837d54c58183ae43f",
+    "semantic_hash": "105c34904761528837d54c58183ae43f"
+  },
+  "packages/infra/tsconfig.json": {
+    "mtime": 1783759061.6052184,
+    "ast_hash": "e16d001475e81affc15414bc72802f32",
+    "semantic_hash": "e16d001475e81affc15414bc72802f32"
+  },
+  "packages/infra/vitest.config.ts": {
+    "mtime": 1783759061.605357,
+    "ast_hash": "4b2848df8b77160cf6da38d0d9333ea3",
+    "semantic_hash": "4b2848df8b77160cf6da38d0d9333ea3"
+  },
+  "packages/jobs/package.json": {
+    "mtime": 1783759061.6055458,
+    "ast_hash": "20e929c6781d4d691450df78b473a908",
+    "semantic_hash": "20e929c6781d4d691450df78b473a908"
+  },
+  "packages/jobs/src/client.ts": {
+    "mtime": 1783759061.605701,
+    "ast_hash": "67ef9718e1c9ec4b2b276bfbebf53ee2",
+    "semantic_hash": "67ef9718e1c9ec4b2b276bfbebf53ee2"
+  },
+  "packages/jobs/src/execute-sync-run.ts": {
+    "mtime": 1783853851.3547914,
+    "ast_hash": "2172053bb7289fd7d3707001eae74038",
+    "semantic_hash": "2172053bb7289fd7d3707001eae74038"
+  },
+  "packages/jobs/src/index.ts": {
+    "mtime": 1783964158.099996,
+    "ast_hash": "492a37be68a84b8a387c589ec476740c",
+    "semantic_hash": "492a37be68a84b8a387c589ec476740c"
+  },
+  "packages/jobs/src/retention-prune.ts": {
+    "mtime": 1783815888.1109545,
+    "ast_hash": "486cbf6065ec4c6457d8fbf2f14bba11",
+    "semantic_hash": "486cbf6065ec4c6457d8fbf2f14bba11"
+  },
+  "packages/jobs/src/scheduler-tick.ts": {
+    "mtime": 1783815888.1111946,
+    "ast_hash": "5e5d40ba03df875bd4ef8b0220cb8c76",
+    "semantic_hash": "5e5d40ba03df875bd4ef8b0220cb8c76"
+  },
+  "packages/jobs/src/stuck-run-sweeper.ts": {
+    "mtime": 1783759061.6061852,
+    "ast_hash": "7bb77cdab8d003d91137a2e827dfd12a",
+    "semantic_hash": "7bb77cdab8d003d91137a2e827dfd12a"
+  },
+  "packages/jobs/src/sync-bug-budget.ts": {
+    "mtime": 1783759061.6063266,
+    "ast_hash": "94e59efe6bfa635806319794e677ea35",
+    "semantic_hash": "94e59efe6bfa635806319794e677ea35"
+  },
+  "packages/jobs/src/weekly-digest.ts": {
+    "mtime": 1783964158.1003428,
+    "ast_hash": "3fd8f6fe81a1ad1d8b759f5c03c07570",
+    "semantic_hash": "3fd8f6fe81a1ad1d8b759f5c03c07570"
+  },
+  "packages/jobs/tsconfig.json": {
+    "mtime": 1783759061.60658,
+    "ast_hash": "cc820f8743994781dd653c2a2666e243",
+    "semantic_hash": "cc820f8743994781dd653c2a2666e243"
+  },
+  "packages/migration/fixtures/legacy-bugbudget-config.json": {
+    "mtime": 1783821691.4212053,
+    "ast_hash": "5a82878f846591c2a087f5b707764e3b",
+    "semantic_hash": "5a82878f846591c2a087f5b707764e3b"
+  },
+  "packages/migration/package.json": {
+    "mtime": 1783821691.421387,
+    "ast_hash": "80bc10daa640bafc987abf7997d8bc83",
+    "semantic_hash": "80bc10daa640bafc987abf7997d8bc83"
+  },
+  "packages/migration/src/checksum.ts": {
+    "mtime": 1783820540.67576,
+    "ast_hash": "07f674ac6e701004bf5bfd2201df5789",
+    "semantic_hash": "07f674ac6e701004bf5bfd2201df5789"
+  },
+  "packages/migration/src/cli.ts": {
+    "mtime": 1783821691.4215543,
+    "ast_hash": "c1a25e4a362740e34144e9f53d2946bb",
+    "semantic_hash": "c1a25e4a362740e34144e9f53d2946bb"
+  },
+  "packages/migration/src/columns.ts": {
+    "mtime": 1783820540.6762576,
+    "ast_hash": "9de84911f6709862fe417fc2c931f29b",
+    "semantic_hash": "9de84911f6709862fe417fc2c931f29b"
+  },
+  "packages/migration/src/copy.ts": {
+    "mtime": 1783821691.4218051,
+    "ast_hash": "0800a3d6282ba826454c0f93e7e80b5a",
+    "semantic_hash": "0800a3d6282ba826454c0f93e7e80b5a"
+  },
+  "packages/migration/src/db.ts": {
+    "mtime": 1783821691.4219468,
+    "ast_hash": "e54c4e451e64a9f5836fd1f3cdff4a84",
+    "semantic_hash": "e54c4e451e64a9f5836fd1f3cdff4a84"
+  },
+  "packages/migration/src/diff.ts": {
+    "mtime": 1783821691.4221377,
+    "ast_hash": "9c6bbed8e6495641634efb3c2237ce99",
+    "semantic_hash": "9c6bbed8e6495641634efb3c2237ce99"
+  },
+  "packages/migration/src/env.ts": {
+    "mtime": 1783820540.6765604,
+    "ast_hash": "d2a864409c869b1480fb4eb53e4e9809",
+    "semantic_hash": "d2a864409c869b1480fb4eb53e4e9809"
+  },
+  "packages/migration/src/legacy-config.ts": {
+    "mtime": 1783821691.422269,
+    "ast_hash": "d72d2791dcc6e65bece89f3e12015590",
+    "semantic_hash": "d72d2791dcc6e65bece89f3e12015590"
+  },
+  "packages/migration/src/reconcile.ts": {
+    "mtime": 1783821691.4224818,
+    "ast_hash": "827ad6b32d7a99dd8578344bb4528360",
+    "semantic_hash": "827ad6b32d7a99dd8578344bb4528360"
+  },
+  "packages/migration/src/settings.test.ts": {
+    "mtime": 1783821691.4226155,
+    "ast_hash": "fad9d8173131016f19f00654e7c1e99e",
+    "semantic_hash": "fad9d8173131016f19f00654e7c1e99e"
+  },
+  "packages/migration/src/settings.ts": {
+    "mtime": 1783821691.4227917,
+    "ast_hash": "8df93be2eb7cb5b15aebc7aebbe5df48",
+    "semantic_hash": "8df93be2eb7cb5b15aebc7aebbe5df48"
+  },
+  "packages/migration/src/transform.test.ts": {
+    "mtime": 1783821691.4231627,
+    "ast_hash": "177fbb6b7343b28ddaeaf10ec15d1ddd",
+    "semantic_hash": "177fbb6b7343b28ddaeaf10ec15d1ddd"
+  },
+  "packages/migration/src/transform.ts": {
+    "mtime": 1783821691.4233806,
+    "ast_hash": "e3b92b91083918906da0fc5bd9f922e2",
+    "semantic_hash": "e3b92b91083918906da0fc5bd9f922e2"
+  },
+  "packages/migration/tsconfig.json": {
+    "mtime": 1783821691.4235647,
+    "ast_hash": "b42e6a3d77bfd526931dfa967ec7b1ec",
+    "semantic_hash": "b42e6a3d77bfd526931dfa967ec7b1ec"
+  },
+  "packages/shared/package.json": {
+    "mtime": 1783733095.0452168,
+    "ast_hash": "20356e28c21000b0d934dd79b00dcf22",
+    "semantic_hash": "20356e28c21000b0d934dd79b00dcf22"
+  },
+  "packages/shared/src/index.ts": {
+    "mtime": 1783733208.0686765,
+    "ast_hash": "a7ff3ab82578dcab378823fb32e28728",
+    "semantic_hash": "a7ff3ab82578dcab378823fb32e28728"
+  },
+  "packages/shared/src/messages.ts": {
+    "mtime": 1783733096.7324476,
+    "ast_hash": "f7456a3d49c2c5bac6f817b24eeb0f54",
+    "semantic_hash": "f7456a3d49c2c5bac6f817b24eeb0f54"
+  },
+  "packages/shared/src/types/index.ts": {
+    "mtime": 1783733097.3025396,
+    "ast_hash": "b8e8878721f8b0efda88ce38044bba2a",
+    "semantic_hash": "b8e8878721f8b0efda88ce38044bba2a"
+  },
+  "packages/shared/tsconfig.json": {
+    "mtime": 1783759061.6067019,
+    "ast_hash": "e16d001475e81affc15414bc72802f32",
+    "semantic_hash": "e16d001475e81affc15414bc72802f32"
+  },
+  "supabase/migrations/20260711000000_initial_schema.sql": {
+    "mtime": 1783733117.4586115,
+    "ast_hash": "69ab6b86dbc26b3bebe872d63a4c78a2",
+    "semantic_hash": "69ab6b86dbc26b3bebe872d63a4c78a2"
+  },
+  "supabase/migrations/20260711000001_rls_policies.sql": {
+    "mtime": 1783733119.6417482,
+    "ast_hash": "9af41297fcdb971a7ad054f57dd15fef",
+    "semantic_hash": "9af41297fcdb971a7ad054f57dd15fef"
+  },
+  "supabase/migrations/20260711000002_seed_data.sql": {
+    "mtime": 1783780966.6884756,
+    "ast_hash": "72927802ffb8d6d7f6e1ae2376a450f8",
+    "semantic_hash": "72927802ffb8d6d7f6e1ae2376a450f8"
+  },
+  "supabase/migrations/20260711000003_health_check_rpc.sql": {
+    "mtime": 1783759061.6078904,
+    "ast_hash": "581e2405fd3527dbff758e1f60027f8d",
+    "semantic_hash": "581e2405fd3527dbff758e1f60027f8d"
+  },
+  "supabase/migrations/20260711000004_seed_automated_system_user.sql": {
+    "mtime": 1783815888.111588,
+    "ast_hash": "e12c9f3b11a00395ca6c288964f8633e",
+    "semantic_hash": "e12c9f3b11a00395ca6c288964f8633e"
+  },
+  "supabase/migrations/20260711210000_jira_token_vault.sql": {
+    "mtime": 1783815888.1117814,
+    "ast_hash": "d3014a8e98d9dfc391633f34b95c7b4a",
+    "semantic_hash": "d3014a8e98d9dfc391633f34b95c7b4a"
+  },
+  "supabase/migrations/20260712000000_tracker_overrides.sql": {
+    "mtime": 1783853851.354992,
+    "ast_hash": "1d7d7b7cb258f2c45378d2d47b10f7ed",
+    "semantic_hash": "1d7d7b7cb258f2c45378d2d47b10f7ed"
+  },
+  "supabase/migrations/20260712120000_auth_approval_allowlist.sql": {
+    "mtime": 1783862424.0501664,
+    "ast_hash": "996e449ee19da3760ae54b11dd232a75",
+    "semantic_hash": "996e449ee19da3760ae54b11dd232a75"
+  },
+  "tsconfig.json": {
+    "mtime": 1783733092.7101362,
+    "ast_hash": "c4f1a87ab52e6b1c617f3da164ea6c7b",
+    "semantic_hash": "c4f1a87ab52e6b1c617f3da164ea6c7b"
+  },
+  "turbo.json": {
+    "mtime": 1783733092.7101402,
+    "ast_hash": "dbc0cf05295206e86657cb42eda5b31a",
+    "semantic_hash": "dbc0cf05295206e86657cb42eda5b31a"
+  },
+  "/Users/emile/Allofresh/Momus/.claude/settings.local.json": {
+    "mtime": 1783991145.4887476,
+    "ast_hash": "d632b949e0a53d88ce6973f32162d6d9",
+    "semantic_hash": "d632b949e0a53d88ce6973f32162d6d9"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/analytics/page.tsx": {
+    "mtime": 1783768398.697814,
+    "ast_hash": "49a3868124cf50fbe5eed31b49cf4c60",
+    "semantic_hash": "49a3868124cf50fbe5eed31b49cf4c60"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/analytics/export/csv/route.ts": {
+    "mtime": 1783964158.0764868,
+    "ast_hash": "9de750c469870e33005a9d801d256cd0",
+    "semantic_hash": "9de750c469870e33005a9d801d256cd0"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/analytics/period-detail/route.ts": {
+    "mtime": 1783825167.9445536,
+    "ast_hash": "f47fd3436ac9c0cab9f9ac79317b1dd9",
+    "semantic_hash": "f47fd3436ac9c0cab9f9ac79317b1dd9"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/analytics/route.ts": {
+    "mtime": 1784806090.5892456,
+    "ast_hash": "b7f321432dd9e2bf4513dc5096c8521c",
+    "semantic_hash": "b7f321432dd9e2bf4513dc5096c8521c"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/auth/ensure-user/route.ts": {
+    "mtime": 1783862424.0362341,
+    "ast_hash": "8f592ead6b7adf4804f42768f46b4e2e",
+    "semantic_hash": "8f592ead6b7adf4804f42768f46b4e2e"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/auth/sign-in/route.ts": {
+    "mtime": 1783853918.0128708,
+    "ast_hash": "78c23a3f36acb7e83aa837133473b78d",
+    "semantic_hash": "78c23a3f36acb7e83aa837133473b78d"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/auth/sign-out/route.ts": {
+    "mtime": 1783853918.0130377,
+    "ast_hash": "f21d7dc4432b3e58097ee8cd16ad1851",
+    "semantic_hash": "f21d7dc4432b3e58097ee8cd16ad1851"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/bug-budget/[id]/route.ts": {
+    "mtime": 1783759061.5871358,
+    "ast_hash": "16e3afd3565df03e0f5b3316a3f55da6",
+    "semantic_hash": "16e3afd3565df03e0f5b3316a3f55da6"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/bug-budget/export/csv/route.ts": {
+    "mtime": 1783759061.587428,
+    "ast_hash": "f1a5462d8c75364b85df1857b4252c4f",
+    "semantic_hash": "f1a5462d8c75364b85df1857b4252c4f"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/bug-budget/open-bug-summary/route.ts": {
+    "mtime": 1783768398.6991813,
+    "ast_hash": "93e35ac3afee2d8ccb745a13f85f6a34",
+    "semantic_hash": "93e35ac3afee2d8ccb745a13f85f6a34"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/bug-budget/open-defect-summary/route.ts": {
+    "mtime": 1783768398.699558,
+    "ast_hash": "6eeff4368f7de9502d93fbd3a7ff79c1",
+    "semantic_hash": "6eeff4368f7de9502d93fbd3a7ff79c1"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/bug-budget/route.ts": {
+    "mtime": 1783768398.6998434,
+    "ast_hash": "c545cad9357b9a0a0b1c82f58599e842",
+    "semantic_hash": "c545cad9357b9a0a0b1c82f58599e842"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/health/route.ts": {
+    "mtime": 1783759061.5882337,
+    "ast_hash": "1a0e6c96da4ceeee6c784ee8b21e32e4",
+    "semantic_hash": "1a0e6c96da4ceeee6c784ee8b21e32e4"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/health/worker/route.ts": {
+    "mtime": 1783815888.1023414,
+    "ast_hash": "1fd9a38737a84b5507881e48eaa5cc79",
+    "semantic_hash": "1fd9a38737a84b5507881e48eaa5cc79"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/inngest/route.ts": {
+    "mtime": 1783954901.778078,
+    "ast_hash": "373854e0df7475ced19041b0b5fccef2",
+    "semantic_hash": "373854e0df7475ced19041b0b5fccef2"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/leaderboard/reporter-issues/route.ts": {
+    "mtime": 1783954901.7784283,
+    "ast_hash": "ca92cd624a5b442b562d11164a22d298",
+    "semantic_hash": "ca92cd624a5b442b562d11164a22d298"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/leaderboard/route.ts": {
+    "mtime": 1783954901.7787461,
+    "ast_hash": "c1c2ae02788ac7d51c0bcbf62d8138d6",
+    "semantic_hash": "c1c2ae02788ac7d51c0bcbf62d8138d6"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/me/route.ts": {
+    "mtime": 1783768398.7001266,
+    "ast_hash": "99f345a80b52d375a701779248c4888b",
+    "semantic_hash": "99f345a80b52d375a701779248c4888b"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/analytics/route.ts": {
+    "mtime": 1783964158.0778046,
+    "ast_hash": "69ebf1cb01f439febb145c5038d61df0",
+    "semantic_hash": "69ebf1cb01f439febb145c5038d61df0"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/auth-allowlist/route.ts": {
+    "mtime": 1783862424.036961,
+    "ast_hash": "7622638d22471d8193a83cd81f0510a7",
+    "semantic_hash": "7622638d22471d8193a83cd81f0510a7"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/config/route.ts": {
+    "mtime": 1783759061.5887127,
+    "ast_hash": "4f4bee60e6e1c66982b184ec57531053",
+    "semantic_hash": "4f4bee60e6e1c66982b184ec57531053"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/connection/route.ts": {
+    "mtime": 1783759061.5889153,
+    "ast_hash": "f06683fd801c1534d6d313e9dcb755ca",
+    "semantic_hash": "f06683fd801c1534d6d313e9dcb755ca"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/cron-schedule/route.ts": {
+    "mtime": 1783815888.102774,
+    "ast_hash": "e2f9939ebe911c2ca1abe702b688b33e",
+    "semantic_hash": "e2f9939ebe911c2ca1abe702b688b33e"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/fetch-from-jira/route.ts": {
+    "mtime": 1783759061.5893621,
+    "ast_hash": "c877eeaf72933d072b78d0dcbeaad712",
+    "semantic_hash": "c877eeaf72933d072b78d0dcbeaad712"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/fetch-projects/route.ts": {
+    "mtime": 1783759061.5895705,
+    "ast_hash": "b5991b97e7af74bbbc9b48134cc1d3ab",
+    "semantic_hash": "b5991b97e7af74bbbc9b48134cc1d3ab"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/get-issue-count/route.ts": {
+    "mtime": 1783759061.5897746,
+    "ast_hash": "05f76cc7ffbc0058be2ed2f950addaa7",
+    "semantic_hash": "05f76cc7ffbc0058be2ed2f950addaa7"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/save-connection/route.ts": {
+    "mtime": 1783815888.1030211,
+    "ast_hash": "45d42b8707e1bf0b8c9bc600d7bacc30",
+    "semantic_hash": "45d42b8707e1bf0b8c9bc600d7bacc30"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/save-multipliers/route.ts": {
+    "mtime": 1783815888.1032965,
+    "ast_hash": "d1b6aece24ebba2490c3e8453e21ce4f",
+    "semantic_hash": "d1b6aece24ebba2490c3e8453e21ce4f"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/save-project-settings/route.ts": {
+    "mtime": 1783815888.1034808,
+    "ast_hash": "72c3e4ee7a4eee2e95c1e033d6d23b25",
+    "semantic_hash": "72c3e4ee7a4eee2e95c1e033d6d23b25"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/save-sync-query/route.ts": {
+    "mtime": 1783815888.103668,
+    "ast_hash": "be4d4c260d243b1cf90c3168fd1c2ccd",
+    "semantic_hash": "be4d4c260d243b1cf90c3168fd1c2ccd"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/sync-activity/route.ts": {
+    "mtime": 1783759061.5916035,
+    "ast_hash": "e0b011720eca36abaf31d9051cd236b2",
+    "semantic_hash": "e0b011720eca36abaf31d9051cd236b2"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/sync-status/[id]/route.ts": {
+    "mtime": 1783759061.5920968,
+    "ast_hash": "3e8fc6a6d0e7d21d630481fdcfee662b",
+    "semantic_hash": "3e8fc6a6d0e7d21d630481fdcfee662b"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/sync-with-database/route.ts": {
+    "mtime": 1783759061.5923662,
+    "ast_hash": "98ddc473f0d2ac6d59c473248aa89e9d",
+    "semantic_hash": "98ddc473f0d2ac6d59c473248aa89e9d"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/sync-with-progress/route.ts": {
+    "mtime": 1783759061.5926762,
+    "ast_hash": "5c330d9ca9535a5f5a908e1e32e1080f",
+    "semantic_hash": "5c330d9ca9535a5f5a908e1e32e1080f"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/bug-budget/test-connection/route.ts": {
+    "mtime": 1783759061.5929427,
+    "ast_hash": "77e29a00476441d18aa8edd06f256028",
+    "semantic_hash": "77e29a00476441d18aa8edd06f256028"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/settings/confluence/route.ts": {
+    "mtime": 1783815888.1039047,
+    "ast_hash": "1d2ae8dd1851a157b36bd76332219a88",
+    "semantic_hash": "1d2ae8dd1851a157b36bd76332219a88"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/tracker/[jiraKey]/route.ts": {
+    "mtime": 1783853851.3374991,
+    "ast_hash": "077265d026aa63c6a49aa6d4dea43cd5",
+    "semantic_hash": "077265d026aa63c6a49aa6d4dea43cd5"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/tracker/field-options/route.ts": {
+    "mtime": 1783862424.037128,
+    "ast_hash": "4aee155e050aa00fb73fb955588d24e7",
+    "semantic_hash": "4aee155e050aa00fb73fb955588d24e7"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/tracker/field-settings/route.ts": {
+    "mtime": 1783862424.0372746,
+    "ast_hash": "a97030010bf51d46dc6d83d61bbf0ed2",
+    "semantic_hash": "a97030010bf51d46dc6d83d61bbf0ed2"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/tracker/route.ts": {
+    "mtime": 1783862424.0374324,
+    "ast_hash": "61aba8af71c7fbd6528c0103ac85aa04",
+    "semantic_hash": "61aba8af71c7fbd6528c0103ac85aa04"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/users/[id]/approve/route.ts": {
+    "mtime": 1783862424.0375776,
+    "ast_hash": "0b3a60d683a5e4f0ee8e2ac14989c6be",
+    "semantic_hash": "0b3a60d683a5e4f0ee8e2ac14989c6be"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/users/[id]/reject/route.ts": {
+    "mtime": 1783862424.0377202,
+    "ast_hash": "4dec2ad0215d273c38da87490df3e68d",
+    "semantic_hash": "4dec2ad0215d273c38da87490df3e68d"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/users/[id]/route.ts": {
+    "mtime": 1783853918.1352093,
+    "ast_hash": "4ce46db6904a6e7a89f00378d8929c95",
+    "semantic_hash": "4ce46db6904a6e7a89f00378d8929c95"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/api/users/route.ts": {
+    "mtime": 1783862424.0379977,
+    "ast_hash": "c9bb150a00b78b421fb152000f715fa8",
+    "semantic_hash": "c9bb150a00b78b421fb152000f715fa8"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/auth/callback/route.ts": {
+    "mtime": 1783862424.038287,
+    "ast_hash": "f4dcee8cb0f94d2cc130522d7812f652",
+    "semantic_hash": "f4dcee8cb0f94d2cc130522d7812f652"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/bug-budget/[id]/page.tsx": {
+    "mtime": 1783768398.700601,
+    "ast_hash": "245b643806b75832d0c4631dfa87c466",
+    "semantic_hash": "245b643806b75832d0c4631dfa87c466"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/bug-budget/export/csv/route.ts": {
+    "mtime": 1783759061.5935771,
+    "ast_hash": "3a462703e324253be874629aff44917c",
+    "semantic_hash": "3a462703e324253be874629aff44917c"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/bug-budget/page.tsx": {
+    "mtime": 1783768398.7009463,
+    "ast_hash": "0dd2f51bef7bfdb6854ca6f515e0ba9e",
+    "semantic_hash": "0dd2f51bef7bfdb6854ca6f515e0ba9e"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/layout.tsx": {
+    "mtime": 1783862424.0386808,
+    "ast_hash": "2593dddd199aa3409db88e65eef7f530",
+    "semantic_hash": "2593dddd199aa3409db88e65eef7f530"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/leaderboard/page.tsx": {
+    "mtime": 1783954901.7789552,
+    "ast_hash": "f5bd215290f87a88635b60eb46ab3067",
+    "semantic_hash": "f5bd215290f87a88635b60eb46ab3067"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/page.tsx": {
+    "mtime": 1783768398.7018418,
+    "ast_hash": "4cffaa248e0dc36e532792aa0bb543f2",
+    "semantic_hash": "4cffaa248e0dc36e532792aa0bb543f2"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/pending-approval/page.tsx": {
+    "mtime": 1783862424.0389953,
+    "ast_hash": "a95d777edd5959bd99db99e0d654030e",
+    "semantic_hash": "a95d777edd5959bd99db99e0d654030e"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/settings/atlassian/page.tsx": {
+    "mtime": 1784806090.5902133,
+    "ast_hash": "7ab1f8e03a0d1726f75cc47efbbb42c7",
+    "semantic_hash": "7ab1f8e03a0d1726f75cc47efbbb42c7"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/settings/users/page.tsx": {
+    "mtime": 1783853918.146335,
+    "ast_hash": "4e3a2bf0609bc8412ab7b7c8f8e21469",
+    "semantic_hash": "4e3a2bf0609bc8412ab7b7c8f8e21469"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/sign-in/page.tsx": {
+    "mtime": 1783853918.013952,
+    "ast_hash": "c7bf40ebdc3bde8fca6c3ce0745401f0",
+    "semantic_hash": "c7bf40ebdc3bde8fca6c3ce0745401f0"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/signed-out/page.tsx": {
+    "mtime": 1783853918.01411,
+    "ast_hash": "07e1b9a64f1d773ee6878ec54a763971",
+    "semantic_hash": "07e1b9a64f1d773ee6878ec54a763971"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/app/tracker/page.tsx": {
+    "mtime": 1783853851.3395705,
+    "ast_hash": "7d9a7161cddcc68155eb98ddb81dccb8",
+    "semantic_hash": "7d9a7161cddcc68155eb98ddb81dccb8"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/analytics-filters.tsx": {
+    "mtime": 1783825167.9449844,
+    "ast_hash": "73f87fdd6c436e8d11f95e0cb63c03ee",
+    "semantic_hash": "73f87fdd6c436e8d11f95e0cb63c03ee"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/cost-quality-panel.tsx": {
+    "mtime": 1783964158.0795207,
+    "ast_hash": "af09353a9552c0cc22766c7ca8cc0581",
+    "semantic_hash": "af09353a9552c0cc22766c7ca8cc0581"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/defect-analytics-dashboard.tsx": {
+    "mtime": 1784806090.5906632,
+    "ast_hash": "230e5b3384112af97c7a970a2c976ec7",
+    "semantic_hash": "230e5b3384112af97c7a970a2c976ec7"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/distribution-panel.tsx": {
+    "mtime": 1783964158.0803611,
+    "ast_hash": "394fd3c61d9617c9cf06fa03be156184",
+    "semantic_hash": "394fd3c61d9617c9cf06fa03be156184"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/mttr-panel.tsx": {
+    "mtime": 1783964158.0816886,
+    "ast_hash": "40fd62af4cadd06232d13e9c9d94eae1",
+    "semantic_hash": "40fd62af4cadd06232d13e9c9d94eae1"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/period-detail-panel.tsx": {
+    "mtime": 1783825167.94523,
+    "ast_hash": "2d9aa0b72ee7095389d1409b1145f2ca",
+    "semantic_hash": "2d9aa0b72ee7095389d1409b1145f2ca"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/risk-panel.tsx": {
+    "mtime": 1783958561.7244291,
+    "ast_hash": "bd715ebbb3b7187a2ba332d74c5f34b4",
+    "semantic_hash": "bd715ebbb3b7187a2ba332d74c5f34b4"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/summary-cards.tsx": {
+    "mtime": 1783825167.9453814,
+    "ast_hash": "7255a07c37e9c992368ede2f6622208b",
+    "semantic_hash": "7255a07c37e9c992368ede2f6622208b"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/trend-chart.tsx": {
+    "mtime": 1783964158.0824983,
+    "ast_hash": "fb0ba3b347b0c213b64fc978c82a248c",
+    "semantic_hash": "fb0ba3b347b0c213b64fc978c82a248c"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/analytics/triage-panel.tsx": {
+    "mtime": 1783964158.0830972,
+    "ast_hash": "b018f6f2b464c08efb3a661ebaa67450",
+    "semantic_hash": "b018f6f2b464c08efb3a661ebaa67450"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/auth/sign-in-form.tsx": {
+    "mtime": 1783862424.0395093,
+    "ast_hash": "5ee6f2bcdf9fa01c483b331bf8007151",
+    "semantic_hash": "5ee6f2bcdf9fa01c483b331bf8007151"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/bug-budget-dashboard.tsx": {
+    "mtime": 1783865873.651191,
+    "ast_hash": "ae876ce62dd1c7bd2bf3e98e398d4286",
+    "semantic_hash": "ae876ce62dd1c7bd2bf3e98e398d4286"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/column-visibility-modal.tsx": {
+    "mtime": 1783768398.703884,
+    "ast_hash": "47d34bf567b5d1f0641306d4b928a38b",
+    "semantic_hash": "47d34bf567b5d1f0641306d4b928a38b"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/dashboard-header.tsx": {
+    "mtime": 1783768398.7041357,
+    "ast_hash": "9613499a9e874e9a87fce5fb1fcf8f11",
+    "semantic_hash": "9613499a9e874e9a87fce5fb1fcf8f11"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/filter-panel.tsx": {
+    "mtime": 1783768398.7043784,
+    "ast_hash": "e9b36ded2d058523e3e4ea51d0ba138d",
+    "semantic_hash": "e9b36ded2d058523e3e4ea51d0ba138d"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/issue-detail.tsx": {
+    "mtime": 1783768398.7046487,
+    "ast_hash": "e0426bb03c83b1450125c38816f12f6c",
+    "semantic_hash": "e0426bb03c83b1450125c38816f12f6c"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/issues-table.tsx": {
+    "mtime": 1783768398.7049243,
+    "ast_hash": "978901b666ff30fa229fea797e813576",
+    "semantic_hash": "978901b666ff30fa229fea797e813576"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/scope-banner.tsx": {
+    "mtime": 1783768398.705199,
+    "ast_hash": "e3d071f868e09e7b365fcb082d4cb667",
+    "semantic_hash": "e3d071f868e09e7b365fcb082d4cb667"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/severity-panel.tsx": {
+    "mtime": 1783768398.7054455,
+    "ast_hash": "96f5ca4c4cdcc9d72642f4b36e9b9da1",
+    "semantic_hash": "96f5ca4c4cdcc9d72642f4b36e9b9da1"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/stat-cards.tsx": {
+    "mtime": 1783768398.7056656,
+    "ast_hash": "703916488ee6df37ecb71ee219938fee",
+    "semantic_hash": "703916488ee6df37ecb71ee219938fee"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/bug-budget/summary-modal.tsx": {
+    "mtime": 1783865873.6513503,
+    "ast_hash": "d85ed2d680b7bd123f963ba4668d68c8",
+    "semantic_hash": "d85ed2d680b7bd123f963ba4668d68c8"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/layout/app-header.tsx": {
+    "mtime": 1783867049.5687413,
+    "ast_hash": "8b801db1d3c4e412f72e2aa18cb8300f",
+    "semantic_hash": "8b801db1d3c4e412f72e2aa18cb8300f"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/leaderboard/leaderboard-dashboard.tsx": {
+    "mtime": 1784806090.5912883,
+    "ast_hash": "0476acd43af9ca6d9d673a8b0f6571c9",
+    "semantic_hash": "0476acd43af9ca6d9d673a8b0f6571c9"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/settings/atlassian-settings.tsx": {
+    "mtime": 1784806090.5917013,
+    "ast_hash": "012162a98c7d4557c20576090f643a31",
+    "semantic_hash": "012162a98c7d4557c20576090f643a31"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/settings/tabs/analytics-tab.tsx": {
+    "mtime": 1783964158.0846956,
+    "ast_hash": "45f671a8fe859bc163f134d5450aefad",
+    "semantic_hash": "45f671a8fe859bc163f134d5450aefad"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/settings/tabs/atlassian-tab.tsx": {
+    "mtime": 1783759061.5953078,
+    "ast_hash": "1f9b6e7d16b05199f7cc95648edfafd8",
+    "semantic_hash": "1f9b6e7d16b05199f7cc95648edfafd8"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/settings/tabs/bug-budget-tab.tsx": {
+    "mtime": 1783759061.5955317,
+    "ast_hash": "6dcb757a83e346b81ae8181273d3cf0a",
+    "semantic_hash": "6dcb757a83e346b81ae8181273d3cf0a"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/settings/users-admin.tsx": {
+    "mtime": 1783862424.0403032,
+    "ast_hash": "27d0f303aadf0bf02099308f202d2cbf",
+    "semantic_hash": "27d0f303aadf0bf02099308f202d2cbf"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/tracker/defect-tracker-dashboard.tsx": {
+    "mtime": 1783964158.0852094,
+    "ast_hash": "f9c1e671caa82c920e52607063ccab2a",
+    "semantic_hash": "f9c1e671caa82c920e52607063ccab2a"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/tracker/tracker-field-settings-modal.tsx": {
+    "mtime": 1783862424.0408509,
+    "ast_hash": "dac5ce629ac9723d12549f5ab9015e67",
+    "semantic_hash": "dac5ce629ac9723d12549f5ab9015e67"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/tracker/tracker-filters.tsx": {
+    "mtime": 1783964158.086133,
+    "ast_hash": "eea6b32870fda1e259ade6eda61dd70e",
+    "semantic_hash": "eea6b32870fda1e259ade6eda61dd70e"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/tracker/tracker-table.tsx": {
+    "mtime": 1783862424.0412908,
+    "ast_hash": "15d197ca55ba55c15e73b581dccd5b6f",
+    "semantic_hash": "15d197ca55ba55c15e73b581dccd5b6f"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/components/tracker/tracker-tabs.tsx": {
+    "mtime": 1783862424.0414512,
+    "ast_hash": "d9cd4e0b63ab2ddf86ac8127c2621856",
+    "semantic_hash": "d9cd4e0b63ab2ddf86ac8127c2621856"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/analytics-cache.ts": {
+    "mtime": 1783964158.087074,
+    "ast_hash": "34e309da9763573dcff877a0808586bb",
+    "semantic_hash": "34e309da9763573dcff877a0808586bb"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/analytics-params.ts": {
+    "mtime": 1783825167.9456475,
+    "ast_hash": "4bdc27085e072fe212133cbe44153e1d",
+    "semantic_hash": "4bdc27085e072fe212133cbe44153e1d"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/api-client.ts": {
+    "mtime": 1783759061.595732,
+    "ast_hash": "1fb1ef0c9368fbe17dfa20a5b1423485",
+    "semantic_hash": "1fb1ef0c9368fbe17dfa20a5b1423485"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/audit.ts": {
+    "mtime": 1783815888.1040905,
+    "ast_hash": "32562b4f399989a8623cfacbec377e32",
+    "semantic_hash": "32562b4f399989a8623cfacbec377e32"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/auth-map.test.ts": {
+    "mtime": 1783862424.0417259,
+    "ast_hash": "72229b22ab68bd583e45acc72d58eeb3",
+    "semantic_hash": "72229b22ab68bd583e45acc72d58eeb3"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/auth-map.ts": {
+    "mtime": 1783862424.04188,
+    "ast_hash": "77288d0b547dcfb13f4866fac7aeec73",
+    "semantic_hash": "77288d0b547dcfb13f4866fac7aeec73"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/auth.ts": {
+    "mtime": 1783862424.042134,
+    "ast_hash": "c3093c289976a8095f3e607a422aa2f0",
+    "semantic_hash": "c3093c289976a8095f3e607a422aa2f0"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/bug-budget-columns.ts": {
+    "mtime": 1783768398.707291,
+    "ast_hash": "c5f15948a386c458acd0d0e1d46d7da2",
+    "semantic_hash": "c5f15948a386c458acd0d0e1d46d7da2"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/bug-budget-params.ts": {
+    "mtime": 1783759061.5960176,
+    "ast_hash": "2efb37e8c45b0c300fa68cc0e4c1b5a0",
+    "semantic_hash": "2efb37e8c45b0c300fa68cc0e4c1b5a0"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/bug-budget-types.ts": {
+    "mtime": 1783768398.7074988,
+    "ast_hash": "1ee8e15e5acd797d5b1953322b745ef1",
+    "semantic_hash": "1ee8e15e5acd797d5b1953322b745ef1"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/bug-budget-url.ts": {
+    "mtime": 1783768398.7076643,
+    "ast_hash": "b9e2acdaae4d9bede24d096a0c4d6bbd",
+    "semantic_hash": "b9e2acdaae4d9bede24d096a0c4d6bbd"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/health.ts": {
+    "mtime": 1783815888.1042595,
+    "ast_hash": "7c13e4ec8f47a151e4bb5ea02f9e32d9",
+    "semantic_hash": "7c13e4ec8f47a151e4bb5ea02f9e32d9"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/leaderboard-map.ts": {
+    "mtime": 1784806090.592067,
+    "ast_hash": "7596afa1bc92be2b36c04550f484467e",
+    "semantic_hash": "7596afa1bc92be2b36c04550f484467e"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/leaderboard-params.ts": {
+    "mtime": 1783862424.0423877,
+    "ast_hash": "df56f2c66dad489f669e315f5aefc5d8",
+    "semantic_hash": "df56f2c66dad489f669e315f5aefc5d8"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/load-leaderboard.ts": {
+    "mtime": 1783954901.7797234,
+    "ast_hash": "a31bf24a8c83fc80f3c68c8f1c349219",
+    "semantic_hash": "a31bf24a8c83fc80f3c68c8f1c349219"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/supabase/browser.ts": {
+    "mtime": 1783853917.979098,
+    "ast_hash": "eb26768a3d31f1f213ff14331e0b242f",
+    "semantic_hash": "eb26768a3d31f1f213ff14331e0b242f"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/supabase/env.ts": {
+    "mtime": 1783853917.979209,
+    "ast_hash": "aa67df5460db6f1b460d81f4e948d5dc",
+    "semantic_hash": "aa67df5460db6f1b460d81f4e948d5dc"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/supabase/middleware.ts": {
+    "mtime": 1783853917.9793036,
+    "ast_hash": "26c58f29c9cc311a262a1f60341884ee",
+    "semantic_hash": "26c58f29c9cc311a262a1f60341884ee"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/supabase/server.ts": {
+    "mtime": 1783853917.9793959,
+    "ast_hash": "c600db46b0f60ca82ea1f48d6f56a124",
+    "semantic_hash": "c600db46b0f60ca82ea1f48d6f56a124"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/sync-params.ts": {
+    "mtime": 1783759061.5961332,
+    "ast_hash": "eaba91d2abae67175e5001ff56e5693e",
+    "semantic_hash": "eaba91d2abae67175e5001ff56e5693e"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/lib/tracker-params.ts": {
+    "mtime": 1783964158.0877278,
+    "ast_hash": "300aca1328e71bcdc7b46999824f3880",
+    "semantic_hash": "300aca1328e71bcdc7b46999824f3880"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/middleware.ts": {
+    "mtime": 1783862424.0426915,
+    "ast_hash": "616ede56a6bdf17da7498bc3ec47f2ab",
+    "semantic_hash": "616ede56a6bdf17da7498bc3ec47f2ab"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/next-env.d.ts": {
+    "mtime": 1783733211.995775,
+    "ast_hash": "ba64ff7d54714a8f64db89b1003207d8",
+    "semantic_hash": "ba64ff7d54714a8f64db89b1003207d8"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/next.config.ts": {
+    "mtime": 1783862424.042831,
+    "ast_hash": "f80dec197236989895362241f4d15544",
+    "semantic_hash": "f80dec197236989895362241f4d15544"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/package.json": {
+    "mtime": 1783853917.9632256,
+    "ast_hash": "b01ec7633f5f155a8f583273bf941ddd",
+    "semantic_hash": "b01ec7633f5f155a8f583273bf941ddd"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/tsconfig.json": {
+    "mtime": 1783759061.5966947,
+    "ast_hash": "077abbf51cf72f481dcc93fee93c8bd0",
+    "semantic_hash": "077abbf51cf72f481dcc93fee93c8bd0"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/vercel.json": {
+    "mtime": 1783862424.0429363,
+    "ast_hash": "4188dd8d6b745cca5d443108639b1fe2",
+    "semantic_hash": "4188dd8d6b745cca5d443108639b1fe2"
+  },
+  "/Users/emile/Allofresh/Momus/apps/web/vitest.config.ts": {
+    "mtime": 1783853917.9633281,
+    "ast_hash": "edf5c836b6bdf35cacefddb14f18aa0e",
+    "semantic_hash": "edf5c836b6bdf35cacefddb14f18aa0e"
+  },
+  "/Users/emile/Allofresh/Momus/package.json": {
+    "mtime": 1783821691.4210238,
+    "ast_hash": "88b62405d5c7728dfed0f9452eeec581",
+    "semantic_hash": "88b62405d5c7728dfed0f9452eeec581"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/package.json": {
+    "mtime": 1783733097.9285545,
+    "ast_hash": "90bc30f1da817a0368595644d44b2902",
+    "semantic_hash": "90bc30f1da817a0368595644d44b2902"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/age/business-days.test.ts": {
+    "mtime": 1783759061.5972204,
+    "ast_hash": "6e98d6bcac7f150947471908501c01ff",
+    "semantic_hash": "6e98d6bcac7f150947471908501c01ff"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/age/business-days.ts": {
+    "mtime": 1783759061.5973666,
+    "ast_hash": "d23a9ea3a1b2dd3befca6a7d2dea5c3f",
+    "semantic_hash": "d23a9ea3a1b2dd3befca6a7d2dea5c3f"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/contract.test.ts": {
+    "mtime": 1783964158.0882382,
+    "ast_hash": "5fb9f23943db2a320a76cc49efe7a0e7",
+    "semantic_hash": "5fb9f23943db2a320a76cc49efe7a0e7"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/csv.test.ts": {
+    "mtime": 1783964158.0889204,
+    "ast_hash": "79fe21491d017b29c43530cdc99594ff",
+    "semantic_hash": "79fe21491d017b29c43530cdc99594ff"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/csv.ts": {
+    "mtime": 1783964158.0891213,
+    "ast_hash": "6ffe5c47ea86ad285e86896d9f88d07b",
+    "semantic_hash": "6ffe5c47ea86ad285e86896d9f88d07b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/digest.test.ts": {
+    "mtime": 1784806090.5925927,
+    "ast_hash": "d8d4264d185e9b2b358c4ac3c6071cd8",
+    "semantic_hash": "d8d4264d185e9b2b358c4ac3c6071cd8"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/digest.ts": {
+    "mtime": 1783964158.0895274,
+    "ast_hash": "89b5fb13ca7ac1ac2320cd73a7485583",
+    "semantic_hash": "89b5fb13ca7ac1ac2320cd73a7485583"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/distribution.test.ts": {
+    "mtime": 1783964158.0898435,
+    "ast_hash": "aa7b15710bf8d19b62e16c87e818af39",
+    "semantic_hash": "aa7b15710bf8d19b62e16c87e818af39"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/distribution.ts": {
+    "mtime": 1783964158.0904148,
+    "ast_hash": "0f7f4523099375495c34df4ab48eb5bc",
+    "semantic_hash": "0f7f4523099375495c34df4ab48eb5bc"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/escape.test.ts": {
+    "mtime": 1783964158.091019,
+    "ast_hash": "993e7e4ad3c918297a15df4e00e03410",
+    "semantic_hash": "993e7e4ad3c918297a15df4e00e03410"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/escape.ts": {
+    "mtime": 1783964158.0913558,
+    "ast_hash": "ba6bfe7dad8342af18aa17e8ba15d60b",
+    "semantic_hash": "ba6bfe7dad8342af18aa17e8ba15d60b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/filter.test.ts": {
+    "mtime": 1783864385.516481,
+    "ast_hash": "5eef921efa4951d8edc2ec04b17187d7",
+    "semantic_hash": "5eef921efa4951d8edc2ec04b17187d7"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/filter.ts": {
+    "mtime": 1783864385.5168266,
+    "ast_hash": "f32590b7f0826a9e46ca3d17ef65d612",
+    "semantic_hash": "f32590b7f0826a9e46ca3d17ef65d612"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/m2.test.ts": {
+    "mtime": 1783825167.9471054,
+    "ast_hash": "b0a8da29df594ea0d885813945df56b9",
+    "semantic_hash": "b0a8da29df594ea0d885813945df56b9"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/period-detail.ts": {
+    "mtime": 1783825167.9471853,
+    "ast_hash": "0a1a31465b36a1911ac0d5826131ffe3",
+    "semantic_hash": "0a1a31465b36a1911ac0d5826131ffe3"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/resolution.test.ts": {
+    "mtime": 1783964158.0918245,
+    "ast_hash": "27fdc1516466d99580c0cc459671c606",
+    "semantic_hash": "27fdc1516466d99580c0cc459671c606"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/resolution.ts": {
+    "mtime": 1783964158.0922341,
+    "ast_hash": "150622f4517361af6777d65df757d5a3",
+    "semantic_hash": "150622f4517361af6777d65df757d5a3"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/response.test.ts": {
+    "mtime": 1783964158.0926733,
+    "ast_hash": "99e1107bc6a67e717cb9e5f709149630",
+    "semantic_hash": "99e1107bc6a67e717cb9e5f709149630"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/response.ts": {
+    "mtime": 1783964158.0929332,
+    "ast_hash": "319175ca71e1c73620bd8334c42a899c",
+    "semantic_hash": "319175ca71e1c73620bd8334c42a899c"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/risk.test.ts": {
+    "mtime": 1783958561.7259164,
+    "ast_hash": "531524954b0e7b8f06c67dd2874c7a16",
+    "semantic_hash": "531524954b0e7b8f06c67dd2874c7a16"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/risk.ts": {
+    "mtime": 1783958561.7261019,
+    "ast_hash": "ff4a95e6960d6628757cd75f678adca7",
+    "semantic_hash": "ff4a95e6960d6628757cd75f678adca7"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/summary.test.ts": {
+    "mtime": 1783768398.7102003,
+    "ast_hash": "00608a7f62409de341c36c1c521f0963",
+    "semantic_hash": "00608a7f62409de341c36c1c521f0963"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/summary.ts": {
+    "mtime": 1783964158.0933995,
+    "ast_hash": "de3700b23970e5dcfd7e1b92e7d79df9",
+    "semantic_hash": "de3700b23970e5dcfd7e1b92e7d79df9"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/thresholds.test.ts": {
+    "mtime": 1783958561.7273674,
+    "ast_hash": "bc6804b06a4f755365917ee21b6d53c6",
+    "semantic_hash": "bc6804b06a4f755365917ee21b6d53c6"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/thresholds.ts": {
+    "mtime": 1783964158.0937495,
+    "ast_hash": "6381368154b255fc86129bdd4d5f618a",
+    "semantic_hash": "6381368154b255fc86129bdd4d5f618a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/trends-cost.test.ts": {
+    "mtime": 1783964158.0942767,
+    "ast_hash": "4c82059cb10bede07269d66f491b1c41",
+    "semantic_hash": "4c82059cb10bede07269d66f491b1c41"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/trends.test.ts": {
+    "mtime": 1783768398.7106984,
+    "ast_hash": "844f4b8f3c74cc5dc8e3dd7a1afe6616",
+    "semantic_hash": "844f4b8f3c74cc5dc8e3dd7a1afe6616"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/trends.ts": {
+    "mtime": 1783964158.0952263,
+    "ast_hash": "bbc1ca3441247f57401e19e80ba7201e",
+    "semantic_hash": "bbc1ca3441247f57401e19e80ba7201e"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/analytics/types.ts": {
+    "mtime": 1784806090.5930076,
+    "ast_hash": "e1df7f311fb226bd1ed35ea29939813e",
+    "semantic_hash": "e1df7f311fb226bd1ed35ea29939813e"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/auth/allowlist.test.ts": {
+    "mtime": 1783862424.0444074,
+    "ast_hash": "9f178e40b814754e84cbec6fda927203",
+    "semantic_hash": "9f178e40b814754e84cbec6fda927203"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/auth/allowlist.ts": {
+    "mtime": 1783862424.04452,
+    "ast_hash": "4157b2f0a10aa75759b117589bd15e23",
+    "semantic_hash": "4157b2f0a10aa75759b117589bd15e23"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/auth/approval.test.ts": {
+    "mtime": 1783862424.0446799,
+    "ast_hash": "b3e05b06bb039d1c1640a23878fa9540",
+    "semantic_hash": "b3e05b06bb039d1c1640a23878fa9540"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/auth/approval.ts": {
+    "mtime": 1783862424.0448136,
+    "ast_hash": "727bda0e38fc154346522e783d409859",
+    "semantic_hash": "727bda0e38fc154346522e783d409859"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/badges/colors.ts": {
+    "mtime": 1783759061.5975306,
+    "ast_hash": "cf5d513fb53d083253495c6022d73ef9",
+    "semantic_hash": "cf5d513fb53d083253495c6022d73ef9"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/budget/cost.test.ts": {
+    "mtime": 1783759061.5977128,
+    "ast_hash": "764815ebf71a7f916fe1176a87f8046c",
+    "semantic_hash": "764815ebf71a7f916fe1176a87f8046c"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/budget/cost.ts": {
+    "mtime": 1783759061.5978866,
+    "ast_hash": "ec8ff52f345e7c5337dd38b0db93eace",
+    "semantic_hash": "ec8ff52f345e7c5337dd38b0db93eace"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/budget/is-open.ts": {
+    "mtime": 1783759061.598049,
+    "ast_hash": "139eaa1e9ad917a89ca957dbe4cd928a",
+    "semantic_hash": "139eaa1e9ad917a89ca957dbe4cd928a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/budget/status.ts": {
+    "mtime": 1783759061.5981634,
+    "ast_hash": "1b184bcdd0798316568bc35ae9985ec1",
+    "semantic_hash": "1b184bcdd0798316568bc35ae9985ec1"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/budget/summary.ts": {
+    "mtime": 1783759061.5983284,
+    "ast_hash": "daa2a8ed028a83abfeeb377f30c2aafa",
+    "semantic_hash": "daa2a8ed028a83abfeeb377f30c2aafa"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/constants/defaults.ts": {
+    "mtime": 1783759061.5985265,
+    "ast_hash": "0b77f32b47a453c03417a142112f87eb",
+    "semantic_hash": "0b77f32b47a453c03417a142112f87eb"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/export/csv-export.test.ts": {
+    "mtime": 1783759061.5986967,
+    "ast_hash": "7cad2123861530aa8e6991568a39722b",
+    "semantic_hash": "7cad2123861530aa8e6991568a39722b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/export/csv-export.ts": {
+    "mtime": 1783759061.5988414,
+    "ast_hash": "a7bef5d73080ddabbce6a021b3ef172e",
+    "semantic_hash": "a7bef5d73080ddabbce6a021b3ef172e"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/filters/filter-options.test.ts": {
+    "mtime": 1783768398.7113562,
+    "ast_hash": "c12a4892e65c24ba38e7cda9b2898e63",
+    "semantic_hash": "c12a4892e65c24ba38e7cda9b2898e63"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/filters/filter-options.ts": {
+    "mtime": 1783768398.7116385,
+    "ast_hash": "e09f87373a578510746bb6626012a717",
+    "semantic_hash": "e09f87373a578510746bb6626012a717"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/filters/parse.ts": {
+    "mtime": 1783759061.5990307,
+    "ast_hash": "d57f8de2843689240445d5cdc36ab903",
+    "semantic_hash": "d57f8de2843689240445d5cdc36ab903"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/filters/stat-card-patches.test.ts": {
+    "mtime": 1783768398.711833,
+    "ast_hash": "a0feccdd2d767e7e96cf8c150418e9a0",
+    "semantic_hash": "a0feccdd2d767e7e96cf8c150418e9a0"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/filters/stat-card-patches.ts": {
+    "mtime": 1783768398.71201,
+    "ast_hash": "c7974e913f0c28d86e10632ea4bafef2",
+    "semantic_hash": "c7974e913f0c28d86e10632ea4bafef2"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/filters/stats.ts": {
+    "mtime": 1783759061.5991714,
+    "ast_hash": "fb9ff82753c2538ab7421ae81107073b",
+    "semantic_hash": "fb9ff82753c2538ab7421ae81107073b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/fixtures/appendix-a1.test.ts": {
+    "mtime": 1783759061.599337,
+    "ast_hash": "5cb2bde54371210fca571d0ebe6b2b9d",
+    "semantic_hash": "5cb2bde54371210fca571d0ebe6b2b9d"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/fixtures/appendix-a2.test.ts": {
+    "mtime": 1783759061.5995345,
+    "ast_hash": "e58eda98972c935f25668ac340607027",
+    "semantic_hash": "e58eda98972c935f25668ac340607027"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/fixtures/appendix-a3.test.ts": {
+    "mtime": 1783759061.5996468,
+    "ast_hash": "dbda784f668c6753266a84b2c36043de",
+    "semantic_hash": "dbda784f668c6753266a84b2c36043de"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/index.ts": {
+    "mtime": 1784806090.5933151,
+    "ast_hash": "e972fd7ab9b8d8d22b97a1abf91a93ad",
+    "semantic_hash": "e972fd7ab9b8d8d22b97a1abf91a93ad"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/jql/builders.ts": {
+    "mtime": 1783759061.6000943,
+    "ast_hash": "3f45bf59cf4e182d977decf2d14430c8",
+    "semantic_hash": "3f45bf59cf4e182d977decf2d14430c8"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/leaderboard/compute.test.ts": {
+    "mtime": 1783862424.0452425,
+    "ast_hash": "92f721602cf333f1e334a613a01e9f31",
+    "semantic_hash": "92f721602cf333f1e334a613a01e9f31"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/leaderboard/compute.ts": {
+    "mtime": 1784806090.593677,
+    "ast_hash": "f6ed4ae3b78ac0fb156aa5a2f5492cf8",
+    "semantic_hash": "f6ed4ae3b78ac0fb156aa5a2f5492cf8"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/leaderboard/period.ts": {
+    "mtime": 1783862424.0455606,
+    "ast_hash": "5fa0d016dd431b1c4740ccf6319e7aca",
+    "semantic_hash": "5fa0d016dd431b1c4740ccf6319e7aca"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/leaderboard/types.ts": {
+    "mtime": 1784806090.5940063,
+    "ast_hash": "9510add6294bcd1065141cc7021345ca",
+    "semantic_hash": "9510add6294bcd1065141cc7021345ca"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/schedule/next-run-at.test.ts": {
+    "mtime": 1783815888.107642,
+    "ast_hash": "3ce61ccc56be25bcc710a19fba63be2a",
+    "semantic_hash": "3ce61ccc56be25bcc710a19fba63be2a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/schedule/next-run-at.ts": {
+    "mtime": 1783815888.107838,
+    "ast_hash": "a3aad843a2e7d7ec467e0b185ea205f8",
+    "semantic_hash": "a3aad843a2e7d7ec467e0b185ea205f8"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/sync/ac-labels.ts": {
+    "mtime": 1783759061.6002634,
+    "ast_hash": "ad4ceee2cfbea5f5626a897d799cdd09",
+    "semantic_hash": "ad4ceee2cfbea5f5626a897d799cdd09"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/sync/sync-run-retention.test.ts": {
+    "mtime": 1783815888.1080015,
+    "ast_hash": "38dff3fbc72597138036afd97eac13e9",
+    "semantic_hash": "38dff3fbc72597138036afd97eac13e9"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/sync/sync-run-retention.ts": {
+    "mtime": 1783815888.1082425,
+    "ast_hash": "1ecfe714c320011ff6c12ccdf5bd4124",
+    "semantic_hash": "1ecfe714c320011ff6c12ccdf5bd4124"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/sync/transform.ts": {
+    "mtime": 1783853851.3483171,
+    "ast_hash": "64ac788d244399de34a9a5a2819b45f3",
+    "semantic_hash": "64ac788d244399de34a9a5a2819b45f3"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/drill.test.ts": {
+    "mtime": 1783964158.0967126,
+    "ast_hash": "5fbafac292164ca004ecc7f8d47e7121",
+    "semantic_hash": "5fbafac292164ca004ecc7f8d47e7121"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/filter.ts": {
+    "mtime": 1783964158.0971713,
+    "ast_hash": "840d53f86593185a762ed907ceaba04b",
+    "semantic_hash": "840d53f86593185a762ed907ceaba04b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/linked-test.test.ts": {
+    "mtime": 1783853851.3490732,
+    "ast_hash": "64b6b57d0c16e534ac751b8766e5372b",
+    "semantic_hash": "64b6b57d0c16e534ac751b8766e5372b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/linked-test.ts": {
+    "mtime": 1783853851.349409,
+    "ast_hash": "94f948d063cf1a04e2b796496bdc266c",
+    "semantic_hash": "94f948d063cf1a04e2b796496bdc266c"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/m2.test.ts": {
+    "mtime": 1783862424.0461414,
+    "ast_hash": "b5cde301edb7c4c8cb8bf5b03c4a5acb",
+    "semantic_hash": "b5cde301edb7c4c8cb8bf5b03c4a5acb"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/missing-fields.ts": {
+    "mtime": 1783862424.046971,
+    "ast_hash": "b1591c967dad792d6875d893fc20e3d5",
+    "semantic_hash": "b1591c967dad792d6875d893fc20e3d5"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/overrides.test.ts": {
+    "mtime": 1783853851.3503795,
+    "ast_hash": "45ba757944bdd6365907dd290f0c0bd1",
+    "semantic_hash": "45ba757944bdd6365907dd290f0c0bd1"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/overrides.ts": {
+    "mtime": 1783853851.3505962,
+    "ast_hash": "8e2e452f506df8ee813bc4d3d8def636",
+    "semantic_hash": "8e2e452f506df8ee813bc4d3d8def636"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/patch.test.ts": {
+    "mtime": 1783853851.3507771,
+    "ast_hash": "af0fa69c5676e9bea44db8bba0f0b9e3",
+    "semantic_hash": "af0fa69c5676e9bea44db8bba0f0b9e3"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/patch.ts": {
+    "mtime": 1783853851.3509557,
+    "ast_hash": "bb25225b825eca7afac5c6d130745b42",
+    "semantic_hash": "bb25225b825eca7afac5c6d130745b42"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/src/tracker/types.ts": {
+    "mtime": 1783964158.0979488,
+    "ast_hash": "073c7b54c29918f991494ac109c6ec76",
+    "semantic_hash": "073c7b54c29918f991494ac109c6ec76"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/tsconfig.json": {
+    "mtime": 1783759061.6006174,
+    "ast_hash": "e16d001475e81affc15414bc72802f32",
+    "semantic_hash": "e16d001475e81affc15414bc72802f32"
+  },
+  "/Users/emile/Allofresh/Momus/packages/domain/vitest.config.ts": {
+    "mtime": 1783759061.6007607,
+    "ast_hash": "6949c54a5fcac9310ea6aae62df9e2b7",
+    "semantic_hash": "6949c54a5fcac9310ea6aae62df9e2b7"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/package.json": {
+    "mtime": 1783759061.600978,
+    "ast_hash": "780dd3d25e3c4f032b0d1749e47701cf",
+    "semantic_hash": "780dd3d25e3c4f032b0d1749e47701cf"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/index.ts": {
+    "mtime": 1783759061.601178,
+    "ast_hash": "419ff5d37a01a9ee6675fe7d4e4b3a3e",
+    "semantic_hash": "419ff5d37a01a9ee6675fe7d4e4b3a3e"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/jira/client.ts": {
+    "mtime": 1784806090.5944412,
+    "ast_hash": "f603fa6b98e90cb8cca97648d0942dbf",
+    "semantic_hash": "f603fa6b98e90cb8cca97648d0942dbf"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/jira/index.ts": {
+    "mtime": 1783759061.6015747,
+    "ast_hash": "6be1dd54d348d685663fd0bbc476ef87",
+    "semantic_hash": "6be1dd54d348d685663fd0bbc476ef87"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/jira/projects.test.ts": {
+    "mtime": 1783759061.6016908,
+    "ast_hash": "821b6d53875166c643c77e39a7ca8c00",
+    "semantic_hash": "821b6d53875166c643c77e39a7ca8c00"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/jira/projects.ts": {
+    "mtime": 1783759061.6018395,
+    "ast_hash": "d9edf79ac4846f4892f4ffb73956990d",
+    "semantic_hash": "d9edf79ac4846f4892f4ffb73956990d"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/analytics-settings.ts": {
+    "mtime": 1783964158.0983896,
+    "ast_hash": "4184773656e22f4dfabbb481ca2135e4",
+    "semantic_hash": "4184773656e22f4dfabbb481ca2135e4"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/audit-logs.repository.ts": {
+    "mtime": 1783815888.108453,
+    "ast_hash": "ba18a2191a6e33a6e4b75750a39f52a1",
+    "semantic_hash": "ba18a2191a6e33a6e4b75750a39f52a1"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/auth-allowlist.repository.test.ts": {
+    "mtime": 1783862424.0476596,
+    "ast_hash": "bb0f0406840c8a35198a3d8287c4f0cd",
+    "semantic_hash": "bb0f0406840c8a35198a3d8287c4f0cd"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/auth-allowlist.repository.ts": {
+    "mtime": 1783862424.0477848,
+    "ast_hash": "e3455652bafd6b00af7728089e8b8512",
+    "semantic_hash": "e3455652bafd6b00af7728089e8b8512"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/bug-budget-query.leaderboard.test.ts": {
+    "mtime": 1784806090.5950139,
+    "ast_hash": "06f9f7b61bf62c854160d0d75e1fc90a",
+    "semantic_hash": "06f9f7b61bf62c854160d0d75e1fc90a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/bug-budget-query.ts": {
+    "mtime": 1784806090.5958698,
+    "ast_hash": "be21d55d31c24ed3946b3b70ac1f39a7",
+    "semantic_hash": "be21d55d31c24ed3946b3b70ac1f39a7"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/bug-budget.repository.overrides.test.ts": {
+    "mtime": 1783853851.3525174,
+    "ast_hash": "71a49a8a318ce9c2b75b609f77ce6064",
+    "semantic_hash": "71a49a8a318ce9c2b75b609f77ce6064"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/bug-budget.repository.ts": {
+    "mtime": 1783853851.3529758,
+    "ast_hash": "25911737ca40b586e9e79cb6e39c47dc",
+    "semantic_hash": "25911737ca40b586e9e79cb6e39c47dc"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/cache.ts": {
+    "mtime": 1783853851.3532395,
+    "ast_hash": "576e7530e04376507eda228b65d4ab27",
+    "semantic_hash": "576e7530e04376507eda228b65d4ab27"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/client.ts": {
+    "mtime": 1783759061.60252,
+    "ast_hash": "615ad768fb22f175ac9562af2418aad4",
+    "semantic_hash": "615ad768fb22f175ac9562af2418aad4"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/config.ts": {
+    "mtime": 1783815888.1087394,
+    "ast_hash": "ffd280b48bbfaa44921101ba92d2cc85",
+    "semantic_hash": "ffd280b48bbfaa44921101ba92d2cc85"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/confluence-settings.test.ts": {
+    "mtime": 1783759061.6028223,
+    "ast_hash": "d779078812344aa4bb597288b9c21ae6",
+    "semantic_hash": "d779078812344aa4bb597288b9c21ae6"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/index.ts": {
+    "mtime": 1784806090.5961883,
+    "ast_hash": "c45f005e69a31819c91a9b252250c8be",
+    "semantic_hash": "c45f005e69a31819c91a9b252250c8be"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/settings-config.ts": {
+    "mtime": 1783759061.6031995,
+    "ast_hash": "f48bb9ed6e05f5e14fab5bf9cff88ef3",
+    "semantic_hash": "f48bb9ed6e05f5e14fab5bf9cff88ef3"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/settings.test.ts": {
+    "mtime": 1783759061.6033812,
+    "ast_hash": "0cf834b565bb09ecb858a9503f66dc88",
+    "semantic_hash": "0cf834b565bb09ecb858a9503f66dc88"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/settings.ts": {
+    "mtime": 1783862424.048879,
+    "ast_hash": "cb8cd3e277a767f6612ec8dea4f9866a",
+    "semantic_hash": "cb8cd3e277a767f6612ec8dea4f9866a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/sync-query.test.ts": {
+    "mtime": 1783759061.6039488,
+    "ast_hash": "86e844bf301cf0eec2f93eb870243e76",
+    "semantic_hash": "86e844bf301cf0eec2f93eb870243e76"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/sync-runs.repository.ts": {
+    "mtime": 1783815888.1097016,
+    "ast_hash": "0a9e31b75d19f01a976f774c6db5c173",
+    "semantic_hash": "0a9e31b75d19f01a976f774c6db5c173"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/system-user.ts": {
+    "mtime": 1783815888.109957,
+    "ast_hash": "14c1980b08ffac99e560161f391f58e9",
+    "semantic_hash": "14c1980b08ffac99e560161f391f58e9"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/tracker-field-settings.ts": {
+    "mtime": 1783862424.0490534,
+    "ast_hash": "3cde3376986075873311088a878257e7",
+    "semantic_hash": "3cde3376986075873311088a878257e7"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/tracker.repository.ts": {
+    "mtime": 1783964158.0996242,
+    "ast_hash": "6bde1dc8b28cb4d661150cbe60a9f32d",
+    "semantic_hash": "6bde1dc8b28cb4d661150cbe60a9f32d"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/users.repository.test.ts": {
+    "mtime": 1783862424.0494814,
+    "ast_hash": "ab2483b3bb2c196057290fc605b62bce",
+    "semantic_hash": "ab2483b3bb2c196057290fc605b62bce"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/supabase/users.repository.ts": {
+    "mtime": 1783862424.0496666,
+    "ast_hash": "b1a09f5348a332bb4f83165f4a87ef79",
+    "semantic_hash": "b1a09f5348a332bb4f83165f4a87ef79"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/sync/index.ts": {
+    "mtime": 1783759061.604441,
+    "ast_hash": "9fd5ce60b470098e91979dbf87450375",
+    "semantic_hash": "9fd5ce60b470098e91979dbf87450375"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/sync/inline-policy.test.ts": {
+    "mtime": 1783759061.604577,
+    "ast_hash": "22360a20ae2c1bddc46f6d90f93beace",
+    "semantic_hash": "22360a20ae2c1bddc46f6d90f93beace"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/sync/inline-policy.ts": {
+    "mtime": 1783759061.6047468,
+    "ast_hash": "d07ffeaeb9586bc309799e3a8aa1d1e7",
+    "semantic_hash": "d07ffeaeb9586bc309799e3a8aa1d1e7"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/sync/orchestrator.test.ts": {
+    "mtime": 1783815888.1102083,
+    "ast_hash": "7ce489efdabe61d75757eada6ad31652",
+    "semantic_hash": "7ce489efdabe61d75757eada6ad31652"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/src/sync/orchestrator.ts": {
+    "mtime": 1783815888.1104171,
+    "ast_hash": "105c34904761528837d54c58183ae43f",
+    "semantic_hash": "105c34904761528837d54c58183ae43f"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/tsconfig.json": {
+    "mtime": 1783759061.6052184,
+    "ast_hash": "e16d001475e81affc15414bc72802f32",
+    "semantic_hash": "e16d001475e81affc15414bc72802f32"
+  },
+  "/Users/emile/Allofresh/Momus/packages/infra/vitest.config.ts": {
+    "mtime": 1783759061.605357,
+    "ast_hash": "4b2848df8b77160cf6da38d0d9333ea3",
+    "semantic_hash": "4b2848df8b77160cf6da38d0d9333ea3"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/package.json": {
+    "mtime": 1783759061.6055458,
+    "ast_hash": "20e929c6781d4d691450df78b473a908",
+    "semantic_hash": "20e929c6781d4d691450df78b473a908"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/client.ts": {
+    "mtime": 1783759061.605701,
+    "ast_hash": "67ef9718e1c9ec4b2b276bfbebf53ee2",
+    "semantic_hash": "67ef9718e1c9ec4b2b276bfbebf53ee2"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/execute-sync-run.ts": {
+    "mtime": 1783853851.3547914,
+    "ast_hash": "2172053bb7289fd7d3707001eae74038",
+    "semantic_hash": "2172053bb7289fd7d3707001eae74038"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/index.ts": {
+    "mtime": 1783964158.099996,
+    "ast_hash": "492a37be68a84b8a387c589ec476740c",
+    "semantic_hash": "492a37be68a84b8a387c589ec476740c"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/retention-prune.ts": {
+    "mtime": 1783815888.1109545,
+    "ast_hash": "486cbf6065ec4c6457d8fbf2f14bba11",
+    "semantic_hash": "486cbf6065ec4c6457d8fbf2f14bba11"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/scheduler-tick.ts": {
+    "mtime": 1783815888.1111946,
+    "ast_hash": "5e5d40ba03df875bd4ef8b0220cb8c76",
+    "semantic_hash": "5e5d40ba03df875bd4ef8b0220cb8c76"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/stuck-run-sweeper.ts": {
+    "mtime": 1783759061.6061852,
+    "ast_hash": "7bb77cdab8d003d91137a2e827dfd12a",
+    "semantic_hash": "7bb77cdab8d003d91137a2e827dfd12a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/sync-bug-budget.ts": {
+    "mtime": 1783759061.6063266,
+    "ast_hash": "94e59efe6bfa635806319794e677ea35",
+    "semantic_hash": "94e59efe6bfa635806319794e677ea35"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/src/weekly-digest.ts": {
+    "mtime": 1783964158.1003428,
+    "ast_hash": "3fd8f6fe81a1ad1d8b759f5c03c07570",
+    "semantic_hash": "3fd8f6fe81a1ad1d8b759f5c03c07570"
+  },
+  "/Users/emile/Allofresh/Momus/packages/jobs/tsconfig.json": {
+    "mtime": 1783759061.60658,
+    "ast_hash": "cc820f8743994781dd653c2a2666e243",
+    "semantic_hash": "cc820f8743994781dd653c2a2666e243"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/fixtures/legacy-bugbudget-config.json": {
+    "mtime": 1783821691.4212053,
+    "ast_hash": "5a82878f846591c2a087f5b707764e3b",
+    "semantic_hash": "5a82878f846591c2a087f5b707764e3b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/package.json": {
+    "mtime": 1783821691.421387,
+    "ast_hash": "80bc10daa640bafc987abf7997d8bc83",
+    "semantic_hash": "80bc10daa640bafc987abf7997d8bc83"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/checksum.ts": {
+    "mtime": 1783820540.67576,
+    "ast_hash": "07f674ac6e701004bf5bfd2201df5789",
+    "semantic_hash": "07f674ac6e701004bf5bfd2201df5789"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/cli.ts": {
+    "mtime": 1783821691.4215543,
+    "ast_hash": "c1a25e4a362740e34144e9f53d2946bb",
+    "semantic_hash": "c1a25e4a362740e34144e9f53d2946bb"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/columns.ts": {
+    "mtime": 1783820540.6762576,
+    "ast_hash": "9de84911f6709862fe417fc2c931f29b",
+    "semantic_hash": "9de84911f6709862fe417fc2c931f29b"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/copy.ts": {
+    "mtime": 1783821691.4218051,
+    "ast_hash": "0800a3d6282ba826454c0f93e7e80b5a",
+    "semantic_hash": "0800a3d6282ba826454c0f93e7e80b5a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/db.ts": {
+    "mtime": 1783821691.4219468,
+    "ast_hash": "e54c4e451e64a9f5836fd1f3cdff4a84",
+    "semantic_hash": "e54c4e451e64a9f5836fd1f3cdff4a84"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/diff.ts": {
+    "mtime": 1783821691.4221377,
+    "ast_hash": "9c6bbed8e6495641634efb3c2237ce99",
+    "semantic_hash": "9c6bbed8e6495641634efb3c2237ce99"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/env.ts": {
+    "mtime": 1783820540.6765604,
+    "ast_hash": "d2a864409c869b1480fb4eb53e4e9809",
+    "semantic_hash": "d2a864409c869b1480fb4eb53e4e9809"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/legacy-config.ts": {
+    "mtime": 1783821691.422269,
+    "ast_hash": "d72d2791dcc6e65bece89f3e12015590",
+    "semantic_hash": "d72d2791dcc6e65bece89f3e12015590"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/reconcile.ts": {
+    "mtime": 1783821691.4224818,
+    "ast_hash": "827ad6b32d7a99dd8578344bb4528360",
+    "semantic_hash": "827ad6b32d7a99dd8578344bb4528360"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/settings.test.ts": {
+    "mtime": 1783821691.4226155,
+    "ast_hash": "fad9d8173131016f19f00654e7c1e99e",
+    "semantic_hash": "fad9d8173131016f19f00654e7c1e99e"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/settings.ts": {
+    "mtime": 1783821691.4227917,
+    "ast_hash": "8df93be2eb7cb5b15aebc7aebbe5df48",
+    "semantic_hash": "8df93be2eb7cb5b15aebc7aebbe5df48"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/transform.test.ts": {
+    "mtime": 1783821691.4231627,
+    "ast_hash": "177fbb6b7343b28ddaeaf10ec15d1ddd",
+    "semantic_hash": "177fbb6b7343b28ddaeaf10ec15d1ddd"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/src/transform.ts": {
+    "mtime": 1783821691.4233806,
+    "ast_hash": "e3b92b91083918906da0fc5bd9f922e2",
+    "semantic_hash": "e3b92b91083918906da0fc5bd9f922e2"
+  },
+  "/Users/emile/Allofresh/Momus/packages/migration/tsconfig.json": {
+    "mtime": 1783821691.4235647,
+    "ast_hash": "b42e6a3d77bfd526931dfa967ec7b1ec",
+    "semantic_hash": "b42e6a3d77bfd526931dfa967ec7b1ec"
+  },
+  "/Users/emile/Allofresh/Momus/packages/shared/package.json": {
+    "mtime": 1783733095.0452168,
+    "ast_hash": "20356e28c21000b0d934dd79b00dcf22",
+    "semantic_hash": "20356e28c21000b0d934dd79b00dcf22"
+  },
+  "/Users/emile/Allofresh/Momus/packages/shared/src/index.ts": {
+    "mtime": 1783733208.0686765,
+    "ast_hash": "a7ff3ab82578dcab378823fb32e28728",
+    "semantic_hash": "a7ff3ab82578dcab378823fb32e28728"
+  },
+  "/Users/emile/Allofresh/Momus/packages/shared/src/messages.ts": {
+    "mtime": 1783733096.7324476,
+    "ast_hash": "f7456a3d49c2c5bac6f817b24eeb0f54",
+    "semantic_hash": "f7456a3d49c2c5bac6f817b24eeb0f54"
+  },
+  "/Users/emile/Allofresh/Momus/packages/shared/src/types/index.ts": {
+    "mtime": 1783733097.3025396,
+    "ast_hash": "b8e8878721f8b0efda88ce38044bba2a",
+    "semantic_hash": "b8e8878721f8b0efda88ce38044bba2a"
+  },
+  "/Users/emile/Allofresh/Momus/packages/shared/tsconfig.json": {
+    "mtime": 1783759061.6067019,
+    "ast_hash": "e16d001475e81affc15414bc72802f32",
+    "semantic_hash": "e16d001475e81affc15414bc72802f32"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260711000000_initial_schema.sql": {
+    "mtime": 1783733117.4586115,
+    "ast_hash": "69ab6b86dbc26b3bebe872d63a4c78a2",
+    "semantic_hash": "69ab6b86dbc26b3bebe872d63a4c78a2"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260711000001_rls_policies.sql": {
+    "mtime": 1783733119.6417482,
+    "ast_hash": "9af41297fcdb971a7ad054f57dd15fef",
+    "semantic_hash": "9af41297fcdb971a7ad054f57dd15fef"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260711000002_seed_data.sql": {
+    "mtime": 1783780966.6884756,
+    "ast_hash": "72927802ffb8d6d7f6e1ae2376a450f8",
+    "semantic_hash": "72927802ffb8d6d7f6e1ae2376a450f8"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260711000003_health_check_rpc.sql": {
+    "mtime": 1783759061.6078904,
+    "ast_hash": "581e2405fd3527dbff758e1f60027f8d",
+    "semantic_hash": "581e2405fd3527dbff758e1f60027f8d"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260711000004_seed_automated_system_user.sql": {
+    "mtime": 1783815888.111588,
+    "ast_hash": "e12c9f3b11a00395ca6c288964f8633e",
+    "semantic_hash": "e12c9f3b11a00395ca6c288964f8633e"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260711210000_jira_token_vault.sql": {
+    "mtime": 1783815888.1117814,
+    "ast_hash": "d3014a8e98d9dfc391633f34b95c7b4a",
+    "semantic_hash": "d3014a8e98d9dfc391633f34b95c7b4a"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260712000000_tracker_overrides.sql": {
+    "mtime": 1783853851.354992,
+    "ast_hash": "1d7d7b7cb258f2c45378d2d47b10f7ed",
+    "semantic_hash": "1d7d7b7cb258f2c45378d2d47b10f7ed"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/20260712120000_auth_approval_allowlist.sql": {
+    "mtime": 1783862424.0501664,
+    "ast_hash": "996e449ee19da3760ae54b11dd232a75",
+    "semantic_hash": "996e449ee19da3760ae54b11dd232a75"
+  },
+  "/Users/emile/Allofresh/Momus/tsconfig.json": {
+    "mtime": 1783733092.7101362,
+    "ast_hash": "c4f1a87ab52e6b1c617f3da164ea6c7b",
+    "semantic_hash": "c4f1a87ab52e6b1c617f3da164ea6c7b"
+  },
+  "/Users/emile/Allofresh/Momus/turbo.json": {
+    "mtime": 1783733092.7101402,
+    "ast_hash": "dbc0cf05295206e86657cb42eda5b31a",
+    "semantic_hash": "dbc0cf05295206e86657cb42eda5b31a"
+  },
+  "/Users/emile/Allofresh/Momus/.github/workflows/ci.yml": {
+    "mtime": 1783821691.420484,
+    "ast_hash": "fad79f3491e1f21af49742bbd0b43a74",
+    "semantic_hash": "fad79f3491e1f21af49742bbd0b43a74"
+  },
+  "/Users/emile/Allofresh/Momus/README.md": {
+    "mtime": 1783815888.102067,
+    "ast_hash": "38b4fa9e7815478c04c51b19d621a3f7",
+    "semantic_hash": "38b4fa9e7815478c04c51b19d621a3f7"
+  },
+  "/Users/emile/Allofresh/Momus/conventions.md": {
+    "mtime": 1783732026.3751528,
+    "ast_hash": "63358d01271d431ca3120555a0988d0f",
+    "semantic_hash": "63358d01271d431ca3120555a0988d0f"
+  },
+  "/Users/emile/Allofresh/Momus/docker/docker-compose.yml": {
+    "mtime": 1783815888.104784,
+    "ast_hash": "2a5307dd7dc230361005cbf445cb5ff8",
+    "semantic_hash": "2a5307dd7dc230361005cbf445cb5ff8"
+  },
+  "/Users/emile/Allofresh/Momus/docs/migration/bb-data-08-consumer-inventory.md": {
+    "mtime": 1783859543.686804,
+    "ast_hash": "84fecb76b8ba8962ec92dca39ef0ca4c",
+    "semantic_hash": "84fecb76b8ba8962ec92dca39ef0ca4c"
+  },
+  "/Users/emile/Allofresh/Momus/docs/migration/bb-mig-01-02.md": {
+    "mtime": 1783820540.6748152,
+    "ast_hash": "3d89b0d0663822cd20ea47e450722bb1",
+    "semantic_hash": "3d89b0d0663822cd20ea47e450722bb1"
+  },
+  "/Users/emile/Allofresh/Momus/docs/migration/bb-mig-03-04.md": {
+    "mtime": 1783821691.4206522,
+    "ast_hash": "2dd78cd931e753cd3718f89281c00eb5",
+    "semantic_hash": "2dd78cd931e753cd3718f89281c00eb5"
+  },
+  "/Users/emile/Allofresh/Momus/docs/migration/bb-mig-05-downstream-cutover.md": {
+    "mtime": 1783862424.0431957,
+    "ast_hash": "6f035c0e15db2093445a123e3e193e4e",
+    "semantic_hash": "6f035c0e15db2093445a123e3e193e4e"
+  },
+  "/Users/emile/Allofresh/Momus/docs/migration/bb-mig-06-rollback.md": {
+    "mtime": 1783822168.5785296,
+    "ast_hash": "cec50ddb27bfb544ba04cf562ebb25f8",
+    "semantic_hash": "cec50ddb27bfb544ba04cf562ebb25f8"
+  },
+  "/Users/emile/Allofresh/Momus/docs/ops/runbook.md": {
+    "mtime": 1783954901.7799637,
+    "ast_hash": "81d2cc490543dfe8924c5d948c8c8572",
+    "semantic_hash": "81d2cc490543dfe8924c5d948c8c8572"
+  },
+  "/Users/emile/Allofresh/Momus/docs/ops/supabase-auth-bootstrap.md": {
+    "mtime": 1783862424.0434508,
+    "ast_hash": "49a4be53427e13d0a986bc32ad2e5dd9",
+    "semantic_hash": "49a4be53427e13d0a986bc32ad2e5dd9"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-11-bug-budget-dashboard.md": {
+    "mtime": 1783768398.7084746,
+    "ast_hash": "8f2b3adbf732db9bda23c68c3687e71a",
+    "semantic_hash": "8f2b3adbf732db9bda23c68c3687e71a"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-11-defect-analytics.md": {
+    "mtime": 1783768398.7087364,
+    "ast_hash": "25a1accac99ba7dcf500e1b4dcae2079",
+    "semantic_hash": "25a1accac99ba7dcf500e1b4dcae2079"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-11-dev9-jira-vault.md": {
+    "mtime": 1783815888.1054726,
+    "ast_hash": "7b868e913c46eab266a9a6a6a936ee04",
+    "semantic_hash": "7b868e913c46eab266a9a6a6a936ee04"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-11-health-ops-runbook.md": {
+    "mtime": 1783815888.105642,
+    "ast_hash": "9d075a4deb2e48cc6c55d2fdea13436d",
+    "semantic_hash": "9d075a4deb2e48cc6c55d2fdea13436d"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-11-retention-audit.md": {
+    "mtime": 1783815888.1059093,
+    "ast_hash": "ae110c2a49fd44f968dfefeb76d813db",
+    "semantic_hash": "ae110c2a49fd44f968dfefeb76d813db"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-11-scheduler-tick.md": {
+    "mtime": 1783815888.1062772,
+    "ast_hash": "b432866922bafaeb2bab99fb8eb7a82b",
+    "semantic_hash": "b432866922bafaeb2bab99fb8eb7a82b"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-12-auth-google-approval.md": {
+    "mtime": 1783862424.0436385,
+    "ast_hash": "6b44b1a0f958b485a32fbd6caa09effe",
+    "semantic_hash": "6b44b1a0f958b485a32fbd6caa09effe"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-12-bb-mig-01-02.md": {
+    "mtime": 1783820540.6751041,
+    "ast_hash": "5c2d5869506aab0b57aca47ea32b7359",
+    "semantic_hash": "5c2d5869506aab0b57aca47ea32b7359"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-12-defect-analytics.md": {
+    "mtime": 1783825167.9465587,
+    "ast_hash": "f49d7a1c90aa197c9ad6be39313fa005",
+    "semantic_hash": "f49d7a1c90aa197c9ad6be39313fa005"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-12-defect-tracker.md": {
+    "mtime": 1783825430.0915253,
+    "ast_hash": "e6f105e5268bc2c0f65347a6615a51dc",
+    "semantic_hash": "e6f105e5268bc2c0f65347a6615a51dc"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-12-supabase-auth-bb-perm.md": {
+    "mtime": 1783853851.3462157,
+    "ast_hash": "7f48d01815bd3446e82a02b861ea1955",
+    "semantic_hash": "7f48d01815bd3446e82a02b861ea1955"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-13-analytics-risk-panel.md": {
+    "mtime": 1783955526.965867,
+    "ast_hash": "229d37c16c6d0a284095001461b1ac3f",
+    "semantic_hash": "229d37c16c6d0a284095001461b1ac3f"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/plans/2026-07-13-leaderboard-ssr-slim-query.md": {
+    "mtime": 1783954901.7802134,
+    "ast_hash": "a4cad10f6c8d65129a1065125dadade3",
+    "semantic_hash": "a4cad10f6c8d65129a1065125dadade3"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-11-bug-budget-dashboard-design.md": {
+    "mtime": 1783768398.709083,
+    "ast_hash": "878acdb33082ec0018d841a76795ae02",
+    "semantic_hash": "878acdb33082ec0018d841a76795ae02"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-11-defect-analytics-design.md": {
+    "mtime": 1783768398.7094429,
+    "ast_hash": "f30e9575f965b60d28d6e530c73c2cc2",
+    "semantic_hash": "f30e9575f965b60d28d6e530c73c2cc2"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-11-dev9-jira-vault-design.md": {
+    "mtime": 1783815888.1064875,
+    "ast_hash": "87e2bd2dc44f233ad69fe4b91de4e0d6",
+    "semantic_hash": "87e2bd2dc44f233ad69fe4b91de4e0d6"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-11-health-ops-runbook-design.md": {
+    "mtime": 1783815888.1067054,
+    "ast_hash": "45dec8b9f8be6d22122952aeb35f6502",
+    "semantic_hash": "45dec8b9f8be6d22122952aeb35f6502"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-11-retention-audit-design.md": {
+    "mtime": 1783815888.1069295,
+    "ast_hash": "b0add126a84b197732ca3aa6f350f462",
+    "semantic_hash": "b0add126a84b197732ca3aa6f350f462"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-11-scheduler-tick-design.md": {
+    "mtime": 1783815888.107116,
+    "ast_hash": "45f975aadb2cfdaae208169c7b87bc68",
+    "semantic_hash": "45f975aadb2cfdaae208169c7b87bc68"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-auth-google-approval-design.md": {
+    "mtime": 1783862424.0438476,
+    "ast_hash": "3082d58e719d96ce39223711336767b3",
+    "semantic_hash": "3082d58e719d96ce39223711336767b3"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-bb-mig-01-02-design.md": {
+    "mtime": 1783820540.6752653,
+    "ast_hash": "aef86ea67fa204608424d150a6fc2e3e",
+    "semantic_hash": "aef86ea67fa204608424d150a6fc2e3e"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-bb-mig-03-04-design.md": {
+    "mtime": 1783821691.4208274,
+    "ast_hash": "778ccf65a36e7e24c3f4d33cc61cc341",
+    "semantic_hash": "778ccf65a36e7e24c3f4d33cc61cc341"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-bb-mig-05-06-design.md": {
+    "mtime": 1783822168.578675,
+    "ast_hash": "973ce9054041b67fe2a4b0427a26d501",
+    "semantic_hash": "973ce9054041b67fe2a4b0427a26d501"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-defect-analytics-design.md": {
+    "mtime": 1783825167.9466908,
+    "ast_hash": "7f18ca26779236498bd0bb27a03fc936",
+    "semantic_hash": "7f18ca26779236498bd0bb27a03fc936"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-defect-tracker-design.md": {
+    "mtime": 1783825433.6428118,
+    "ast_hash": "89cb9135b7df803ecc2cc6b274c1dcf9",
+    "semantic_hash": "89cb9135b7df803ecc2cc6b274c1dcf9"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-open-bug-summary-key-severity-design.md": {
+    "mtime": 1783865873.6514585,
+    "ast_hash": "f4f9e2712f9bf3591e61ad269b415773",
+    "semantic_hash": "f4f9e2712f9bf3591e61ad269b415773"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-12-supabase-auth-bb-perm-design.md": {
+    "mtime": 1783853851.346517,
+    "ast_hash": "c4a43c565a6fb024a9c1e203bb758972",
+    "semantic_hash": "c4a43c565a6fb024a9c1e203bb758972"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-13-analytics-risk-panel-design.md": {
+    "mtime": 1783958561.7250366,
+    "ast_hash": "ae57d0b8437df72b3dccf6b8e02ba823",
+    "semantic_hash": "ae57d0b8437df72b3dccf6b8e02ba823"
+  },
+  "/Users/emile/Allofresh/Momus/docs/superpowers/specs/2026-07-13-leaderboard-ssr-slim-query-design.md": {
+    "mtime": 1783954901.7803836,
+    "ast_hash": "c03e0f50272574c6839571fb08c2a133",
+    "semantic_hash": "c03e0f50272574c6839571fb08c2a133"
+  },
+  "/Users/emile/Allofresh/Momus/history-log.md": {
+    "mtime": 1783862424.044223,
+    "ast_hash": "fa5f9fc91c9f0b011b843105c2009e8d",
+    "semantic_hash": "fa5f9fc91c9f0b011b843105c2009e8d"
+  },
+  "/Users/emile/Allofresh/Momus/plan.md": {
+    "mtime": 1783859525.7704437,
+    "ast_hash": "4523c51bbd66ebf527c535ba67080346",
+    "semantic_hash": "4523c51bbd66ebf527c535ba67080346"
+  },
+  "/Users/emile/Allofresh/Momus/pnpm-workspace.yaml": {
+    "mtime": 1783733092.7101955,
+    "ast_hash": "de6b9e7bb156f8dc12f68dc3d1a0b649",
+    "semantic_hash": "de6b9e7bb156f8dc12f68dc3d1a0b649"
+  },
+  "/Users/emile/Allofresh/Momus/prd.md": {
+    "mtime": 1783859522.6914718,
+    "ast_hash": "7e83fc0df992d13be1f7024e50b38179",
+    "semantic_hash": "7e83fc0df992d13be1f7024e50b38179"
+  },
+  "/Users/emile/Allofresh/Momus/supabase/migrations/remote-performance/README.md": {
+    "mtime": 1783737637.6128697,
+    "ast_hash": "2a8e85c43ebcb75c5257b5ef58c157f2",
+    "semantic_hash": "2a8e85c43ebcb75c5257b5ef58c157f2"
+  }
+}

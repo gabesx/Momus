@@ -1,0 +1,1 @@
+{"nodes": [{"id": "supabase_sync_runs_repository_syncrunrepository", "label": "SyncRunRepository", "file_type": "code", "source_file": "packages/infra/src/supabase/sync-runs.repository.ts", "source_location": null, "source_url": null, "captured_at": null, "author": null, "contributor": null}], "edges": [], "hyperedges": []}
