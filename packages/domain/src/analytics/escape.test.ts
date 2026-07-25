@@ -1,5 +1,5 @@
 import { describe, expect, it } from 'vitest';
-import { computeAnalyticsEscape, isFoundInProd } from './escape';
+import { computeAnalyticsEscape, isEscapeIssueType, isFoundInProd } from './escape';
 import { computeAnalyticsResponse } from './response';
 import type { AnalyticsIssueRow } from './types';
 
@@ -30,8 +30,28 @@ describe('isFoundInProd', () => {
   });
 });
 
+describe('isEscapeIssueType', () => {
+  it('matches configured issue types case-insensitively via issueTypeOf', () => {
+    expect(isEscapeIssueType(row({ project: 'A', is_open: true, issue_type: 'Bug' }), ['bug'])).toBe(
+      true,
+    );
+    expect(
+      isEscapeIssueType(
+        row({ project: 'A', is_open: true, issue_type: null, final_issue_type: 'Defect Task' }),
+        ['Defect Task'],
+      ),
+    ).toBe(true);
+    expect(
+      isEscapeIssueType(row({ project: 'A', is_open: true, issue_type: 'Defect' }), ['Bug']),
+    ).toBe(false);
+    expect(isEscapeIssueType(row({ project: 'A', is_open: true, issue_type: 'Bug' }), [])).toBe(
+      false,
+    );
+  });
+});
+
 describe('computeAnalyticsEscape', () => {
-  it('computes escape percentage over all rows in scope', () => {
+  it('computes escape percentage by label (default mode)', () => {
     const res = computeAnalyticsEscape([
       row({ project: 'A', is_open: true, labels: ['found-in-prod'] }),
       row({ project: 'A', is_open: false, labels: [] }),
@@ -42,6 +62,26 @@ describe('computeAnalyticsEscape', () => {
       total: 3,
       pct: 33.3,
       labels_used: ['found-in-prod'],
+      mode: 'labels',
+    });
+  });
+
+  it('computes escape percentage by issue type when mode is issue_type', () => {
+    const res = computeAnalyticsEscape(
+      [
+        row({ project: 'A', is_open: true, issue_type: 'Bug', labels: [] }),
+        row({ project: 'A', is_open: false, issue_type: 'Bug' }),
+        row({ project: 'A', is_open: false, issue_type: 'Defect' }),
+        row({ project: 'A', is_open: false, issue_type: 'Defect Task' }),
+      ],
+      { mode: 'issue_type', prodIssueTypes: ['Bug', 'Defect Task'] },
+    );
+    expect(res).toEqual({
+      prod: 3,
+      total: 4,
+      pct: 75,
+      labels_used: ['Bug', 'Defect Task'],
+      mode: 'issue_type',
     });
   });
 

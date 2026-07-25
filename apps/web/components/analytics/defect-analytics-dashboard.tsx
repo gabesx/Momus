@@ -8,6 +8,7 @@ import type {
   AnalyticsTrendsResult,
   QaSlipRow,
 } from '@momus/domain';
+import type { AnalyticsThresholds } from '@momus/infra';
 import { apiJson } from '@/lib/api-client';
 import { analyticsParamsFromUrl, analyticsParamsToQuery } from '@/lib/analytics-params';
 import { AnalyticsFilters } from './analytics-filters';
@@ -30,7 +31,12 @@ type AnalyticsResponse = {
   trends: AnalyticsTrendsResult;
   qa_slip: QaSlipRow[];
   filter_options: { projects: string[]; years: number[] };
-  meta: { last_updated: string | null; scope_hint: string; trend_grain?: string };
+  meta: {
+    last_updated: string | null;
+    scope_hint: string;
+    trend_grain?: string;
+    thresholds?: AnalyticsThresholds;
+  };
 };
 
 type PeriodDetailResponse = {
@@ -193,6 +199,7 @@ export function DefectAnalyticsDashboard() {
   const filterOptions = data?.filter_options ?? { projects: [], years: [] };
   const scopeHint = data?.meta.scope_hint;
   const grain = state.trend_grain ?? data?.meta.trend_grain ?? 'month';
+  const thresholds = data?.meta.thresholds;
 
   return (
     <main className="bb-analytics">
@@ -266,10 +273,10 @@ export function DefectAnalyticsDashboard() {
         onClose={clearPeriod}
       />
 
-      <SummaryCards summary={data?.summary ?? null} loading={loading} />
-      <RiskPanel summary={data?.summary ?? null} loading={loading} />
-      <MttrPanel summary={data?.summary ?? null} loading={loading} />
-      <TriagePanel summary={data?.summary ?? null} loading={loading} />
+      <SummaryCards summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
+      <RiskPanel summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
+      <MttrPanel summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
+      <TriagePanel summary={data?.summary ?? null} loading={loading} thresholds={thresholds} />
       <DistributionPanel
         summary={data?.summary ?? null}
         loading={loading}
@@ -282,6 +289,7 @@ export function DefectAnalyticsDashboard() {
         summary={data?.summary ?? null}
         trends={data?.trends ?? null}
         loading={loading}
+        thresholds={thresholds}
       />
     </main>
   );

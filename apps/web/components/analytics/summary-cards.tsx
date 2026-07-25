@@ -7,10 +7,12 @@ import {
   resolutionRateTone,
   type AnalyticsSummaryResult,
 } from '@momus/domain';
+import type { AnalyticsThresholds } from '@momus/infra';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
   loading?: boolean;
+  thresholds?: AnalyticsThresholds;
 };
 
 type Sentiment = 'higher-is-bad' | 'higher-is-good' | 'lower-is-good';
@@ -40,7 +42,7 @@ function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
   return '';
 }
 
-export function SummaryCards({ summary, loading }: Props) {
+export function SummaryCards({ summary, loading, thresholds }: Props) {
   if (loading && !summary) {
     return (
       <div className="bb-analytics-metrics">
@@ -52,6 +54,11 @@ export function SummaryCards({ summary, loading }: Props) {
   }
 
   if (!summary) return null;
+
+  const openW = thresholds?.open_warning ?? ANALYTICS_KPI_THRESHOLDS.open_warning;
+  const rrHealthy =
+    thresholds?.resolution_rate_healthy_pct ?? ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct;
+  const avgAgeW = thresholds?.avg_age_warning_days ?? ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days;
 
   const cards = [
     {
@@ -68,11 +75,8 @@ export function SummaryCards({ summary, loading }: Props) {
       value: String(summary.open),
       variant: 'bb-analytics-metric-card--danger',
       sentiment: 'higher-is-bad' as const,
-      threshold: thresholdClass(openIssuesTone(summary.open)),
-      hint:
-        summary.open >= ANALYTICS_KPI_THRESHOLDS.open_warning
-          ? `≥ ${ANALYTICS_KPI_THRESHOLDS.open_warning} warning`
-          : undefined,
+      threshold: thresholdClass(openIssuesTone(summary.open, openW)),
+      hint: summary.open >= openW ? `≥ ${openW} warning` : undefined,
     },
     {
       key: 'resolved' as const,
@@ -88,11 +92,9 @@ export function SummaryCards({ summary, loading }: Props) {
       value: `${summary.resolution_rate}%`,
       variant: 'bb-analytics-metric-card--info',
       sentiment: 'higher-is-good' as const,
-      threshold: thresholdClass(resolutionRateTone(summary.resolution_rate)),
+      threshold: thresholdClass(resolutionRateTone(summary.resolution_rate, rrHealthy)),
       hint:
-        summary.resolution_rate < ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct
-          ? `< ${ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct}% healthy`
-          : undefined,
+        summary.resolution_rate < rrHealthy ? `< ${rrHealthy}% healthy` : undefined,
     },
     {
       key: 'avg_age' as const,
@@ -100,11 +102,8 @@ export function SummaryCards({ summary, loading }: Props) {
       value: String(Math.round(summary.avg_age)),
       variant: '',
       sentiment: 'lower-is-good' as const,
-      threshold: thresholdClass(avgAgeTone(summary.avg_age)),
-      hint:
-        summary.avg_age >= ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days
-          ? `≥ ${ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days}d warning`
-          : undefined,
+      threshold: thresholdClass(avgAgeTone(summary.avg_age, avgAgeW)),
+      hint: summary.avg_age >= avgAgeW ? `≥ ${avgAgeW}d warning` : undefined,
     },
   ];
 

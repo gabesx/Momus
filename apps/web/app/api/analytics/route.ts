@@ -9,6 +9,7 @@ import {
 import {
   BugBudgetQueryRepository,
   createServerClient,
+  effectiveThresholds,
   loadAnalyticsSettings,
   loadSummaryConfig,
   RosterRepository,
@@ -58,6 +59,8 @@ export async function GET(request: Request) {
     const summary = computeAnalyticsSummary(filtered, nowIso, {
       sla: settings,
       prod_labels: settings.prod_labels,
+      escape_mode: settings.escape_mode,
+      prod_issue_types: settings.prod_issue_types,
     });
     const trends = computeTrends(filtered, grain, nowIso, config.multipliers);
     const qa_slip = buildQaSlipRows(roster, filtered);
@@ -78,7 +81,12 @@ export async function GET(request: Request) {
       trends,
       qa_slip,
       filter_options,
-      meta: { last_updated, scope_hint, trend_grain: grain },
+      meta: {
+        last_updated,
+        scope_hint,
+        trend_grain: grain,
+        thresholds: effectiveThresholds(settings),
+      },
     };
     setCachedAnalytics(cacheKey, version, payload);
     return jsonOk(payload);

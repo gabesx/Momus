@@ -6,10 +6,12 @@ import {
   longOverduePctTone,
   type AnalyticsSummaryResult,
 } from '@momus/domain';
+import type { AnalyticsThresholds } from '@momus/infra';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
   loading?: boolean;
+  thresholds?: AnalyticsThresholds;
 };
 
 type Sentiment = 'higher-is-bad' | 'higher-is-good' | 'lower-is-good';
@@ -48,7 +50,7 @@ function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
   return '';
 }
 
-export function RiskPanel({ summary, loading }: Props) {
+export function RiskPanel({ summary, loading, thresholds }: Props) {
   if (loading && !summary) {
     return (
       <div className="bb-analytics-risk">
@@ -76,6 +78,13 @@ export function RiskPanel({ summary, loading }: Props) {
   const cmMom = formatMom(risk.mom.open_critical_major);
   const loMom = formatMom(risk.mom.open_long_overdue);
 
+  const cmW =
+    thresholds?.open_critical_major_pct_warning ??
+    ANALYTICS_KPI_THRESHOLDS.open_critical_major_pct_warning;
+  const loW =
+    thresholds?.open_long_overdue_pct_warning ??
+    ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning;
+
   return (
     <section className="bb-analytics-risk" aria-label="Open risk">
       <div className="bb-analytics-risk__header">
@@ -86,7 +95,7 @@ export function RiskPanel({ summary, loading }: Props) {
       <div className="bb-analytics-risk__kpis">
         <div
           className={`bb-analytics-metric-card bb-analytics-metric-card--danger ${thresholdClass(
-            criticalMajorPctTone(risk.open_critical_major_pct_of_open),
+            criticalMajorPctTone(risk.open_critical_major_pct_of_open, cmW),
           )}`.trim()}
         >
           <div className="bb-analytics-metric-card__label">Open Critical / Major</div>
@@ -104,17 +113,16 @@ export function RiskPanel({ summary, loading }: Props) {
               {cmMom}
             </div>
           ) : null}
-          {risk.open_critical_major_pct_of_open >=
-          ANALYTICS_KPI_THRESHOLDS.open_critical_major_pct_warning ? (
+          {risk.open_critical_major_pct_of_open >= cmW ? (
             <div className="muted" style={{ fontSize: '0.75rem', marginTop: 4 }}>
-              ≥ {ANALYTICS_KPI_THRESHOLDS.open_critical_major_pct_warning}% of open warning
+              ≥ {cmW}% of open warning
             </div>
           ) : null}
         </div>
 
         <div
           className={`bb-analytics-metric-card bb-analytics-metric-card--danger ${thresholdClass(
-            longOverduePctTone(risk.open_long_overdue_pct_of_open),
+            longOverduePctTone(risk.open_long_overdue_pct_of_open, loW),
           )}`.trim()}
         >
           <div className="bb-analytics-metric-card__label">Long overdue</div>
@@ -132,10 +140,9 @@ export function RiskPanel({ summary, loading }: Props) {
               {loMom}
             </div>
           ) : null}
-          {risk.open_long_overdue_pct_of_open >=
-          ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning ? (
+          {risk.open_long_overdue_pct_of_open >= loW ? (
             <div className="muted" style={{ fontSize: '0.75rem', marginTop: 4 }}>
-              ≥ {ANALYTICS_KPI_THRESHOLDS.open_long_overdue_pct_warning}% of open warning
+              ≥ {loW}% of open warning
             </div>
           ) : null}
         </div>

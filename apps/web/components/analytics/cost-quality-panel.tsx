@@ -5,11 +5,13 @@ import {
   type AnalyticsSummaryResult,
   type AnalyticsTrendsResult,
 } from '@momus/domain';
+import type { AnalyticsThresholds } from '@momus/infra';
 
 type Props = {
   summary: AnalyticsSummaryResult | null;
   trends: AnalyticsTrendsResult | null;
   loading?: boolean;
+  thresholds?: AnalyticsThresholds;
 };
 
 const MAX_PERIODS = 12;
@@ -25,7 +27,7 @@ function thresholdClass(tone: 'ok' | 'warning' | 'danger' | 'neutral'): string {
   return '';
 }
 
-export function CostQualityPanel({ summary, trends, loading }: Props) {
+export function CostQualityPanel({ summary, trends, loading, thresholds }: Props) {
   if (loading && !summary) {
     return (
       <div className="bb-analytics-risk">
@@ -69,13 +71,17 @@ export function CostQualityPanel({ summary, trends, loading }: Props) {
 
         <div
           className={`bb-analytics-metric-card ${
-            escape.prod > 0 ? thresholdClass(escapeRateTone(escape.pct)) : ''
+            escape.prod > 0
+              ? thresholdClass(escapeRateTone(escape.pct, thresholds?.escape_rate_warning_pct))
+              : ''
           }`.trim()}
         >
           <div className="bb-analytics-metric-card__label">Escape rate (prod)</div>
           <div className="bb-analytics-metric-card__value">{escape.pct}%</div>
           <div className="bb-analytics-risk__meta">
-            {escape.prod}/{escape.total} labeled {escape.labels_used.join(', ')}
+            {escape.prod}/{escape.total}{' '}
+            {escape.mode === 'issue_type' ? 'of type' : 'labeled'}{' '}
+            {escape.labels_used.join(', ') || '—'}
           </div>
         </div>
       </div>
