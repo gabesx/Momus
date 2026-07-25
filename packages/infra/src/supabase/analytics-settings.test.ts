@@ -160,6 +160,29 @@ describe('weekly digest provider', () => {
   });
 });
 
+describe('digest schedule (day + hour)', () => {
+  it('defaults to mon / 08:00 and coerces invalid values', () => {
+    const d = normalizeAnalyticsSettings({});
+    expect(d.digest_day).toBe('mon');
+    expect(d.digest_hour).toBe(8);
+    const bad = normalizeAnalyticsSettings({ digest_day: 'funday', digest_hour: 99 });
+    expect(bad.digest_day).toBe('mon');
+    expect(bad.digest_hour).toBe(8);
+  });
+
+  it('normalizes valid day + hour', () => {
+    const s = normalizeAnalyticsSettings({ digest_day: 'fri', digest_hour: 17 });
+    expect(s.digest_day).toBe('fri');
+    expect(s.digest_hour).toBe(17);
+  });
+
+  it('parse rejects an invalid day or out-of-range hour', () => {
+    expect(() => parseAnalyticsSettings({ ...validSla, digest_day: 'nope' })).toThrow(/digest_day/);
+    expect(() => parseAnalyticsSettings({ ...validSla, digest_hour: 24 })).toThrow(/digest_hour/);
+    expect(() => parseAnalyticsSettings({ ...validSla, digest_hour: 1.5 })).toThrow(/digest_hour/);
+  });
+});
+
 describe('effectiveThresholds', () => {
   it('extracts the 8 KPI thresholds plus first-response SLA from settings', () => {
     const t = effectiveThresholds(DEFAULT_ANALYTICS_SETTINGS);
