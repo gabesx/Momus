@@ -2,6 +2,10 @@
 
 import Link from 'next/link';
 import { useCallback, useEffect, useState } from 'react';
+import {
+  authSignInMethodLabel,
+  type AuthSignInMethod,
+} from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
 
 type UserRecord = {
@@ -11,9 +15,13 @@ type UserRecord = {
   is_candidate: boolean;
   approval_status?: string;
   permissions: string[];
+  auth_method?: AuthSignInMethod;
+  auth_providers?: string[];
+  auth_user_id?: string | null;
 };
 
 type AdminTab = 'pending' | 'active' | 'allowlist';
+type CreateMode = 'invite' | 'password';
 
 const PERMISSION_OPTIONS = [
   { key: 'view_analytics', label: 'View Analytics' },
@@ -38,6 +46,24 @@ function permissionsFromFlags(flags: PermissionFlags): string[] {
 function isForbiddenResponse(message?: string): boolean {
   if (!message) return false;
   return message.includes('manage_users') || message.includes('Missing permission');
+}
+
+function AuthMethodBadge({ method }: { method?: AuthSignInMethod }) {
+  const m = method ?? 'unknown';
+  const label = authSignInMethodLabel(m);
+  const cls =
+    m === 'google_sso'
+      ? 'bb-badge bb-badge--info'
+      : m === 'email_password'
+        ? 'bb-badge bb-badge--secondary'
+        : m === 'both'
+          ? 'bb-badge bb-badge--success'
+          : 'bb-badge';
+  return (
+    <span className={cls} title={label}>
+      {label}
+    </span>
+  );
 }
 
 function ApproveDialog({
@@ -101,6 +127,148 @@ function ApproveDialog({
   );
 }
 
+function ActivateDialog({
+  email,
+  permissions,
+  activating,
+  onPermissionsChange,
+  onActivate,
+  onClose,
+}: {
+  email: string;
+  permissions: PermissionFlags;
+  activating: boolean;
+  onPermissionsChange: (next: PermissionFlags) => void;
+  onActivate: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="bb-modal" role="dialog" aria-modal="true" aria-label="Activate user">
+      <div className="bb-modal__panel" style={{ maxWidth: 480, margin: '4rem auto', flex: 'none' }}>
+        <div className="bb-modal__head">
+          <div>
+            <h2>Activate user</h2>
+            <p className="muted">
+              {email} has no permissions saved. Choose permissions before restoring access.
+            </p>
+          </div>
+          <button type="button" className="btn btn-outline" onClick={onClose} disabled={activating}>
+            Cancel
+          </button>
+        </div>
+
+        <fieldset style={{ border: 0, padding: 0, margin: '0 0 1rem' }}>
+          <legend className="muted" style={{ marginBottom: '0.5rem', fontWeight: 600 }}>
+            Permissions
+          </legend>
+          {PERMISSION_OPTIONS.map((perm) => (
+            <label key={perm.key} className="toggle-row" style={{ marginBottom: '0.35rem' }}>
+              <span>{perm.label}</span>
+              <input
+                type="checkbox"
+                checked={permissions[perm.key]}
+                onChange={(e) =>
+                  onPermissionsChange({ ...permissions, [perm.key]: e.target.checked })
+                }
+              />
+            </label>
+          ))}
+        </fieldset>
+
+        <div className="btn-row">
+          <button
+            type="button"
+            className="btn btn-primary"
+            disabled={activating || permissionsFromFlags(permissions).length === 0}
+            onClick={onActivate}
+          >
+            {activating ? 'Activating…' : 'Activate'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function PasswordDialog({
+  email,
+  authMethod,
+  saving,
+  error,
+  password,
+  confirm,
+  onPasswordChange,
+  onConfirmChange,
+  onSave,
+  onClose,
+}: {
+  email: string;
+  authMethod?: AuthSignInMethod;
+  saving: boolean;
+  error: string | null;
+  password: string;
+  confirm: string;
+  onPasswordChange: (v: string) => void;
+  onConfirmChange: (v: string) => void;
+  onSave: () => void;
+  onClose: () => void;
+}) {
+  return (
+    <div className="bb-modal" role="dialog" aria-modal="true" aria-label="Set password">
+      <div className="bb-modal__panel" style={{ maxWidth: 480, margin: '4rem auto', flex: 'none' }}>
+        <div className="bb-modal__head">
+          <div>
+            <h2>Set password</h2>
+            <p className="muted">{email}</p>
+          </div>
+          <button type="button" className="btn btn-outline" onClick={onClose} disabled={saving}>
+            Cancel
+          </button>
+        </div>
+
+        {authMethod === 'google_sso' ? (
+          <p className="muted" style={{ marginTop: 0 }}>
+            This user signs in with Google SSO. Setting a password also enables email/password
+            sign-in for the same account.
+          </p>
+        ) : null}
+
+        {error ? (
+          <div className="settings-alert settings-alert--error" role="alert">
+            {error}
+          </div>
+        ) : null}
+
+        <label className="field">
+          <span>New password *</span>
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={password}
+            onChange={(e) => onPasswordChange(e.target.value)}
+            placeholder="At least 8 characters"
+          />
+        </label>
+        <label className="field">
+          <span>Confirm password *</span>
+          <input
+            type="password"
+            autoComplete="new-password"
+            value={confirm}
+            onChange={(e) => onConfirmChange(e.target.value)}
+          />
+        </label>
+
+        <div className="btn-row">
+          <button type="button" className="btn btn-primary" disabled={saving} onClick={onSave}>
+            {saving ? 'Saving…' : 'Save password'}
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export function UsersAdmin() {
   const [tab, setTab] = useState<AdminTab>('pending');
 
@@ -113,17 +281,31 @@ export function UsersAdmin() {
 
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteName, setInviteName] = useState('');
+  const [invitePassword, setInvitePassword] = useState('');
+  const [createMode, setCreateMode] = useState<CreateMode>('invite');
   const [invitePermissions, setInvitePermissions] = useState<PermissionFlags>(DEFAULT_PERMISSIONS);
   const [inviting, setInviting] = useState(false);
   const [inviteError, setInviteError] = useState<string | null>(null);
 
   const [savingId, setSavingId] = useState<number | null>(null);
   const [deactivatingId, setDeactivatingId] = useState<number | null>(null);
+  const [activatingId, setActivatingId] = useState<number | null>(null);
+
+  const [passwordTarget, setPasswordTarget] = useState<UserRecord | null>(null);
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordSaving, setPasswordSaving] = useState(false);
+  const [passwordError, setPasswordError] = useState<string | null>(null);
 
   const [approveTarget, setApproveTarget] = useState<UserRecord | null>(null);
   const [approvePermissions, setApprovePermissions] = useState<PermissionFlags>(DEFAULT_PERMISSIONS);
   const [approving, setApproving] = useState(false);
   const [rejectingId, setRejectingId] = useState<number | null>(null);
+
+  const [activateTarget, setActivateTarget] = useState<UserRecord | null>(null);
+  const [activatePermissions, setActivatePermissions] =
+    useState<PermissionFlags>(DEFAULT_PERMISSIONS);
+  const [activatingFromDialog, setActivatingFromDialog] = useState(false);
 
   const [allowlistDomains, setAllowlistDomains] = useState<string[]>([]);
   const [allowlistEmails, setAllowlistEmails] = useState<string[]>([]);
@@ -205,34 +387,50 @@ export function UsersAdmin() {
     setInviteError(null);
     const email = inviteEmail.trim();
     const name = inviteName.trim();
+    const password = invitePassword;
 
     if (!email || !email.includes('@')) {
       setInviteError('Valid email is required');
       return;
     }
+    if (createMode === 'password') {
+      if (password.length < 8) {
+        setInviteError('Password must be at least 8 characters');
+        return;
+      }
+    }
 
     setInviting(true);
     try {
+      const body: Record<string, unknown> = {
+        email,
+        name,
+        permissions: permissionsFromFlags(invitePermissions),
+      };
+      if (createMode === 'password') body.password = password;
+
       const res = await apiJson<{ user?: UserRecord }>('/api/users', {
         method: 'POST',
-        body: JSON.stringify({
-          email,
-          name,
-          permissions: permissionsFromFlags(invitePermissions),
-        }),
+        body: JSON.stringify(body),
       });
 
       if (!res.success) {
-        setInviteError(res.message ?? 'Failed to invite user');
+        setInviteError(res.message ?? 'Failed to add user');
         return;
       }
 
       setInviteEmail('');
       setInviteName('');
+      setInvitePassword('');
       setInvitePermissions(DEFAULT_PERMISSIONS);
-      showAlert('success', `Invited ${email}`);
+      showAlert(
+        'success',
+        createMode === 'password' ? `Created ${email}` : `Invited ${email}`,
+      );
       if (tab === 'active') {
         await loadUsers('approved');
+      } else {
+        setTab('active');
       }
     } finally {
       setInviting(false);
@@ -263,9 +461,10 @@ export function UsersAdmin() {
   const softDeactivate = async (userId: number) => {
     setDeactivatingId(userId);
     try {
+      // Keep permissions so Activate can restore access without re-picking them.
       const res = await apiJson<{ user?: UserRecord }>(`/api/users/${userId}`, {
         method: 'PATCH',
-        body: JSON.stringify({ is_candidate: true, permissions: [] }),
+        body: JSON.stringify({ is_candidate: true }),
       });
 
       if (!res.success) {
@@ -277,6 +476,105 @@ export function UsersAdmin() {
       await loadUsers('approved');
     } finally {
       setDeactivatingId(null);
+    }
+  };
+
+  const softActivate = async (user: UserRecord) => {
+    if (user.permissions.length === 0) {
+      setActivateTarget(user);
+      setActivatePermissions(DEFAULT_PERMISSIONS);
+      return;
+    }
+
+    setActivatingId(user.id);
+    try {
+      const res = await apiJson<{ user?: UserRecord }>(`/api/users/${user.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_candidate: false }),
+      });
+
+      if (!res.success) {
+        showAlert('error', res.message ?? 'Failed to activate user');
+        return;
+      }
+
+      showAlert('success', `Activated ${user.email}`);
+      await loadUsers('approved');
+    } finally {
+      setActivatingId(null);
+    }
+  };
+
+  const closeActivateDialog = () => {
+    if (activatingFromDialog) return;
+    setActivateTarget(null);
+  };
+
+  const confirmActivateWithPermissions = async () => {
+    if (!activateTarget) return;
+    const permissions = permissionsFromFlags(activatePermissions);
+    if (permissions.length === 0) return;
+
+    setActivatingFromDialog(true);
+    try {
+      const res = await apiJson<{ user?: UserRecord }>(`/api/users/${activateTarget.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ is_candidate: false, permissions }),
+      });
+
+      if (!res.success) {
+        showAlert('error', res.message ?? 'Failed to activate user');
+        return;
+      }
+
+      setActivateTarget(null);
+      showAlert('success', `Activated ${activateTarget.email}`);
+      await loadUsers('approved');
+    } finally {
+      setActivatingFromDialog(false);
+    }
+  };
+
+  const openPasswordDialog = (user: UserRecord) => {
+    setPasswordTarget(user);
+    setNewPassword('');
+    setConfirmPassword('');
+    setPasswordError(null);
+  };
+
+  const closePasswordDialog = () => {
+    if (passwordSaving) return;
+    setPasswordTarget(null);
+    setPasswordError(null);
+  };
+
+  const savePassword = async () => {
+    if (!passwordTarget) return;
+    setPasswordError(null);
+    if (newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      return;
+    }
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    setPasswordSaving(true);
+    try {
+      const res = await apiJson<{ user?: UserRecord }>(`/api/users/${passwordTarget.id}`, {
+        method: 'PATCH',
+        body: JSON.stringify({ password: newPassword }),
+      });
+      if (!res.success) {
+        setPasswordError(res.message ?? 'Failed to update password');
+        return;
+      }
+      setPasswordTarget(null);
+      showAlert('success', `Password updated for ${passwordTarget.email}`);
+      if (tab === 'active') await loadUsers('approved');
+    } finally {
+      setPasswordSaving(false);
     }
   };
 
@@ -445,14 +743,40 @@ export function UsersAdmin() {
       ) : null}
 
       <section className="settings-card">
-        <h2>Invite user</h2>
-        <p className="muted">Sends a Supabase invite email and creates an approved Momus user.</p>
+        <h2>Add user</h2>
+        <p className="muted">
+          Invite by email (Supabase sends a link) or create an email/password account immediately.
+        </p>
 
         {inviteError ? (
           <div className="settings-alert settings-alert--error" role="alert">
             {inviteError}
           </div>
         ) : null}
+
+        <fieldset style={{ border: 0, padding: 0, margin: '0 0 0.75rem' }}>
+          <legend className="muted" style={{ marginBottom: '0.5rem', fontWeight: 600 }}>
+            How to add
+          </legend>
+          <label className="toggle-row" style={{ marginBottom: '0.35rem' }}>
+            <span>Send invite email</span>
+            <input
+              type="radio"
+              name="create-mode"
+              checked={createMode === 'invite'}
+              onChange={() => setCreateMode('invite')}
+            />
+          </label>
+          <label className="toggle-row" style={{ marginBottom: '0.35rem' }}>
+            <span>Create with email &amp; password</span>
+            <input
+              type="radio"
+              name="create-mode"
+              checked={createMode === 'password'}
+              onChange={() => setCreateMode('password')}
+            />
+          </label>
+        </fieldset>
 
         <div className="field-row">
           <label className="field">
@@ -473,6 +797,19 @@ export function UsersAdmin() {
             />
           </label>
         </div>
+
+        {createMode === 'password' ? (
+          <label className="field">
+            <span>Password *</span>
+            <input
+              type="password"
+              autoComplete="new-password"
+              value={invitePassword}
+              onChange={(e) => setInvitePassword(e.target.value)}
+              placeholder="At least 8 characters"
+            />
+          </label>
+        ) : null}
 
         <fieldset style={{ border: 0, padding: 0, margin: '0 0 0.75rem' }}>
           <legend className="muted" style={{ marginBottom: '0.5rem', fontWeight: 600 }}>
@@ -499,7 +836,13 @@ export function UsersAdmin() {
             disabled={inviting}
             onClick={() => void inviteUser()}
           >
-            {inviting ? 'Inviting…' : 'Send invite'}
+            {inviting
+              ? createMode === 'password'
+                ? 'Creating…'
+                : 'Inviting…'
+              : createMode === 'password'
+                ? 'Create user'
+                : 'Send invite'}
           </button>
         </div>
       </section>
@@ -547,6 +890,7 @@ export function UsersAdmin() {
                   <tr>
                     <th>Email</th>
                     <th>Name</th>
+                    <th>Sign-in</th>
                     <th>Actions</th>
                   </tr>
                 </thead>
@@ -555,6 +899,9 @@ export function UsersAdmin() {
                     <tr key={user.id}>
                       <td>{user.email}</td>
                       <td>{user.name || '—'}</td>
+                      <td>
+                        <AuthMethodBadge method={user.auth_method} />
+                      </td>
                       <td>
                         <div className="btn-row" style={{ marginTop: 0 }}>
                           <button
@@ -602,6 +949,7 @@ export function UsersAdmin() {
                   <tr>
                     <th>Email</th>
                     <th>Name</th>
+                    <th>Sign-in</th>
                     <th>Status</th>
                     <th>Permissions</th>
                     <th>Actions</th>
@@ -617,6 +965,9 @@ export function UsersAdmin() {
                       <tr key={user.id}>
                         <td>{user.email}</td>
                         <td>{user.name || '—'}</td>
+                        <td>
+                          <AuthMethodBadge method={user.auth_method} />
+                        </td>
                         <td>{user.is_candidate ? 'Inactive' : 'Active'}</td>
                         <td>
                           {user.is_candidate ? (
@@ -654,7 +1005,28 @@ export function UsersAdmin() {
                         </td>
                         <td>
                           {user.is_candidate ? (
-                            <span className="muted">Deactivated</span>
+                            <div className="btn-row" style={{ marginTop: 0 }}>
+                              <button
+                                type="button"
+                                className="btn btn-primary"
+                                disabled={
+                                  activatingId === user.id ||
+                                  activatingFromDialog ||
+                                  deactivatingId === user.id
+                                }
+                                onClick={() => void softActivate(user)}
+                              >
+                                {activatingId === user.id ? 'Activating…' : 'Activate'}
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-outline"
+                                disabled={!user.auth_user_id || passwordSaving}
+                                onClick={() => openPasswordDialog(user)}
+                              >
+                                Set password
+                              </button>
+                            </div>
                           ) : (
                             <div className="btn-row" style={{ marginTop: 0 }}>
                               <button
@@ -668,7 +1040,15 @@ export function UsersAdmin() {
                               <button
                                 type="button"
                                 className="btn btn-outline"
-                                disabled={deactivatingId === user.id}
+                                disabled={!user.auth_user_id || passwordSaving}
+                                onClick={() => openPasswordDialog(user)}
+                              >
+                                Set password
+                              </button>
+                              <button
+                                type="button"
+                                className="btn btn-outline"
+                                disabled={deactivatingId === user.id || activatingId === user.id}
                                 onClick={() => void softDeactivate(user.id)}
                               >
                                 {deactivatingId === user.id ? 'Deactivating…' : 'Deactivate'}
@@ -820,6 +1200,32 @@ export function UsersAdmin() {
           onPermissionsChange={setApprovePermissions}
           onApprove={() => void approveUser()}
           onClose={closeApproveDialog}
+        />
+      ) : null}
+
+      {activateTarget ? (
+        <ActivateDialog
+          email={activateTarget.email}
+          permissions={activatePermissions}
+          activating={activatingFromDialog}
+          onPermissionsChange={setActivatePermissions}
+          onActivate={() => void confirmActivateWithPermissions()}
+          onClose={closeActivateDialog}
+        />
+      ) : null}
+
+      {passwordTarget ? (
+        <PasswordDialog
+          email={passwordTarget.email}
+          authMethod={passwordTarget.auth_method}
+          saving={passwordSaving}
+          error={passwordError}
+          password={newPassword}
+          confirm={confirmPassword}
+          onPasswordChange={setNewPassword}
+          onConfirmChange={setConfirmPassword}
+          onSave={() => void savePassword()}
+          onClose={closePasswordDialog}
         />
       ) : null}
     </div>

@@ -109,7 +109,14 @@ function makeAllowlistDb(options: {
   const usersTable = options.users ?? makeUsersTableMock({});
 
   const db = {
-    auth: { admin: { inviteUserByEmail: vi.fn() } },
+    auth: {
+      admin: {
+        inviteUserByEmail: vi.fn(),
+        createUser: vi.fn(),
+        updateUserById: vi.fn(),
+        getUserById: vi.fn().mockResolvedValue({ data: { user: null }, error: null }),
+      },
+    },
     from: vi.fn((table: string) => {
       if (table === 'auth_allowed_domains') {
         return {
@@ -252,6 +259,8 @@ describe('UsersRepository', () => {
         auth_user_id: 'auth-123',
         approval_status: 'approved',
         permissions: ['view_analytics'],
+        auth_providers: [],
+        auth_method: 'unknown',
       },
     });
   });
@@ -309,6 +318,8 @@ describe('UsersRepository', () => {
         auth_user_id: 'auth-race',
         approval_status: 'pending',
         permissions: [],
+        auth_providers: [],
+        auth_method: 'unknown',
       },
     });
   });
@@ -369,5 +380,94 @@ describe('UsersRepository', () => {
     const repo = new UsersRepository(db);
 
     await expect(repo.rejectUser(99)).rejects.toBeInstanceOf(UserNotFoundError);
+  });
+
+  it('createUserWithPassword creates auth + approved Momus user', async () => {
+    const inserted = makeUserRow({
+      id: 12,
+      approval_status: 'approved',
+      auth_user_id: 'auth-new-pw',
+    });
+    const usersTable = makeUsersTableMock({
+      existingByAuthUserId: null,
+      insertResult: inserted,
+    });
+    usersTable.upsert = vi.fn().mockReturnValue({
+      select: vi.fn().mockReturnValue({
+        single: vi.fn().mockResolvedValue({
+          data: {
+            id: 12,
+            email: 'pw@allofresh.id',
+            name: 'Pw User',
+            is_candidate: false,
+            auth_user_id: 'auth-new-pw',
+            approval_status: 'approved',
+          },
+          error: null,
+        }),
+      }),
+    });
+    // getUserById after upsert
+    usersTable._selectChain.maybeSingle = vi
+      .fn()
+      .mockResolvedValueOnce({ data: inserted, error: null });
+
+    const createUser = vi.fn().mockResolvedValue({
+      data: { user: { id: 'auth-new-pw', identities: [{ provider: 'email' }] } },
+      error: null,
+    });
+    const getUserById = vi.fn().mockResolvedValue({
+      data: { user: { id: 'auth-new-pw', identities: [{ provider: 'email' }] } },
+      error: null,
+    });
+
+    const db = {
+      auth: { admin: { createUser, getUserById, inviteUserByEmail: vi.fn(), updateUserById: vi.fn() } },
+      from: vi.fn((table: string) => {
+        if (table === 'users') return usersTable;
+        if (table === 'user_permissions') {
+          return {
+            delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) }),
+            insert: vi.fn().mockResolvedValue({ error: null }),
+          };
+        }
+        return {};
+      }),
+    } as unknown as SupabaseClient;
+
+    const repo = new UsersRepository(db);
+    const user = await repo.createUserWithPassword({
+      email: 'pw@allofresh.id',
+      name: 'Pw User',
+      password: 'secret123',
+      permissions: ['view_analytics'],
+    });
+
+    expect(createUser).toHaveBeenCalled();
+    expect(user.auth_method).toBe('email_password');
+    expect(user.auth_providers).toEqual(['email']);
+  });
+
+  it('updateUserPassword rejects short passwords', async () => {
+    const selectChain = {
+      eq: vi.fn().mockReturnThis(),
+      maybeSingle: vi.fn().mockResolvedValue({
+        data: makeUserRow({ id: 3, auth_user_id: 'auth-3' }),
+        error: null,
+      }),
+    };
+    const getUserById = vi.fn().mockResolvedValue({
+      data: { user: { id: 'auth-3', identities: [{ provider: 'email' }] } },
+      error: null,
+    });
+    const db = {
+      auth: { admin: { getUserById, updateUserById: vi.fn() } },
+      from: vi.fn().mockReturnValue({
+        select: vi.fn().mockReturnValue(selectChain),
+      }),
+    } as unknown as SupabaseClient;
+
+    const repo = new UsersRepository(db);
+    await expect(repo.updateUserPassword(3, 'short')).rejects.toThrow(/at least 8/i);
   });
 });
