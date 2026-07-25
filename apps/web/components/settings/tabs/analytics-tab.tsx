@@ -6,6 +6,17 @@ import { apiJson } from '@/lib/api-client';
 
 type EscapeMode = 'labels' | 'issue_type';
 type DigestProvider = 'slack' | 'google_chat';
+type DigestDay = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+
+const DIGEST_DAY_OPTIONS: Array<{ value: DigestDay; label: string }> = [
+  { value: 'mon', label: 'Monday' },
+  { value: 'tue', label: 'Tuesday' },
+  { value: 'wed', label: 'Wednesday' },
+  { value: 'thu', label: 'Thursday' },
+  { value: 'fri', label: 'Friday' },
+  { value: 'sat', label: 'Saturday' },
+  { value: 'sun', label: 'Sunday' },
+];
 
 const DIGEST_PROVIDERS: Array<{ value: DigestProvider; label: string; placeholder: string }> = [
   {
@@ -43,6 +54,8 @@ type AnalyticsSettings = {
   digest_enabled: boolean;
   digest_provider: DigestProvider;
   digest_webhook_url: string;
+  digest_day: DigestDay;
+  digest_hour: number;
 } & Record<KpiThresholdKey, number>;
 
 /** Mirrors infra KPI_THRESHOLD_BOUNDS; drives the inputs + client-side validation. */
@@ -70,6 +83,7 @@ export function AnalyticsTab({ onAlert }: Props) {
   const [settings, setSettings] = useState<AnalyticsSettings | null>(null);
   const [prodLabelsText, setProdLabelsText] = useState('');
   const [saving, setSaving] = useState(false);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     void (async () => {
@@ -113,6 +127,25 @@ export function AnalyticsTab({ onAlert }: Props) {
       }
     } finally {
       setSaving(false);
+    }
+  };
+
+  const sendDigestNow = async () => {
+    setSending(true);
+    try {
+      const res = await apiJson<{ status?: number }>('/api/settings/analytics/send-digest', {
+        method: 'POST',
+        body: JSON.stringify({}),
+      });
+      if (res.success) {
+        onAlert('success', 'Digest sent to the configured webhook.');
+      } else {
+        onAlert('error', res.message ?? 'Failed to send digest');
+      }
+    } catch (err) {
+      onAlert('error', err instanceof Error ? err.message : 'Failed to send digest');
+    } finally {
+      setSending(false);
     }
   };
 
@@ -260,7 +293,7 @@ export function AnalyticsTab({ onAlert }: Props) {
           <h2>Weekly digest</h2>
           <p className="muted">
             Posts a weekly analytics summary (KPIs, deltas, top offenders) to a Slack or Google
-            Chat incoming-webhook URL every Monday morning.
+            Chat incoming-webhook URL on the configured day and hour (Asia/Jakarta).
           </p>
           <label className="field">
             <span>
@@ -301,6 +334,50 @@ export function AnalyticsTab({ onAlert }: Props) {
               Incoming-webhook URL for the selected provider.
             </span>
           </label>
+
+          <div className="field-row">
+            <label className="field">
+              Send day
+              <select
+                value={settings.digest_day}
+                onChange={(e) =>
+                  setSettings({ ...settings, digest_day: e.target.value as DigestDay })
+                }
+              >
+                {DIGEST_DAY_OPTIONS.map((d) => (
+                  <option key={d.value} value={d.value}>
+                    {d.label}
+                  </option>
+                ))}
+              </select>
+            </label>
+            <label className="field">
+              Send hour (0–23, Asia/Jakarta)
+              <input
+                type="number"
+                min={0}
+                max={23}
+                value={settings.digest_hour}
+                onChange={setNum('digest_hour')}
+              />
+            </label>
+          </div>
+
+          <div className="btn-row" style={{ marginTop: '0.75rem' }}>
+            <button
+              type="button"
+              className="btn btn-outline"
+              onClick={sendDigestNow}
+              disabled={sending || !settings.digest_webhook_url}
+              title={
+                settings.digest_webhook_url
+                  ? 'Uses saved settings — save first if you changed the webhook'
+                  : 'Configure and save a webhook URL first'
+              }
+            >
+              {sending ? 'Sending…' : 'Send digest now'}
+            </button>
+          </div>
         </section>
 
         <div className="btn-row">
