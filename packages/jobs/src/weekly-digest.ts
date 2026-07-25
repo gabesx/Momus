@@ -14,8 +14,8 @@ import { inngest } from './client';
 
 /**
  * Weekly analytics digest — Monday 08:00 Asia/Jakarta. Posts KPI summary,
- * deltas, and top offenders to the Slack webhook configured in the
- * Analytics settings tab. No-op unless the digest is enabled there.
+ * deltas, and top offenders to the webhook configured in the Analytics
+ * settings tab (Slack or Google Chat). No-op unless enabled there.
  */
 export const weeklyAnalyticsDigest = inngest.createFunction(
   {
@@ -46,7 +46,11 @@ export const weeklyAnalyticsDigest = inngest.createFunction(
       const dashboardUrl = process.env.NEXT_PUBLIC_APP_URL
         ? `${process.env.NEXT_PUBLIC_APP_URL.replace(/\/$/, '')}/`
         : undefined;
-      return buildAnalyticsDigest(summary, trends, { dateLabel, dashboardUrl });
+      return buildAnalyticsDigest(summary, trends, {
+        dateLabel,
+        dashboardUrl,
+        linkStyle: settings.digest_provider === 'google_chat' ? 'plain' : 'slack',
+      });
     });
 
     await step.run('post-webhook', async () => {

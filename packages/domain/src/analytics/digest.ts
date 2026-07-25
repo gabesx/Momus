@@ -12,6 +12,11 @@ function topN<T>(entries: T[], n: number): T[] {
 export type AnalyticsDigestOptions = {
   dateLabel: string;
   dashboardUrl?: string;
+  /**
+   * How to render the dashboard link. 'slack' uses mrkdwn `<url|label>`;
+   * 'plain' emits a bare URL (Google Chat prints `<url|label>` literally).
+   */
+  linkStyle?: 'slack' | 'plain';
 };
 
 /**
@@ -93,7 +98,13 @@ export function buildAnalyticsDigest(
     );
   }
 
-  if (options.dashboardUrl) lines.push(`<${options.dashboardUrl}|Open the dashboard>`);
+  if (options.dashboardUrl) {
+    lines.push(
+      options.linkStyle === 'plain'
+        ? `Open the dashboard: ${options.dashboardUrl}`
+        : `<${options.dashboardUrl}|Open the dashboard>`,
+    );
+  }
 
   return lines.join('\n');
 }
