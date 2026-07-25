@@ -113,5 +113,20 @@ export function buildAnalyticsCsv(
     lines.push('');
   }
 
+  const heat = distribution.squad_heat;
+  if (heat && heat.squads.length) {
+    lines.push(line('Squad heat (open by severity)', ...heat.severities, 'Total'));
+    for (const squad of heat.squads) {
+      lines.push(
+        line(
+          squad,
+          ...heat.severities.map((sev) => heat.open[squad]?.[sev] ?? 0),
+          heat.row_totals[squad] ?? 0,
+        ),
+      );
+    }
+    lines.push('');
+  }
+
   return lines.join('\n');
 }

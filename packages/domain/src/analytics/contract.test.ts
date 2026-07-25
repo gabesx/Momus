@@ -186,6 +186,36 @@ describe('analytics M1 contract', () => {
     }
   });
 
+  it('distribution exposes a squad_heat matrix', () => {
+    const rows: AnalyticsIssueRow[] = [
+      {
+        project: 'AO',
+        real_project: 'operation',
+        created_date: '2026-06-01T00:00:00+07:00',
+        created_year: 2026,
+        is_open: true,
+        issue_type: 'Bug',
+        severity_issue: 'Critical',
+      },
+      {
+        project: 'AO',
+        real_project: 'operation',
+        created_date: '2026-06-02T00:00:00+07:00',
+        created_year: 2026,
+        is_open: true,
+        issue_type: 'Bug',
+        severity_issue: 'Major',
+      },
+    ];
+    const heat = computeAnalyticsSummary(rows, nowIso).distribution.squad_heat!;
+    expect(heat.squads).toEqual(['operation']);
+    expect(heat.severities).toEqual(['Critical', 'Major']);
+    expect(heat.open.operation).toEqual({ Critical: 1, Major: 1 });
+    expect(heat.row_totals).toEqual({ operation: 2 });
+    expect(heat.col_totals).toEqual({ Critical: 1, Major: 1 });
+    expect(heat.max).toBe(1);
+  });
+
   it('exports KPI threshold defaults and period-detail shape', () => {
     expect(ANALYTICS_KPI_THRESHOLDS.open_warning).toBe(100);
     expect(ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days).toBe(30);

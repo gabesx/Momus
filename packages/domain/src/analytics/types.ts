@@ -164,6 +164,26 @@ export type AnalyticsSummaryOptions = {
   prod_labels?: readonly string[];
 };
 
+/**
+ * Squad × severity matrix of OPEN issue counts — the concentration view behind
+ * `by_squad`. Squads (rows) share `by_squad`'s key; severities (columns) are
+ * ordered Critical→Major→Minor→Low then any others, blanks as 'Unspecified'.
+ */
+export type AnalyticsSquadHeat = {
+  /** Row order: worst first (open Critical/Major desc → open desc → name). */
+  squads: string[];
+  /** Column order: fixed priority list, then remaining severities alphabetically. */
+  severities: string[];
+  /** open[squad][severity] = open issue count. */
+  open: Record<string, Record<string, number>>;
+  /** Open issues per squad (row total). */
+  row_totals: Record<string, number>;
+  /** Open issues per severity (column total). */
+  col_totals: Record<string, number>;
+  /** Largest single cell — for UI intensity scaling (0 when empty). */
+  max: number;
+};
+
 export type AnalyticsDistributionResult = {
   /** real_project (fallback project), sorted by total desc */
   by_squad: AnalyticsDistributionEntry[];
@@ -172,6 +192,8 @@ export type AnalyticsDistributionResult = {
   /** engineer_assignee (fallback test_engineer_assignee), sorted by open desc */
   by_engineer: AnalyticsDistributionEntry[];
   traceability: { linked: number; total: number; pct: number };
+  /** Squad × severity open-issue matrix (concentration view). */
+  squad_heat?: AnalyticsSquadHeat;
 };
 
 export type AnalyticsTrendsResult = {

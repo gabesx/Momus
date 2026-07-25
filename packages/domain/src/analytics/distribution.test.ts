@@ -69,5 +69,58 @@ describe('computeAnalyticsDistribution', () => {
     const res = computeAnalyticsDistribution([]);
     expect(res.by_squad).toEqual([]);
     expect(res.traceability).toEqual({ linked: 0, total: 0, pct: 0 });
+    expect(res.squad_heat).toEqual({
+      squads: [],
+      severities: [],
+      open: {},
+      row_totals: {},
+      col_totals: {},
+      max: 0,
+    });
+  });
+});
+
+describe('computeAnalyticsDistribution squad_heat', () => {
+  it('builds a squad × severity matrix of open counts', () => {
+    const res = computeAnalyticsDistribution([
+      row({ project: 'AO', real_project: 'operation', is_open: true, severity_issue: 'Critical' }),
+      row({ project: 'AO', real_project: 'operation', is_open: true, severity_issue: 'Major' }),
+      row({ project: 'AO', real_project: 'operation', is_open: true, severity_issue: 'Major' }),
+      row({ project: 'FIN', real_project: 'FIN', is_open: true, severity_issue: 'Minor' }),
+      // closed rows never enter the heat map
+      row({ project: 'AO', real_project: 'operation', is_open: false, severity_issue: 'Critical' }),
+    ]);
+    const heat = res.squad_heat!;
+    expect(heat.open.operation).toEqual({ Critical: 1, Major: 2 });
+    expect(heat.open.FIN).toEqual({ Minor: 1 });
+    expect(heat.row_totals).toEqual({ operation: 3, FIN: 1 });
+    expect(heat.col_totals).toEqual({ Critical: 1, Major: 2, Minor: 1 });
+    expect(heat.max).toBe(2);
+  });
+
+  it('orders severities by priority then squads worst-first', () => {
+    const res = computeAnalyticsDistribution([
+      // FIN: 1 Critical (worst)
+      row({ project: 'FIN', real_project: 'FIN', is_open: true, severity_issue: 'Critical' }),
+      // ops: 3 open but all Minor (no critical/major)
+      row({ project: 'A', real_project: 'ops', is_open: true, severity_issue: 'Minor' }),
+      row({ project: 'A', real_project: 'ops', is_open: true, severity_issue: 'Low' }),
+      row({ project: 'A', real_project: 'ops', is_open: true, severity_issue: 'Minor' }),
+    ]);
+    const heat = res.squad_heat!;
+    expect(heat.severities).toEqual(['Critical', 'Minor', 'Low']);
+    // FIN first (1 open Critical/Major) even though ops has more open overall
+    expect(heat.squads).toEqual(['FIN', 'ops']);
+  });
+
+  it('buckets blank severity as Unspecified and sorts it after known severities', () => {
+    const res = computeAnalyticsDistribution([
+      row({ project: 'A', real_project: 'ops', is_open: true, severity_issue: 'Major' }),
+      row({ project: 'A', real_project: 'ops', is_open: true, severity_issue: '  ' }),
+      row({ project: 'A', real_project: 'ops', is_open: true }),
+    ]);
+    const heat = res.squad_heat!;
+    expect(heat.severities).toEqual(['Major', 'Unspecified']);
+    expect(heat.open.ops).toEqual({ Major: 1, Unspecified: 2 });
   });
 });
