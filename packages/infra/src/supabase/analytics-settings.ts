@@ -24,6 +24,10 @@ export type KpiThresholdKey = keyof typeof KPI_THRESHOLD_BOUNDS;
 /** Chat provider the weekly digest webhook targets. */
 export type DigestProvider = 'slack' | 'google_chat';
 
+/** Day-of-week the weekly digest is sent (Asia/Jakarta). */
+export type DigestDay = 'mon' | 'tue' | 'wed' | 'thu' | 'fri' | 'sat' | 'sun';
+export const DIGEST_DAYS: readonly DigestDay[] = ['mon', 'tue', 'wed', 'thu', 'fri', 'sat', 'sun'];
+
 /** Expected webhook host per provider, used to validate the configured URL. */
 export const DIGEST_PROVIDER_HOSTS: Record<DigestProvider, string> = {
   slack: 'hooks.slack.com',
@@ -42,6 +46,10 @@ export type AnalyticsSettings = {
   digest_enabled: boolean;
   digest_provider: DigestProvider;
   digest_webhook_url: string;
+  /** Day-of-week the digest is sent (Asia/Jakarta). */
+  digest_day: DigestDay;
+  /** Hour-of-day the digest is sent, 0–23 (Asia/Jakarta). */
+  digest_hour: number;
 } & Record<KpiThresholdKey, number>;
 
 export const DEFAULT_ANALYTICS_SETTINGS: AnalyticsSettings = {
@@ -54,6 +62,8 @@ export const DEFAULT_ANALYTICS_SETTINGS: AnalyticsSettings = {
   digest_enabled: false,
   digest_provider: 'slack',
   digest_webhook_url: '',
+  digest_day: 'mon',
+  digest_hour: 8,
   open_warning: ANALYTICS_KPI_THRESHOLDS.open_warning,
   avg_age_warning_days: ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days,
   resolution_rate_healthy_pct: ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct,
@@ -123,6 +133,10 @@ export function normalizeAnalyticsSettings(raw: unknown): AnalyticsSettings {
     digest_enabled: value.digest_enabled === true,
     digest_provider: value.digest_provider === 'google_chat' ? 'google_chat' : 'slack',
     digest_webhook_url: webhook,
+    digest_day: DIGEST_DAYS.includes(value.digest_day as DigestDay)
+      ? (value.digest_day as DigestDay)
+      : d.digest_day,
+    digest_hour: boundedNumber(value.digest_hour, d.digest_hour, 0, 23),
     ...kpi,
   };
 }
@@ -168,6 +182,15 @@ export function parseAnalyticsSettings(body: unknown): AnalyticsSettings {
     value.digest_provider !== 'google_chat'
   ) {
     throw new Error("digest_provider must be 'slack' or 'google_chat'");
+  }
+  if (value.digest_day !== undefined && !DIGEST_DAYS.includes(value.digest_day as DigestDay)) {
+    throw new Error('digest_day must be one of mon, tue, wed, thu, fri, sat, sun');
+  }
+  if (value.digest_hour !== undefined) {
+    const h = Number(value.digest_hour);
+    if (!Number.isInteger(h) || h < 0 || h > 23) {
+      throw new Error('digest_hour must be an integer between 0 and 23');
+    }
   }
   const webhook =
     typeof value.digest_webhook_url === 'string' ? value.digest_webhook_url.trim() : '';
