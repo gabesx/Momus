@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import { MESSAGES } from '@momus/shared';
+import { useHasPermission } from '@/lib/use-me';
 
 type Props = {
   onOpenBug: () => void;
@@ -18,6 +19,8 @@ export function DashboardHeader({
   exportHref,
   settingsHref = '/settings/atlassian#bug-budget',
 }: Props) {
+  const canAccessSettings = useHasPermission('access_settings');
+
   return (
     <header className="bb-dash-header">
       <div>
@@ -31,9 +34,11 @@ export function DashboardHeader({
         <button type="button" className="btn btn-outline" onClick={onOpenDefect}>
           Open Defect Summary
         </button>
-        <Link className="btn btn-outline" href={settingsHref}>
-          Settings
-        </Link>
+        {canAccessSettings ? (
+          <Link className="btn btn-outline" href={settingsHref}>
+            Settings
+          </Link>
+        ) : null}
         <button type="button" className="btn btn-outline" onClick={onColumns}>
           Columns
         </button>

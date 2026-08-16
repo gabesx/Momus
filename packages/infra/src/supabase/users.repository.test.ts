@@ -37,6 +37,23 @@ describe('normalizePermissions', () => {
   });
 });
 
+/**
+ * user_permissions mock. `delete().eq()` is awaited directly when clearing all rows,
+ * or chained with `.not()` when keeping the newly upserted set.
+ */
+function permissionsTable() {
+  const resolved = { error: null };
+  const eqResult = {
+    not: vi.fn().mockResolvedValue(resolved),
+    then: (onFulfilled: (value: typeof resolved) => unknown) => Promise.resolve(resolved).then(onFulfilled),
+  };
+  return {
+    delete: vi.fn().mockReturnValue({ eq: vi.fn().mockReturnValue(eqResult) }),
+    upsert: vi.fn().mockResolvedValue(resolved),
+    insert: vi.fn().mockResolvedValue(resolved),
+  };
+}
+
 function makeUserRow(overrides: Partial<Record<string, unknown>> = {}) {
   return {
     id: 1,
@@ -140,12 +157,7 @@ function makeAllowlistDb(options: {
       }
       if (table === 'users') return usersTable;
       if (table === 'user_permissions') {
-        return {
-          delete: vi.fn().mockReturnValue({
-            eq: vi.fn().mockResolvedValue({ error: null }),
-          }),
-          insert: vi.fn().mockResolvedValue({ error: null }),
-        };
+        return permissionsTable();
       }
       throw new Error(`unexpected table: ${table}`);
     }),
@@ -426,10 +438,7 @@ describe('UsersRepository', () => {
       from: vi.fn((table: string) => {
         if (table === 'users') return usersTable;
         if (table === 'user_permissions') {
-          return {
-            delete: vi.fn().mockReturnValue({ eq: vi.fn().mockResolvedValue({ error: null }) }),
-            insert: vi.fn().mockResolvedValue({ error: null }),
-          };
+          return permissionsTable();
         }
         return {};
       }),

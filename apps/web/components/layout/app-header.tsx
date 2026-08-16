@@ -18,6 +18,7 @@ const NAV = [
     href: '/reports/executive',
     label: 'Executive Report',
     match: (p: string) => p.startsWith('/reports'),
+    requires: 'view_executive_reports' as const,
   },
   {
     href: '/tracker',
@@ -28,6 +29,7 @@ const NAV = [
     href: '/leaderboard',
     label: 'Leaderboard',
     match: (p: string) => p.startsWith('/leaderboard'),
+    requires: 'view_leaderboard' as const,
   },
   {
     href: '/bug-budget',

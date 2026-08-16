@@ -27,6 +27,8 @@ const PERMISSION_OPTIONS = [
   { key: 'view_analytics', label: 'View Analytics' },
   { key: 'access_settings', label: 'Access Settings' },
   { key: 'manage_users', label: 'Manage Users' },
+  { key: 'view_executive_reports', label: 'View Executive Report' },
+  { key: 'view_leaderboard', label: 'View Leaderboard' },
 ] as const;
 
 type PermissionKey = (typeof PERMISSION_OPTIONS)[number]['key'];
@@ -37,6 +39,8 @@ const DEFAULT_PERMISSIONS: PermissionFlags = {
   view_analytics: true,
   access_settings: false,
   manage_users: false,
+  view_executive_reports: false,
+  view_leaderboard: false,
 };
 
 function permissionsFromFlags(flags: PermissionFlags): string[] {

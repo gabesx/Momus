@@ -7,14 +7,14 @@ import {
   type TrackerMissingFieldKey,
 } from '@momus/domain';
 import { BugBudgetQueryRepository, createServerClient, getJiraSettings } from '@momus/infra';
-import { requireViewAnalytics } from '@/lib/auth';
+import { requireViewLeaderboard } from '@/lib/auth';
 import { mapBugBudgetToLeaderboardRow } from '@/lib/leaderboard-map';
 import { leaderboardParamsFromUrl } from '@/lib/leaderboard-params';
 import { leaderboardSqlRange } from '@/lib/load-leaderboard';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 export async function GET(request: Request) {
-  const auth = await requireViewAnalytics();
+  const auth = await requireViewLeaderboard();
   if ('error' in auth) return auth.error;
   try {
     const url = new URL(request.url);

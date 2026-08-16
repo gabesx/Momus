@@ -5,7 +5,12 @@ import { mapMomusUser, type AuthUser, type MomusUserRow } from '@/lib/auth-map';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
 export type { AuthUser };
-export type UserPermission = 'view_analytics' | 'access_settings' | 'manage_users';
+export type UserPermission =
+  | 'view_analytics'
+  | 'access_settings'
+  | 'manage_users'
+  | 'view_executive_reports'
+  | 'view_leaderboard';
 
 export type SessionResult =
   | { user: AuthUser; access: 'ok' }
@@ -225,6 +230,18 @@ export async function requireManageUsers(): Promise<
   { user: AuthUser } | { error: NextResponse }
 > {
   return requirePermission('manage_users');
+}
+
+export async function requireViewExecutiveReports(): Promise<
+  { user: AuthUser } | { error: NextResponse }
+> {
+  return requirePermission('view_executive_reports');
+}
+
+export async function requireViewLeaderboard(): Promise<
+  { user: AuthUser } | { error: NextResponse }
+> {
+  return requirePermission('view_leaderboard');
 }
 
 /** Lightweight CSRF guard for state-changing routes (BB-NFR / conventions). */
