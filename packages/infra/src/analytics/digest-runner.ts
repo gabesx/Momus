@@ -2,10 +2,16 @@ import type { SupabaseClient } from '@supabase/supabase-js';
 import {
   buildExecutiveDigestMessage,
   buildProductDigestMessage,
+  chunkDigest,
   computeExecutiveSummary,
   computeProductHealth,
+  criticalMajor,
   hasDigestContent,
   listProductsByRisk,
+  weekRangeLabel,
+  weeklySeries,
+  type DigestLinkStyle,
+  type DigestThresholds,
 } from '@momus/domain';
 import { BugBudgetQueryRepository } from '../supabase/bug-budget-query';
 import { getJiraSettings } from '../supabase/settings';
@@ -64,7 +70,8 @@ export async function runAnalyticsDigest(
   const repo = new BugBudgetQueryRepository(db);
   const all = await repo.listAllForFilters();
   const nowIso = new Date().toISOString();
-  const linkStyle = settings.digest_provider === 'google_chat' ? 'plain' : 'slack';
+  const linkStyle: DigestLinkStyle =
+    settings.digest_provider === 'google_chat' ? 'plain' : 'slack';
 
   const appUrl = process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, '');
   const dashboardUrl = opts.dashboardUrl ?? (appUrl ? `${appUrl}/reports/executive` : undefined);
@@ -78,19 +85,36 @@ export async function runAnalyticsDigest(
   }
 
   const summary = computeExecutiveSummary(all, nowIso);
+  // topN 5: only the attention list is rendered now, so 10 was wasted work.
   const products = listProductsByRisk(all)
-    .map((p) => computeProductHealth(all, p, nowIso))
+    .map((p) => computeProductHealth(all, p, nowIso, 5))
     .filter(hasDigestContent);
+
+  const thresholds: DigestThresholds = {
+    open_warning: settings.open_warning,
+    open_critical_major_pct_warning: settings.open_critical_major_pct_warning,
+    resolution_rate_healthy_pct: settings.resolution_rate_healthy_pct,
+  };
+  const shared = { dateLabel: weekRangeLabel(nowIso), jiraBase, dashboardUrl, linkStyle, thresholds };
+
+  const openTotals = products.reduce(
+    (acc, h) => {
+      const { count } = criticalMajor(h);
+      return { cm: acc.cm + count, open: acc.open + h.open_total };
+    },
+    { cm: 0, open: 0 },
+  );
+  const criticalMajorPct =
+    openTotals.open > 0 ? Math.round((openTotals.cm / openTotals.open) * 100) : 0;
 
   const messages = [
     buildExecutiveDigestMessage(summary, {
-      dateLabel: nowIso.slice(0, 10),
-      jiraBase,
-      dashboardUrl,
-      linkStyle,
+      ...shared,
+      flow: weeklySeries(all, nowIso),
+      criticalMajorPct,
     }),
-    ...products.map((h) => buildProductDigestMessage(h, { jiraBase, linkStyle })),
-  ];
+    ...products.map((h) => buildProductDigestMessage(h, shared)),
+  ].flatMap((m) => chunkDigest(m));
 
   for (let i = 0; i < messages.length; i++) {
     if (i > 0) await sleep(1200); // stay under the ~1 msg/sec chat webhook limit
