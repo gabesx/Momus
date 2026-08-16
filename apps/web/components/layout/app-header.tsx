@@ -2,15 +2,9 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { apiJson } from '@/lib/api-client';
-
-type MeUser = {
-  id: number;
-  email: string;
-  name: string;
-  permissions: string[];
-};
+import { clearMeCache, useMe } from '@/lib/use-me';
 
 const NAV = [
   {
@@ -62,19 +56,9 @@ export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [user, setUser] = useState<MeUser | null>(null);
+  const { user, loaded } = useMe();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-
-  const loadMe = useCallback(async () => {
-    const res = await apiJson<{ user?: MeUser }>('/api/me');
-    if (res.success && res.user) setUser(res.user);
-    else setUser(null);
-  }, []);
-
-  useEffect(() => {
-    void loadMe();
-  }, [loadMe]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -96,6 +80,7 @@ export function AppHeader() {
     }
     setSigningOut(false);
     setMenuOpen(false);
+    clearMeCache();
     router.push('/sign-in');
     router.refresh();
   };
@@ -108,9 +93,11 @@ export function AppHeader() {
     return null;
   }
 
-  const links = NAV.filter(
-    (item) => !item.requires || user?.permissions.includes(item.requires),
-  );
+  // Gated links stay out until permissions are known, so the nav renders once
+  // rather than popping extra items in when /api/me lands.
+  const links = loaded
+    ? NAV.filter((item) => !item.requires || user?.permissions.includes(item.requires))
+    : NAV.filter((item) => !item.requires);
 
   return (
     <header className="bb-app-header">

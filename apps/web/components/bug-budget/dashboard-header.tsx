@@ -2,7 +2,7 @@
 
 import Link from 'next/link';
 import { MESSAGES } from '@momus/shared';
-import { useHasPermission } from '@/lib/use-me';
+import { useMe } from '@/lib/use-me';
 
 type Props = {
   onOpenBug: () => void;
@@ -19,7 +19,8 @@ export function DashboardHeader({
   exportHref,
   settingsHref = '/settings/atlassian#bug-budget',
 }: Props) {
-  const canAccessSettings = useHasPermission('access_settings');
+  const { user, loaded } = useMe();
+  const canAccessSettings = loaded && !!user?.permissions.includes('access_settings');
 
   return (
     <header className="bb-dash-header">
