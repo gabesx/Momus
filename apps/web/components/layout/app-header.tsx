@@ -4,53 +4,9 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { apiJson } from '@/lib/api-client';
+import { APP_ROUTES } from '@/lib/routes';
 import { clearMeCache, useMe } from '@/lib/use-me';
 
-const NAV = [
-  {
-    href: '/',
-    label: 'Defect Analytics',
-    match: (p: string) => p === '/',
-    requires: 'view_analytics' as const,
-  },
-  {
-    href: '/reports/executive',
-    label: 'Executive Report',
-    match: (p: string) => p.startsWith('/reports'),
-    requires: 'view_executive_reports' as const,
-  },
-  {
-    href: '/tracker',
-    label: 'Defect Tracker',
-    match: (p: string) => p.startsWith('/tracker'),
-    requires: 'view_analytics' as const,
-  },
-  {
-    href: '/leaderboard',
-    label: 'Leaderboard',
-    match: (p: string) => p.startsWith('/leaderboard'),
-    requires: 'view_leaderboard' as const,
-  },
-  {
-    href: '/bug-budget',
-    label: 'Bug Budget',
-    match: (p: string) => p.startsWith('/bug-budget'),
-    requires: 'view_analytics' as const,
-  },
-  {
-    href: '/settings/users',
-    label: 'Users',
-    match: (p: string) => p.startsWith('/settings/users'),
-    requires: 'manage_users' as const,
-  },
-  {
-    href: '/settings/atlassian',
-    label: 'Settings',
-    match: (p: string) =>
-      p.startsWith('/settings') && !p.startsWith('/settings/users'),
-    requires: 'access_settings' as const,
-  },
-];
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -95,9 +51,11 @@ export function AppHeader() {
 
   // Gated links stay out until permissions are known, so the nav renders once
   // rather than popping extra items in when /api/me lands.
+  // Nothing gated renders until permissions are known, so the nav appears once
+  // in its final state rather than popping items in when /api/me lands.
   const links = loaded
-    ? NAV.filter((item) => !item.requires || user?.permissions.includes(item.requires))
-    : NAV.filter((item) => !item.requires);
+    ? APP_ROUTES.filter((route) => user?.permissions.includes(route.permission))
+    : [];
 
   return (
     <header className="bb-app-header">

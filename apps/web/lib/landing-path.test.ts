@@ -1,6 +1,9 @@
+import { readdirSync, readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import { ALL_USER_PERMISSIONS } from '@momus/shared';
-import { LANDING_ROUTES, landingPathFor } from './landing-path';
+import { landingPathFor } from './landing-path';
+import { APP_ROUTES } from './routes';
 
 describe('landingPathFor', () => {
   it('sends analytics users to the dashboard', () => {
@@ -28,9 +31,9 @@ describe('landingPathFor', () => {
   it('never returns a page the user cannot open', () => {
     for (const permission of ALL_USER_PERMISSIONS) {
       const target = landingPathFor([permission]);
-      const route = LANDING_ROUTES.find((r) => r.path === target);
+      const route = APP_ROUTES.find((r) => r.href === target);
       expect(route, `no landing route for ${permission}`).toBeDefined();
-      expect([permission]).toContain(route?.permission);
+      expect(route?.permission).toBe(permission);
     }
   });
 
@@ -38,5 +41,57 @@ describe('landingPathFor', () => {
     for (const permission of ALL_USER_PERMISSIONS) {
       expect(landingPathFor([permission])).not.toBe('/no-access');
     }
+  });
+});
+
+/**
+ * Pages that intentionally render without a permission check: the signed-out
+ * flow, plus redirect-only shims that render nothing and forward to a page
+ * which is itself gated.
+ */
+const UNGATED_PAGES = new Set([
+  'sign-in',
+  'pending-approval',
+  'no-access',
+  'auth/auth-code-error',
+  'analytics', // redirects to /
+  'signed-out', // redirects to /sign-in
+]);
+
+function findPages(dir: string, base = ''): string[] {
+  const out: string[] = [];
+  for (const entry of readdirSync(dir, { withFileTypes: true })) {
+    const rel = base ? `${base}/${entry.name}` : entry.name;
+    if (entry.isDirectory()) {
+      if (entry.name === 'api') continue;
+      out.push(...findPages(join(dir, entry.name), rel));
+    } else if (entry.name === 'page.tsx') {
+      out.push(base || '/');
+    }
+  }
+  return out;
+}
+
+/**
+ * Catches the gap where a new page ships reachable by URL because only its API
+ * was gated — the reason /bug-budget/[id] slipped through review.
+ */
+describe('page guards', () => {
+  const appDir = join(__dirname, '..', 'app');
+
+  it('every page either checks a permission or is explicitly public', () => {
+    const ungated: string[] = [];
+
+    for (const page of findPages(appDir)) {
+      if (UNGATED_PAGES.has(page)) continue;
+      const file = join(appDir, page === '/' ? '' : page, 'page.tsx');
+      if (!readFileSync(file, 'utf8').includes('requirePagePermission')) {
+        ungated.push(page);
+      }
+    }
+
+    expect(ungated, `add requirePagePermission or list as public: ${ungated.join(', ')}`).toEqual(
+      [],
+    );
   });
 });

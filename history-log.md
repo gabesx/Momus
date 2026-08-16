@@ -21,6 +21,23 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ## Changelog
 
+### 2026-08-17 — Per-page permissions (Executive Report + Leaderboard)
+
+| Event | Details |
+|---|---|
+| **Permissions** | Added `view_executive_reports` and `view_leaderboard` to the existing checklist (BB-PERM-01) rather than introducing roles — access control was already a `user_permissions` join table, so a role system would have been a second parallel mechanism |
+| **Migration** | `20260817000000_add_report_permissions.sql` — widens the CHECK constraint and backfills both permissions for existing users |
+| **Gating** | `/reports/executive` and `/leaderboard` now require their own permission instead of the broader `view_analytics`; drilldown API (`/api/leaderboard/reporter-issues`) follows the page |
+| **Page guards** | Every page now calls `requirePagePermission`. Previously only API routes were gated, so `/`, `/tracker`, `/bug-budget`, `/bug-budget/[id]`, `/reports/executive`, `/settings/atlassian` and `/settings/users` all rendered for any approved user by direct URL |
+| **Redirect target** | Guards redirect to `landingPathFor(permissions)` — the first page the user actually holds — because a hard-coded `/` looped once `/` itself became gated. Users with no permissions get `/no-access` |
+| **Single source of truth** | `lib/routes.ts` (`APP_ROUTES`) drives both the header nav and the fallback redirect; `@momus/shared` owns the permission list, with the infra allowlist and `lib/auth` deriving from it |
+| **Session fetch** | `useMe()` memoises `/api/me` at module scope so several components share one request, and reports `loaded` so gated links are not hidden merely because permissions have not arrived |
+| **Tests** | `landing-path.test.ts` asserts the no-loop invariant and that no page ships ungated — the latter caught `/bug-budget/[id]` |
+
+**Fixed along the way:** `replacePermissions` deleted every row before inserting the new set, so an insert rejected by the DB constraint left the user with zero permissions and locked out of the admin UI. It now upserts first and deletes only what is no longer granted.
+
+**Operational note:** the migration was applied to production out-of-band and is recorded in `schema_migrations`. Invite/approve defaults grant both new permissions so newly approved users match the backfill.
+
 ### 2026-07-12 — Google OAuth2 + approval allowlist
 
 | Event | Details |
@@ -222,6 +239,18 @@ Structured changelog documenting implementation progress, design decisions, comp
 
 ---
 
+### DD-009: Permission Checklist over Roles for Page Access (2026-08-17)
+
+**Decision:** Gate per-page access by adding keys to the existing permission checklist (`view_executive_reports`, `view_leaderboard`) rather than introducing admin/manager roles.
+
+**Rationale:** There is no `role` column anywhere in the schema — access has always been a `user_permissions` join table enforced by `requirePermission()`. Adding roles would mean maintaining two parallel access systems that can disagree, for no capability the checklist lacks. Roles become worth revisiting if the permission list grows large enough that assigning them individually is error-prone.
+
+**Consequence:** Each new gated page costs one permission key across four places — `@momus/shared`, the DB CHECK constraint, `APP_ROUTES`, and the users admin labels. Three of the four now fail the build or a test if missed.
+
+**Alternatives considered:** Role column with a role→permission map (rejected — second source of truth); reusing `view_analytics` for both pages (rejected — the point was to restrict these two pages independently of general analytics access).
+
+---
+
 ## Completed Features
 
 | Feature | Phase | Date | PRD Refs |
@@ -233,6 +262,7 @@ Structured changelog documenting implementation progress, design decisions, comp
 | Seed data (multipliers, mappings, holidays) | 0 | 2026-07-11 | §4.5C, Appendix A prep |
 | Docker Compose (web + Inngest) | 0 | 2026-07-11 | plan.md §9 |
 | CI pipeline (GitHub Actions) | 0 | 2026-07-11 | plan.md Phase 0 |
+| Per-page permissions + server-side page guards | — | 2026-08-17 | BB-PERM-01 |
 | PRD analysis | — | 2026-07-11 | Full document |
 | Implementation plan | — | 2026-07-11 | §15 traceability |
 | Development conventions | — | 2026-07-11 | — |
