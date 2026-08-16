@@ -1,16 +1,11 @@
 import { NextResponse } from 'next/server';
 import { canAccessApp } from '@momus/domain';
+import type { UserPermission } from '@momus/shared';
 import { createServerClient } from '@momus/infra/supabase';
 import { mapMomusUser, type AuthUser, type MomusUserRow } from '@/lib/auth-map';
 import { createSupabaseServerClient } from '@/lib/supabase/server';
 
-export type { AuthUser };
-export type UserPermission =
-  | 'view_analytics'
-  | 'access_settings'
-  | 'manage_users'
-  | 'view_executive_reports'
-  | 'view_leaderboard';
+export type { AuthUser, UserPermission };
 
 export type SessionResult =
   | { user: AuthUser; access: 'ok' }

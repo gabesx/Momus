@@ -21,8 +21,14 @@ export default async function LeaderboardPage({ searchParams }: Props) {
 
   const result = await loadLeaderboard(params);
   if ('error' in result) {
-    const next = encodeURIComponent(`/leaderboard${url.search}`);
-    redirect(`/sign-in?next=${next}`);
+    // 401 means signed out, so a sign-in round trip actually helps. 403 means
+    // signed in without view_leaderboard — sending those to /sign-in just
+    // bounces them straight back here, so send them home like Settings does.
+    if (result.error.status === 401) {
+      const next = encodeURIComponent(`/leaderboard${url.search}`);
+      redirect(`/sign-in?next=${next}`);
+    }
+    redirect('/');
   }
 
   return <LeaderboardDashboard initialData={result.data} initialParams={params} />;

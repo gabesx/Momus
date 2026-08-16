@@ -5,16 +5,11 @@ import {
   type ApprovalStatus,
   type AuthSignInMethod,
 } from '@momus/domain';
+import { ALL_USER_PERMISSIONS } from '@momus/shared';
 import type { SupabaseClient, User as AuthUser } from '@supabase/supabase-js';
 import { AuthAllowlistRepository } from './auth-allowlist.repository';
 
-const ALLOWED_PERMISSIONS = new Set([
-  'view_analytics',
-  'access_settings',
-  'manage_users',
-  'view_executive_reports',
-  'view_leaderboard',
-]);
+const ALLOWED_PERMISSIONS = new Set<string>(ALL_USER_PERMISSIONS);
 
 const MIN_PASSWORD_LENGTH = 8;
 
