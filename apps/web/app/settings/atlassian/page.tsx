@@ -1,6 +1,5 @@
-import { redirect } from 'next/navigation';
 import { AtlassianSettings, type SettingsTab } from '@/components/settings/atlassian-settings';
-import { getSessionUser } from '@/lib/auth';
+import { requirePagePermission } from '@/lib/page-guard';
 
 type SearchParams = Promise<{ tab?: string }>;
 
@@ -16,14 +15,7 @@ export default async function AtlassianSettingsPage({
 }: {
   searchParams: SearchParams;
 }) {
-  const session = await getSessionUser();
-  if (
-    'error' in session ||
-    session.access !== 'ok' ||
-    !session.user.permissions.includes('access_settings')
-  ) {
-    redirect('/');
-  }
+  await requirePagePermission('access_settings');
 
   const sp = await searchParams;
   return (

@@ -13,7 +13,12 @@ type MeUser = {
 };
 
 const NAV = [
-  { href: '/', label: 'Defect Analytics', match: (p: string) => p === '/' },
+  {
+    href: '/',
+    label: 'Defect Analytics',
+    match: (p: string) => p === '/',
+    requires: 'view_analytics' as const,
+  },
   {
     href: '/reports/executive',
     label: 'Executive Report',
@@ -24,6 +29,7 @@ const NAV = [
     href: '/tracker',
     label: 'Defect Tracker',
     match: (p: string) => p.startsWith('/tracker'),
+    requires: 'view_analytics' as const,
   },
   {
     href: '/leaderboard',
@@ -35,6 +41,7 @@ const NAV = [
     href: '/bug-budget',
     label: 'Bug Budget',
     match: (p: string) => p.startsWith('/bug-budget'),
+    requires: 'view_analytics' as const,
   },
   {
     href: '/settings/users',

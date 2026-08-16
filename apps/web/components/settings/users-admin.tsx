@@ -42,12 +42,17 @@ type PermissionKey = UserPermission;
 
 type PermissionFlags = Record<PermissionKey, boolean>;
 
+/**
+ * Matches what the 20260817000000 migration backfilled for existing users, so a
+ * newly approved account sees the same pages as everyone else. The two admin
+ * permissions stay opt-in.
+ */
 const DEFAULT_PERMISSIONS: PermissionFlags = {
   view_analytics: true,
   access_settings: false,
   manage_users: false,
-  view_executive_reports: false,
-  view_leaderboard: false,
+  view_executive_reports: true,
+  view_leaderboard: true,
 };
 
 function permissionsFromFlags(flags: PermissionFlags): string[] {
