@@ -1,4 +1,5 @@
 import { AtlassianSettings, type SettingsTab } from '@/components/settings/atlassian-settings';
+import { requirePagePermission } from '@/lib/page-guard';
 
 type SearchParams = Promise<{ tab?: string }>;
 
@@ -14,6 +15,8 @@ export default async function AtlassianSettingsPage({
 }: {
   searchParams: SearchParams;
 }) {
+  await requirePagePermission('access_settings');
+
   const sp = await searchParams;
   return (
     <main>

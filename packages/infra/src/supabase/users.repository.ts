@@ -5,14 +5,11 @@ import {
   type ApprovalStatus,
   type AuthSignInMethod,
 } from '@momus/domain';
+import { ALL_USER_PERMISSIONS } from '@momus/shared';
 import type { SupabaseClient, User as AuthUser } from '@supabase/supabase-js';
 import { AuthAllowlistRepository } from './auth-allowlist.repository';
 
-const ALLOWED_PERMISSIONS = new Set([
-  'view_analytics',
-  'access_settings',
-  'manage_users',
-]);
+const ALLOWED_PERMISSIONS = new Set<string>(ALL_USER_PERMISSIONS);
 
 const MIN_PASSWORD_LENGTH = 8;
 
@@ -461,25 +458,32 @@ export class UsersRepository {
     return out;
   }
 
+  /**
+   * Insert the new set first, then drop what is no longer granted. Deleting first
+   * would strand the user with zero permissions if the insert is rejected (e.g. a
+   * permission the DB CHECK constraint does not know yet).
+   */
   private async replacePermissions(userId: number, permissions: string[]): Promise<void> {
-    const { error: deleteError } = await this.db
-      .from('user_permissions')
-      .delete()
-      .eq('user_id', userId);
-    if (deleteError) {
-      throw new Error(`replacePermissions delete failed: ${deleteError.message}`);
+    if (permissions.length > 0) {
+      const { error: insertError } = await this.db.from('user_permissions').upsert(
+        permissions.map((permission) => ({
+          user_id: userId,
+          permission,
+        })),
+        { onConflict: 'user_id,permission', ignoreDuplicates: true },
+      );
+      if (insertError) {
+        throw new Error(`replacePermissions insert failed: ${insertError.message}`);
+      }
     }
 
-    if (permissions.length === 0) return;
-
-    const { error: insertError } = await this.db.from('user_permissions').insert(
-      permissions.map((permission) => ({
-        user_id: userId,
-        permission,
-      })),
-    );
-    if (insertError) {
-      throw new Error(`replacePermissions insert failed: ${insertError.message}`);
+    let deleteQuery = this.db.from('user_permissions').delete().eq('user_id', userId);
+    if (permissions.length > 0) {
+      deleteQuery = deleteQuery.not('permission', 'in', `(${permissions.join(',')})`);
+    }
+    const { error: deleteError } = await deleteQuery;
+    if (deleteError) {
+      throw new Error(`replacePermissions delete failed: ${deleteError.message}`);
     }
   }
 }

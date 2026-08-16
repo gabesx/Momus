@@ -1,6 +1,6 @@
 import { computeExecutiveSummary, computeProductHealth, listProductsByRisk } from '@momus/domain';
 import { BugBudgetQueryRepository, createServerClient, getJiraSettings } from '@momus/infra';
-import { requireViewAnalytics } from '@/lib/auth';
+import { requireViewExecutiveReports } from '@/lib/auth';
 import {
   getBugBudgetCacheVersion,
   getCachedAnalytics,
@@ -12,7 +12,7 @@ import { jsonFail, jsonOk } from '@/lib/sync-params';
 const CACHE_KEY = 'report:executive';
 
 export async function GET() {
-  const auth = await requireViewAnalytics();
+  const auth = await requireViewExecutiveReports();
   if ('error' in auth) return auth.error;
   try {
     const db = createServerClient();

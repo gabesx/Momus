@@ -9,7 +9,7 @@ import {
   type LeaderboardResult,
 } from '@momus/domain';
 import { BugBudgetQueryRepository, createServerClient } from '@momus/infra';
-import { requireViewAnalytics } from '@/lib/auth';
+import { requireViewLeaderboard } from '@/lib/auth';
 import { mapBugBudgetToLeaderboardRow } from '@/lib/leaderboard-map';
 
 export type LeaderboardFilterOptions = {
@@ -43,7 +43,7 @@ export async function loadLeaderboard(
   params: LeaderboardFilterParams,
   nowIso = new Date().toISOString(),
 ): Promise<{ data: LeaderboardPayload } | { error: Response }> {
-  const auth = await requireViewAnalytics();
+  const auth = await requireViewLeaderboard();
   if ('error' in auth) return { error: auth.error };
 
   const range = leaderboardSqlRange(params, nowIso);

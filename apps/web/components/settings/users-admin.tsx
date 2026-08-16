@@ -6,6 +6,7 @@ import {
   authSignInMethodLabel,
   type AuthSignInMethod,
 } from '@momus/domain';
+import { ALL_USER_PERMISSIONS, type UserPermission } from '@momus/shared';
 import { apiJson } from '@/lib/api-client';
 
 type UserRecord = {
@@ -23,20 +24,35 @@ type UserRecord = {
 type AdminTab = 'pending' | 'active' | 'allowlist';
 type CreateMode = 'invite' | 'password';
 
-const PERMISSION_OPTIONS = [
-  { key: 'view_analytics', label: 'View Analytics' },
-  { key: 'access_settings', label: 'Access Settings' },
-  { key: 'manage_users', label: 'Manage Users' },
-] as const;
+/** Exhaustive by type: a new UserPermission will not compile without a label. */
+const PERMISSION_LABELS: Record<PermissionKey, string> = {
+  view_analytics: 'View Analytics',
+  access_settings: 'Access Settings',
+  manage_users: 'Manage Users',
+  view_executive_reports: 'View Executive Report',
+  view_leaderboard: 'View Leaderboard',
+};
 
-type PermissionKey = (typeof PERMISSION_OPTIONS)[number]['key'];
+const PERMISSION_OPTIONS = ALL_USER_PERMISSIONS.map((key) => ({
+  key,
+  label: PERMISSION_LABELS[key],
+}));
+
+type PermissionKey = UserPermission;
 
 type PermissionFlags = Record<PermissionKey, boolean>;
 
+/**
+ * Matches what the 20260817000000 migration backfilled for existing users, so a
+ * newly approved account sees the same pages as everyone else. The two admin
+ * permissions stay opt-in.
+ */
 const DEFAULT_PERMISSIONS: PermissionFlags = {
   view_analytics: true,
   access_settings: false,
   manage_users: false,
+  view_executive_reports: true,
+  view_leaderboard: true,
 };
 
 function permissionsFromFlags(flags: PermissionFlags): string[] {

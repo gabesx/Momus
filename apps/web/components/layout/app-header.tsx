@@ -2,70 +2,19 @@
 
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { apiJson } from '@/lib/api-client';
+import { APP_ROUTES } from '@/lib/routes';
+import { clearMeCache, useMe } from '@/lib/use-me';
 
-type MeUser = {
-  id: number;
-  email: string;
-  name: string;
-  permissions: string[];
-};
-
-const NAV = [
-  { href: '/', label: 'Defect Analytics', match: (p: string) => p === '/' },
-  {
-    href: '/reports/executive',
-    label: 'Executive Report',
-    match: (p: string) => p.startsWith('/reports'),
-  },
-  {
-    href: '/tracker',
-    label: 'Defect Tracker',
-    match: (p: string) => p.startsWith('/tracker'),
-  },
-  {
-    href: '/leaderboard',
-    label: 'Leaderboard',
-    match: (p: string) => p.startsWith('/leaderboard'),
-  },
-  {
-    href: '/bug-budget',
-    label: 'Bug Budget',
-    match: (p: string) => p.startsWith('/bug-budget'),
-  },
-  {
-    href: '/settings/users',
-    label: 'Users',
-    match: (p: string) => p.startsWith('/settings/users'),
-    requires: 'manage_users' as const,
-  },
-  {
-    href: '/settings/atlassian',
-    label: 'Settings',
-    match: (p: string) =>
-      p.startsWith('/settings') && !p.startsWith('/settings/users'),
-    requires: 'access_settings' as const,
-  },
-];
 
 export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
-  const [user, setUser] = useState<MeUser | null>(null);
+  const { user, loaded } = useMe();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
-
-  const loadMe = useCallback(async () => {
-    const res = await apiJson<{ user?: MeUser }>('/api/me');
-    if (res.success && res.user) setUser(res.user);
-    else setUser(null);
-  }, []);
-
-  useEffect(() => {
-    void loadMe();
-  }, [loadMe]);
 
   useEffect(() => {
     if (!menuOpen) return;
@@ -87,6 +36,7 @@ export function AppHeader() {
     }
     setSigningOut(false);
     setMenuOpen(false);
+    clearMeCache();
     router.push('/sign-in');
     router.refresh();
   };
@@ -99,9 +49,13 @@ export function AppHeader() {
     return null;
   }
 
-  const links = NAV.filter(
-    (item) => !item.requires || user?.permissions.includes(item.requires),
-  );
+  // Gated links stay out until permissions are known, so the nav renders once
+  // rather than popping extra items in when /api/me lands.
+  // Nothing gated renders until permissions are known, so the nav appears once
+  // in its final state rather than popping items in when /api/me lands.
+  const links = loaded
+    ? APP_ROUTES.filter((route) => user?.permissions.includes(route.permission))
+    : [];
 
   return (
     <header className="bb-app-header">
