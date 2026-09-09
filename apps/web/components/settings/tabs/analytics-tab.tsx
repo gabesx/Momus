@@ -4,7 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { ANALYTICS_KPI_THRESHOLDS, BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '@momus/domain';
 import type { MenuVisibility } from '@momus/infra';
 import { apiJson } from '@/lib/api-client';
+import {
+  type AnalyticsSetupSectionId,
+  readAnalyticsSetupOpen,
+  toggleAnalyticsSetupOpen,
+} from '@/lib/analytics-settings-setup-open';
 import { reloadMe } from '@/lib/use-me';
+import { SetupSection } from '../bug-budget/setup-section';
 
 type EscapeMode = 'labels' | 'issue_type';
 type DigestProvider = 'slack' | 'google_chat';
@@ -37,10 +43,10 @@ const MENU_VISIBILITY_TOGGLES: Array<{
   key: keyof Omit<MenuVisibility, 'allowlist_user_ids'>;
   label: string;
 }> = [
-  { key: 'defect_analytics', label: 'Show Defect Analytics in navigation' },
-  { key: 'defect_tracker', label: 'Show Defect Tracker in navigation' },
-  { key: 'leaderboard', label: 'Show Leaderboard in navigation' },
-  { key: 'bug_budget', label: 'Show Bug Budget in navigation' },
+  { key: 'defect_analytics', label: 'Defect Analytics' },
+  { key: 'defect_tracker', label: 'Defect Tracker' },
+  { key: 'leaderboard', label: 'Leaderboard' },
+  { key: 'bug_budget', label: 'Bug Budget' },
 ];
 
 /** Canonical Jira issue types (default sync scope) offered for issue-type escape mode. */
@@ -113,6 +119,11 @@ export function AnalyticsTab({ onAlert }: Props) {
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
+  const [setupOpen, setSetupOpen] = useState<Set<AnalyticsSetupSectionId>>(() => new Set());
+
+  useEffect(() => {
+    setSetupOpen(readAnalyticsSetupOpen());
+  }, []);
 
   useEffect(() => {
     void (async () => {
@@ -224,7 +235,7 @@ export function AnalyticsTab({ onAlert }: Props) {
 
   return (
     <div className="bb-layout">
-      <div className="bb-main">
+      <div className="bb-main bb-analytics-settings">
         <section className="settings-card">
           <h2>Menu visibility</h2>
           <p className="muted">
@@ -232,43 +243,32 @@ export function AnalyticsTab({ onAlert }: Props) {
             everyone except allowlisted users. Settings stays available so you can turn modules
             back on.
           </p>
-          {MENU_VISIBILITY_TOGGLES.map(({ key, label }) => (
-            <label className="field" key={key}>
-              <span>
-                <input
-                  type="checkbox"
-                  checked={settings.menu_visibility[key]}
-                  onChange={setMenuFlag(key)}
-                />{' '}
-                {label}
-              </span>
-            </label>
-          ))}
+          <div className="bb-menu-visibility__grid">
+            {MENU_VISIBILITY_TOGGLES.map(({ key, label }) => (
+              <label className="field" key={key}>
+                <span>
+                  <input
+                    type="checkbox"
+                    checked={settings.menu_visibility[key]}
+                    onChange={setMenuFlag(key)}
+                  />{' '}
+                  {label}
+                </span>
+              </label>
+            ))}
+          </div>
           {anyModuleHidden(settings.menu_visibility) ? (
-            <fieldset className="field" style={{ border: 0, padding: 0, margin: '0.75rem 0 0' }}>
-              <legend>Allowlisted users</legend>
-              <p className="muted" style={{ fontSize: '0.75rem', marginTop: 0 }}>
-                Selected approved users still see hidden modules.
-              </p>
+            <fieldset className="bb-menu-visibility__allowlist">
+              <legend>Hide from everyone — still show to selected users</legend>
+              <p className="muted">Selected approved users still see hidden modules.</p>
               {candidates === null ? (
                 <span className="muted">Loading users…</span>
               ) : candidates.length === 0 ? (
                 <span className="muted">No approved users available.</span>
               ) : (
-                <div
-                  style={{
-                    maxHeight: 220,
-                    overflowY: 'auto',
-                    display: 'flex',
-                    flexDirection: 'column',
-                    gap: '0.35rem',
-                  }}
-                >
+                <div className="bb-menu-visibility__allowlist-list">
                   {candidates.map((u) => (
-                    <label
-                      key={u.id}
-                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                    >
+                    <label key={u.id} className="bb-menu-visibility__allowlist-row">
                       <input
                         type="checkbox"
                         checked={settings.menu_visibility.allowlist_user_ids.includes(u.id)}
@@ -320,104 +320,6 @@ export function AnalyticsTab({ onAlert }: Props) {
               />
             </label>
           </div>
-        </section>
-
-        <section className="settings-card">
-          <h2>KPI thresholds</h2>
-          <p className="muted">
-            Tune when Defect Analytics KPI tiles turn warning/danger. Percentages are 0–100.
-          </p>
-          <div className="field-row" style={{ flexWrap: 'wrap' }}>
-            {KPI_FIELDS.map(({ key, label, min, max }) => (
-              <label className="field" key={key}>
-                {label}
-                <input
-                  type="number"
-                  min={min}
-                  max={max}
-                  value={settings[key]}
-                  onChange={setNum(key)}
-                />
-              </label>
-            ))}
-          </div>
-          <div className="btn-row" style={{ marginTop: '0.75rem' }}>
-            <button
-              type="button"
-              className="btn btn-outline"
-              onClick={() => {
-                const resetKpis = Object.fromEntries(
-                  KPI_FIELDS.map(({ key }) => [key, ANALYTICS_KPI_THRESHOLDS[key]]),
-                ) as Record<KpiThresholdKey, number>;
-                setSettings((s) => (s ? { ...s, ...resetKpis } : s));
-              }}
-            >
-              Reset thresholds to defaults
-            </button>
-          </div>
-        </section>
-
-        <section className="settings-card">
-          <h2>Defect escape detection</h2>
-          <p className="muted">
-            How an issue is judged found in production, driving the escape-rate metric.
-          </p>
-          <label className="field">
-            Detect escapes by
-            <select
-              value={settings.escape_mode}
-              onChange={(e) =>
-                setSettings({ ...settings, escape_mode: e.target.value as EscapeMode })
-              }
-            >
-              <option value="labels">Jira labels</option>
-              <option value="issue_type">Issue type</option>
-            </select>
-          </label>
-
-          {settings.escape_mode === 'labels' ? (
-            <label className="field">
-              Production labels
-              <input
-                type="text"
-                value={prodLabelsText}
-                placeholder="found-in-prod"
-                onChange={(e) => setProdLabelsText(e.target.value)}
-              />
-              <span className="muted" style={{ fontSize: '0.75rem' }}>
-                Comma-separated Jira labels.
-              </span>
-            </label>
-          ) : (
-            <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
-              <legend>Escape issue types</legend>
-              <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem 1.25rem' }}>
-                {ESCAPE_TYPE_OPTIONS.map((t) => (
-                  <label
-                    key={t}
-                    style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
-                  >
-                    <input
-                      type="checkbox"
-                      checked={settings.prod_issue_types.includes(t)}
-                      onChange={(e) =>
-                        setSettings({
-                          ...settings,
-                          prod_issue_types: e.target.checked
-                            ? [...settings.prod_issue_types, t]
-                            : settings.prod_issue_types.filter((x) => x !== t),
-                        })
-                      }
-                    />
-                    {t}
-                  </label>
-                ))}
-              </div>
-              <span className="muted" style={{ display: 'block', fontSize: '0.75rem', marginTop: 4 }}>
-                Issues of the selected types count as escapes. Pick at least one.
-              </span>
-            </fieldset>
-          )}
         </section>
 
         <section className="settings-card">
@@ -511,7 +413,122 @@ export function AnalyticsTab({ onAlert }: Props) {
           </div>
         </section>
 
-        <div className="btn-row">
+        <div className="bb-setup-group">
+          <h3 className="bb-setup-group__title">Setup</h3>
+
+          <SetupSection
+            id="analytics-setup-kpi"
+            title="KPI thresholds"
+            hint="When dashboard tiles turn warning/danger"
+            open={setupOpen.has('kpi')}
+            onOpenChange={(open) => setSetupOpen(toggleAnalyticsSetupOpen('kpi', open))}
+          >
+            <p className="muted">
+              Tune when Defect Analytics KPI tiles turn warning/danger. Percentages are 0–100.
+            </p>
+            <div className="field-row" style={{ flexWrap: 'wrap' }}>
+              {KPI_FIELDS.map(({ key, label, min, max }) => (
+                <label className="field" key={key}>
+                  {label}
+                  <input
+                    type="number"
+                    min={min}
+                    max={max}
+                    value={settings[key]}
+                    onChange={setNum(key)}
+                  />
+                </label>
+              ))}
+            </div>
+            <div className="btn-row" style={{ marginTop: '0.75rem' }}>
+              <button
+                type="button"
+                className="btn btn-outline"
+                onClick={() => {
+                  const resetKpis = Object.fromEntries(
+                    KPI_FIELDS.map(({ key }) => [key, ANALYTICS_KPI_THRESHOLDS[key]]),
+                  ) as Record<KpiThresholdKey, number>;
+                  setSettings((s) => (s ? { ...s, ...resetKpis } : s));
+                }}
+              >
+                Reset thresholds to defaults
+              </button>
+            </div>
+          </SetupSection>
+
+          <SetupSection
+            id="analytics-setup-escape"
+            title="Defect escape detection"
+            hint="How production escapes are detected"
+            open={setupOpen.has('escape')}
+            onOpenChange={(open) => setSetupOpen(toggleAnalyticsSetupOpen('escape', open))}
+          >
+            <p className="muted">
+              How an issue is judged found in production, driving the escape-rate metric.
+            </p>
+            <label className="field">
+              Detect escapes by
+              <select
+                value={settings.escape_mode}
+                onChange={(e) =>
+                  setSettings({ ...settings, escape_mode: e.target.value as EscapeMode })
+                }
+              >
+                <option value="labels">Jira labels</option>
+                <option value="issue_type">Issue type</option>
+              </select>
+            </label>
+
+            {settings.escape_mode === 'labels' ? (
+              <label className="field">
+                Production labels
+                <input
+                  type="text"
+                  value={prodLabelsText}
+                  placeholder="found-in-prod"
+                  onChange={(e) => setProdLabelsText(e.target.value)}
+                />
+                <span className="muted" style={{ fontSize: '0.75rem' }}>
+                  Comma-separated Jira labels.
+                </span>
+              </label>
+            ) : (
+              <fieldset className="field" style={{ border: 0, padding: 0, margin: 0 }}>
+                <legend>Escape issue types</legend>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.5rem 1.25rem' }}>
+                  {ESCAPE_TYPE_OPTIONS.map((t) => (
+                    <label
+                      key={t}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={settings.prod_issue_types.includes(t)}
+                        onChange={(e) =>
+                          setSettings({
+                            ...settings,
+                            prod_issue_types: e.target.checked
+                              ? [...settings.prod_issue_types, t]
+                              : settings.prod_issue_types.filter((x) => x !== t),
+                          })
+                        }
+                      />
+                      {t}
+                    </label>
+                  ))}
+                </div>
+                <span
+                  className="muted"
+                  style={{ display: 'block', fontSize: '0.75rem', marginTop: 4 }}
+                >
+                  Issues of the selected types count as escapes. Pick at least one.
+                </span>
+              </fieldset>
+            )}
+          </SetupSection>
+        </div>
+
+        <div className="bb-settings-sticky-save">
           <button type="button" className="btn btn-primary" onClick={save} disabled={saving}>
             {saving ? 'Saving…' : 'Save analytics settings'}
           </button>
