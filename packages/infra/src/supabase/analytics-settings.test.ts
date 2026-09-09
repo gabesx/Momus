@@ -204,32 +204,37 @@ describe('effectiveThresholds', () => {
   });
 });
 
-describe('normalizeAnalyticsSettings — show_defect_analytics', () => {
-  it('defaults to true when omitted', () => {
-    expect(normalizeAnalyticsSettings({}).show_defect_analytics).toBe(true);
-  });
-
-  it('keeps explicit false', () => {
-    expect(normalizeAnalyticsSettings({ show_defect_analytics: false }).show_defect_analytics).toBe(
-      false,
-    );
-  });
-
-  it('keeps explicit true', () => {
-    expect(normalizeAnalyticsSettings({ show_defect_analytics: true }).show_defect_analytics).toBe(
-      true,
-    );
-  });
-});
-
-describe('parseAnalyticsSettings — show_defect_analytics', () => {
-  it('round-trips false with valid SLA payload', () => {
-    const s = parseAnalyticsSettings({
-      sla_first_response_days: 2,
-      sla_critical_resolution_days: 3,
-      sla_major_resolution_days: 7,
-      show_defect_analytics: false,
+describe('normalizeAnalyticsSettings — menu_visibility', () => {
+  it('defaults all modules true and empty allowlist', () => {
+    const s = normalizeAnalyticsSettings({});
+    expect(s.menu_visibility).toEqual({
+      defect_analytics: true,
+      defect_tracker: true,
+      leaderboard: true,
+      bug_budget: true,
+      allowlist_user_ids: [],
     });
-    expect(s.show_defect_analytics).toBe(false);
+  });
+
+  it('maps legacy show_defect_analytics false when menu_visibility missing', () => {
+    const s = normalizeAnalyticsSettings({ show_defect_analytics: false });
+    expect(s.menu_visibility.defect_analytics).toBe(false);
+    expect(s.menu_visibility.defect_tracker).toBe(true);
+  });
+
+  it('prefers menu_visibility over legacy key when both present', () => {
+    const s = normalizeAnalyticsSettings({
+      show_defect_analytics: false,
+      menu_visibility: {
+        defect_analytics: true,
+        defect_tracker: false,
+        leaderboard: true,
+        bug_budget: true,
+        allowlist_user_ids: [1, 'x', -1, 2.5, 3],
+      },
+    });
+    expect(s.menu_visibility.defect_analytics).toBe(true);
+    expect(s.menu_visibility.defect_tracker).toBe(false);
+    expect(s.menu_visibility.allowlist_user_ids).toEqual([1, 3]);
   });
 });
