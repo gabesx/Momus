@@ -12,6 +12,9 @@ export type MeUser = {
 
 export type AppFlags = {
   show_defect_analytics: boolean;
+  show_defect_tracker: boolean;
+  show_leaderboard: boolean;
+  show_bug_budget: boolean;
 };
 
 export type MeState = {
@@ -24,8 +27,13 @@ export type MeState = {
   loaded: boolean;
 };
 
-/** Fail-open so the Defect Analytics nav does not flash-hide while /api/me loads. */
-const DEFAULT_FLAGS: AppFlags = { show_defect_analytics: true };
+/** Fail-open so product nav does not flash-hide while /api/me loads. */
+const DEFAULT_FLAGS: AppFlags = {
+  show_defect_analytics: true,
+  show_defect_tracker: true,
+  show_leaderboard: true,
+  show_bug_budget: true,
+};
 
 type MeSnapshot = { user: MeUser | null; flags: AppFlags };
 
@@ -40,15 +48,21 @@ function notify(me: MeSnapshot): void {
   }
 }
 
+function parseFlags(partial: Partial<AppFlags> | undefined, success: boolean): AppFlags {
+  if (!success) return DEFAULT_FLAGS;
+  return {
+    show_defect_analytics: partial?.show_defect_analytics !== false,
+    show_defect_tracker: partial?.show_defect_tracker !== false,
+    show_leaderboard: partial?.show_leaderboard !== false,
+    show_bug_budget: partial?.show_bug_budget !== false,
+  };
+}
+
 function loadMe(): Promise<MeSnapshot> {
   pending ??= apiJson<{ user?: MeUser; flags?: Partial<AppFlags> }>('/api/me')
     .then((res) => {
       const user = res.success && res.user ? res.user : null;
-      const flags: AppFlags = {
-        show_defect_analytics: res.success
-          ? res.flags?.show_defect_analytics !== false
-          : DEFAULT_FLAGS.show_defect_analytics,
-      };
+      const flags = parseFlags(res.flags, res.success);
       snapshot = { user, flags };
       return snapshot;
     })

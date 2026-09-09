@@ -5,8 +5,24 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { apiJson } from '@/lib/api-client';
 import { APP_ROUTES } from '@/lib/routes';
-import { clearMeCache, useMe } from '@/lib/use-me';
+import { clearMeCache, useMe, type AppFlags } from '@/lib/use-me';
 
+const PRODUCT_HREFS = new Set([
+  '/',
+  '/reports/executive',
+  '/tracker',
+  '/leaderboard',
+  '/bug-budget',
+]);
+
+/** Product routes gated by menu flags; reports/settings always pass. */
+function routeShown(href: string, flags: AppFlags): boolean {
+  if (href === '/') return flags.show_defect_analytics;
+  if (href === '/tracker') return flags.show_defect_tracker;
+  if (href === '/leaderboard') return flags.show_leaderboard;
+  if (href === '/bug-budget') return flags.show_bug_budget;
+  return true;
+}
 
 export function AppHeader() {
   const pathname = usePathname();
@@ -52,13 +68,18 @@ export function AppHeader() {
   // Nothing gated renders until permissions are known, so the nav appears once
   // in its final state rather than popping items in when /api/me lands.
   const links = loaded
-    ? APP_ROUTES.filter((route) => {
-        if (route.href === '/' && !flags.show_defect_analytics) return false;
-        return user?.permissions.includes(route.permission);
-      })
+    ? APP_ROUTES.filter(
+        (route) =>
+          routeShown(route.href, flags) &&
+          Boolean(user?.permissions.includes(route.permission)),
+      )
     : [];
 
-  const brandHref = flags.show_defect_analytics ? '/' : '/bug-budget';
+  const brandHref =
+    links.find((l) => PRODUCT_HREFS.has(l.href))?.href ??
+    links.find((l) => l.href.startsWith('/settings'))?.href ??
+    '/no-access';
+
 
   return (
     <header className="bb-app-header">
