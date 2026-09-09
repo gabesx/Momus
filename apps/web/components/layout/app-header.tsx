@@ -12,7 +12,7 @@ export function AppHeader() {
   const pathname = usePathname();
   const router = useRouter();
   const menuRef = useRef<HTMLDivElement>(null);
-  const { user, loaded } = useMe();
+  const { user, flags, loaded } = useMe();
   const [menuOpen, setMenuOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
 
@@ -54,13 +54,18 @@ export function AppHeader() {
   // Nothing gated renders until permissions are known, so the nav appears once
   // in its final state rather than popping items in when /api/me lands.
   const links = loaded
-    ? APP_ROUTES.filter((route) => user?.permissions.includes(route.permission))
+    ? APP_ROUTES.filter((route) => {
+        if (route.href === '/' && !flags.show_defect_analytics) return false;
+        return user?.permissions.includes(route.permission);
+      })
     : [];
+
+  const brandHref = flags.show_defect_analytics ? '/' : '/bug-budget';
 
   return (
     <header className="bb-app-header">
       <div className="bb-app-header__inner">
-        <Link href="/" className="bb-app-brand">
+        <Link href={brandHref} className="bb-app-brand">
           Momus
         </Link>
 
