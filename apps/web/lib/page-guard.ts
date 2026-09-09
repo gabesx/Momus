@@ -19,7 +19,11 @@ export async function requirePagePermission(permission: UserPermission) {
   const { permissions } = session.user;
   if (!permissions.includes(permission)) {
     const showDefectAnalytics = await loadShowDefectAnalytics();
-    redirect(landingPathFor(permissions, { showDefectAnalytics }));
+    redirect(
+      landingPathFor(permissions, {
+        flags: { show_defect_analytics: showDefectAnalytics },
+      }),
+    );
   }
 
   return session.user;

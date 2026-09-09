@@ -1,25 +1,24 @@
-import { APP_ROUTES, type AppRoute } from './routes';
+import { APP_ROUTES } from './routes';
+import type { MenuFlags } from './menu-visibility';
 
-function routesForLanding(showDefectAnalytics: boolean): AppRoute[] {
-  if (showDefectAnalytics) return APP_ROUTES;
-  const withoutHome = APP_ROUTES.filter((r) => r.href !== '/');
-  const trackerIdx = withoutHome.findIndex((r) => r.href === '/tracker');
-  const bugIdx = withoutHome.findIndex((r) => r.href === '/bug-budget');
-  if (trackerIdx === -1 || bugIdx === -1 || bugIdx < trackerIdx) return withoutHome;
-  const next = [...withoutHome];
-  const [bug] = next.splice(bugIdx, 1);
-  next.splice(trackerIdx, 0, bug);
-  return next;
+/** Map product hrefs to menu flags; reports/settings always count as shown. */
+function isShown(href: string, flags: Partial<MenuFlags>): boolean {
+  if (href === '/') return flags.show_defect_analytics !== false;
+  if (href === '/tracker') return flags.show_defect_tracker !== false;
+  if (href === '/leaderboard') return flags.show_leaderboard !== false;
+  if (href === '/bug-budget') return flags.show_bug_budget !== false;
+  return true;
 }
 
 /** Where to send a user who may not open the page they asked for. */
 export function landingPathFor(
   permissions: string[],
-  options?: { showDefectAnalytics?: boolean },
+  options?: { flags?: Partial<MenuFlags> },
 ): string {
-  const show = options?.showDefectAnalytics !== false;
+  const flags = options?.flags ?? {};
   return (
-    routesForLanding(show).find((route) => permissions.includes(route.permission))?.href ??
-    '/no-access'
+    APP_ROUTES.find(
+      (route) => isShown(route.href, flags) && permissions.includes(route.permission),
+    )?.href ?? '/no-access'
   );
 }
