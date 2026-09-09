@@ -436,6 +436,42 @@ a {
   align-items: start;
 }
 
+.bb-ops-card .btn-row {
+  margin-top: 0.35rem;
+}
+
+.bb-setup-group {
+  margin-top: 0.5rem;
+}
+
+.bb-setup-group__title {
+  margin: 0 0 0.5rem;
+  font-size: 0.8rem;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bb-secondary);
+}
+
+.bb-setup-section {
+  padding: 0;
+}
+
+.bb-setup-section__summary {
+  list-style: none;
+  cursor: pointer;
+  font-weight: 700;
+  padding: 1rem 1.25rem;
+}
+
+.bb-setup-section__summary::-webkit-details-marker {
+  display: none;
+}
+
+.bb-setup-section__body {
+  padding: 0 1.25rem 1.25rem;
+}
+
 .bb-conn-banner {
   margin: 0 0 0.75rem;
   padding: 0.65rem 0.85rem;
