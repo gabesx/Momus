@@ -16,6 +16,7 @@ import {
   getTrackerExcludedFields,
 } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { trackerParamsFromUrl } from '@/lib/tracker-params';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
@@ -51,6 +52,8 @@ function formatFreshness(iso: string): string {
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('defect_tracker', auth.user.id);
+  if (denied) return denied;
 
   try {
     const params = trackerParamsFromUrl(new URL(request.url));

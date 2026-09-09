@@ -11,6 +11,10 @@ type Props = {
 
 export default async function LeaderboardPage({ searchParams }: Props) {
   const user = await requirePagePermission('view_leaderboard');
+  const flags = await loadMenuFlagsForUser(user.id);
+  if (!flags.show_leaderboard) {
+    redirect(landingPathFor(user.permissions, { flags }));
+  }
   const sp = await searchParams;
   const url = new URL('http://local/leaderboard');
   for (const [k, v] of Object.entries(sp)) {
@@ -31,11 +35,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
       const next = encodeURIComponent(`/leaderboard${url.search}`);
       redirect(`/sign-in?next=${next}`);
     }
-    redirect(
-      landingPathFor(user.permissions, {
-        flags: await loadMenuFlagsForUser(user.id),
-      }),
-    );
+    redirect(landingPathFor(user.permissions, { flags }));
   }
 
   return <LeaderboardDashboard initialData={result.data} initialParams={params} />;

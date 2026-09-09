@@ -4,6 +4,7 @@ import {
   getJiraSettings,
 } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 type RouteContext = { params: Promise<{ id: string }> };
@@ -12,6 +13,8 @@ type RouteContext = { params: Promise<{ id: string }> };
 export async function GET(_request: Request, context: RouteContext) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('bug_budget', auth.user.id);
+  if (denied) return denied;
 
   try {
     const { id } = await context.params;
