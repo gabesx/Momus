@@ -245,15 +245,13 @@ export function AnalyticsTab({ onAlert }: Props) {
           </p>
           <div className="bb-menu-visibility__grid">
             {MENU_VISIBILITY_TOGGLES.map(({ key, label }) => (
-              <label className="field" key={key}>
-                <span>
-                  <input
-                    type="checkbox"
-                    checked={settings.menu_visibility[key]}
-                    onChange={setMenuFlag(key)}
-                  />{' '}
-                  {label}
-                </span>
+              <label className="bb-menu-visibility__toggle" key={key}>
+                <input
+                  type="checkbox"
+                  checked={settings.menu_visibility[key]}
+                  onChange={setMenuFlag(key)}
+                />
+                <span>{label}</span>
               </label>
             ))}
           </div>
@@ -274,7 +272,9 @@ export function AnalyticsTab({ onAlert }: Props) {
                         checked={settings.menu_visibility.allowlist_user_ids.includes(u.id)}
                         onChange={(e) => toggleAllowlistUser(u.id, e.target.checked)}
                       />
-                      {(u.name?.trim() || 'Unnamed') + ' — ' + u.email}
+                      <span className="bb-menu-visibility__allowlist-row-label">
+                        {(u.name?.trim() || 'Unnamed') + ' — ' + u.email}
+                      </span>
                     </label>
                   ))}
                 </div>
