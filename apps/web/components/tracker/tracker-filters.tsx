@@ -9,7 +9,24 @@ type FilterOptions = {
   projects: string[];
   years: number[];
   missing_fields?: MissingFieldOption[];
+  reporters?: string[];
+  creators?: string[];
+  owners?: string[];
 };
+
+type ChipKey =
+  | 'year'
+  | 'issue_type'
+  | 'missing_field'
+  | 'q'
+  | 'project'
+  | 'exclude_projects'
+  | 'squad'
+  | 'service'
+  | 'engineer'
+  | 'reporter'
+  | 'creator'
+  | 'owner';
 
 type Props = {
   /** Draft filter values edited in the panel (applied on Apply). */
@@ -20,6 +37,52 @@ type Props = {
   onApply: () => void;
   onReset: () => void;
 };
+
+function PeopleFilterField({
+  label,
+  paramKey,
+  options,
+  draft,
+  onDraftChange,
+}: {
+  label: string;
+  paramKey: 'reporter' | 'creator' | 'owner';
+  options: string[];
+  draft: TrackerFilterParams;
+  onDraftChange: (patch: Partial<TrackerFilterParams>) => void;
+}) {
+  const value = draft[paramKey] ?? '';
+  const selectValue =
+    value === 'Unassigned' || options.includes(value) ? value : value ? '' : '';
+
+  return (
+    <label className="field bb-tracker-people-field">
+      <span>{label}</span>
+      <select
+        value={selectValue}
+        onChange={(e) =>
+          onDraftChange({ [paramKey]: e.target.value || undefined, page: 1 })
+        }
+      >
+        <option value="">All</option>
+        <option value="Unassigned">Unassigned</option>
+        {options.map((name) => (
+          <option key={name} value={name}>
+            {name}
+          </option>
+        ))}
+      </select>
+      <input
+        type="search"
+        placeholder="Or type to search…"
+        value={value}
+        onChange={(e) =>
+          onDraftChange({ [paramKey]: e.target.value || undefined, page: 1 })
+        }
+      />
+    </label>
+  );
+}
 
 export function TrackerFilters({
   draft,
@@ -34,6 +97,9 @@ export function TrackerFilters({
   const years = options.years ?? [];
   const missingFields = options.missing_fields ?? [];
   const projects = options.projects ?? [];
+  const reporters = options.reporters ?? [];
+  const creators = options.creators ?? [];
+  const owners = options.owners ?? [];
   const excluded = new Set(draft.exclude_projects ?? []);
 
   const toggleExclude = (project: string) => {
@@ -107,6 +173,28 @@ export function TrackerFilters({
             onChange={(e) => onDraftChange({ q: e.target.value || undefined, page: 1 })}
           />
         </label>
+
+        <PeopleFilterField
+          label="Reporter"
+          paramKey="reporter"
+          options={reporters}
+          draft={draft}
+          onDraftChange={onDraftChange}
+        />
+        <PeopleFilterField
+          label="Creator"
+          paramKey="creator"
+          options={creators}
+          draft={draft}
+          onDraftChange={onDraftChange}
+        />
+        <PeopleFilterField
+          label="Owner/Ownership"
+          paramKey="owner"
+          options={owners}
+          draft={draft}
+          onDraftChange={onDraftChange}
+        />
       </div>
 
       {projects.length ? (
@@ -155,32 +243,9 @@ export function TrackerActiveChips({
   onRemove,
 }: {
   state: TrackerFilterParams;
-  onRemove: (
-    key:
-      | 'year'
-      | 'issue_type'
-      | 'missing_field'
-      | 'q'
-      | 'project'
-      | 'exclude_projects'
-      | 'squad'
-      | 'service'
-      | 'engineer',
-  ) => void;
+  onRemove: (key: ChipKey) => void;
 }) {
-  const chips: {
-    key:
-      | 'year'
-      | 'issue_type'
-      | 'missing_field'
-      | 'q'
-      | 'project'
-      | 'exclude_projects'
-      | 'squad'
-      | 'service'
-      | 'engineer';
-    label: string;
-  }[] = [];
+  const chips: { key: ChipKey; label: string }[] = [];
 
   if (state.year && state.year !== 'all') {
     chips.push({ key: 'year', label: `Year: ${state.year}` });
@@ -208,6 +273,9 @@ export function TrackerActiveChips({
   if (state.squad) chips.push({ key: 'squad', label: `Squad: ${state.squad}` });
   if (state.service) chips.push({ key: 'service', label: `Service: ${state.service}` });
   if (state.engineer) chips.push({ key: 'engineer', label: `Engineer: ${state.engineer}` });
+  if (state.reporter) chips.push({ key: 'reporter', label: `Reporter: ${state.reporter}` });
+  if (state.creator) chips.push({ key: 'creator', label: `Creator: ${state.creator}` });
+  if (state.owner) chips.push({ key: 'owner', label: `Owner: ${state.owner}` });
 
   if (!chips.length) return null;
 

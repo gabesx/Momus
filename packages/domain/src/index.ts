@@ -37,6 +37,7 @@ export * from './tracker/types';
 export * from './tracker/overrides';
 export * from './tracker/missing-fields';
 export * from './tracker/filter';
+export * from './tracker/sort';
 export * from './tracker/patch';
 export * from './tracker/linked-test';
 export * from './auth/allowlist';

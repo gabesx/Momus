@@ -27,6 +27,12 @@ export type TrackerFilterParams = {
   service?: string | null;
   /** Analytics drill-through: engineer_assignee (fallback test_engineer_assignee); 'Unassigned' matches rows with neither */
   engineer?: string | null;
+  reporter?: string | null;
+  creator?: string | null;
+  /** Ownership display: owner ‖ tester_assignee; 'Unassigned' for empty */
+  owner?: string | null;
+  sort?: string | null;
+  direction?: 'asc' | 'desc' | null;
   page?: number | null;
   page_size?: number | null;
   /** Field keys excluded from incompleteness tracking (from Field Settings). */

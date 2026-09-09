@@ -1,5 +1,9 @@
-import type { TrackerFilterParams, TrackerTab } from '@momus/domain';
-import { TIMEZONE } from '@momus/domain';
+import {
+  isTrackerSortColumn,
+  TIMEZONE,
+  type TrackerFilterParams,
+  type TrackerTab,
+} from '@momus/domain';
 
 const VALID_TABS: TrackerTab[] = ['all', 'missing_fields', 'no_linked_test'];
 const DEFAULT_TAB: TrackerTab = 'missing_fields';
@@ -49,9 +53,21 @@ function parseExcludeProjects(sp: URLSearchParams): string[] | undefined {
   return list.length ? [...new Set(list)] : undefined;
 }
 
+function parseSort(raw: string | null | undefined): string | undefined {
+  if (!raw || !isTrackerSortColumn(raw)) return undefined;
+  return raw;
+}
+
+function parseDirection(raw: string | null | undefined): 'asc' | 'desc' | undefined {
+  if (raw === 'asc' || raw === 'desc') return raw;
+  return undefined;
+}
+
 export function trackerParamsFromUrl(url: URL): TrackerFilterParams {
   const sp = url.searchParams;
   const get = (k: string) => sp.get(k) ?? undefined;
+  const sort = parseSort(get('sort'));
+  const direction = sort ? parseDirection(get('direction')) : undefined;
   return {
     tab: parseTab(sp.get('tab')),
     year: parseYear(sp.get('year')),
@@ -63,6 +79,11 @@ export function trackerParamsFromUrl(url: URL): TrackerFilterParams {
     squad: get('squad'),
     service: get('service'),
     engineer: get('engineer'),
+    reporter: get('reporter') || undefined,
+    creator: get('creator') || undefined,
+    owner: get('owner') || undefined,
+    sort,
+    direction,
     page: parsePage(sp.get('page')),
     page_size: parsePageSize(sp.get('page_size')),
   };
@@ -90,6 +111,15 @@ export function trackerParamsToQuery(state: TrackerFilterParams): string {
   if (state.squad) sp.set('squad', state.squad);
   if (state.service) sp.set('service', state.service);
   if (state.engineer) sp.set('engineer', state.engineer);
+  if (state.reporter) sp.set('reporter', state.reporter);
+  if (state.creator) sp.set('creator', state.creator);
+  if (state.owner) sp.set('owner', state.owner);
+  if (state.sort && isTrackerSortColumn(state.sort)) {
+    sp.set('sort', state.sort);
+    if (state.direction === 'asc' || state.direction === 'desc') {
+      sp.set('direction', state.direction);
+    }
+  }
   const page = state.page ?? DEFAULT_PAGE;
   if (page !== DEFAULT_PAGE) sp.set('page', String(page));
   const pageSize = state.page_size ?? DEFAULT_PAGE_SIZE;
