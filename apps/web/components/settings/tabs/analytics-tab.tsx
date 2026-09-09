@@ -116,6 +116,7 @@ export function AnalyticsTab({ onAlert }: Props) {
   const [settings, setSettings] = useState<AnalyticsSettings | null>(null);
   const [prodLabelsText, setProdLabelsText] = useState('');
   const [candidates, setCandidates] = useState<AllowlistCandidate[] | null>(null);
+  const [allowlistQuery, setAllowlistQuery] = useState('');
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
@@ -256,30 +257,92 @@ export function AnalyticsTab({ onAlert }: Props) {
             ))}
           </div>
           {anyModuleHidden(settings.menu_visibility) ? (
-            <fieldset className="bb-menu-visibility__allowlist">
-              <legend>Hide from everyone — still show to selected users</legend>
-              <p className="muted">Selected approved users still see hidden modules.</p>
+            <div className="bb-menu-visibility__allowlist">
+              <div className="bb-menu-visibility__allowlist-head">
+                <div>
+                  <h3 className="bb-menu-visibility__allowlist-title">Allowlisted users</h3>
+                  <p className="muted bb-menu-visibility__allowlist-hint">
+                    Selected approved users still see hidden modules.
+                  </p>
+                </div>
+                <span className="bb-menu-visibility__allowlist-count" aria-live="polite">
+                  {settings.menu_visibility.allowlist_user_ids.length} selected
+                </span>
+              </div>
               {candidates === null ? (
                 <span className="muted">Loading users…</span>
               ) : candidates.length === 0 ? (
                 <span className="muted">No approved users available.</span>
               ) : (
-                <div className="bb-menu-visibility__allowlist-list">
-                  {candidates.map((u) => (
-                    <label key={u.id} className="bb-menu-visibility__allowlist-row">
-                      <input
-                        type="checkbox"
-                        checked={settings.menu_visibility.allowlist_user_ids.includes(u.id)}
-                        onChange={(e) => toggleAllowlistUser(u.id, e.target.checked)}
-                      />
-                      <span className="bb-menu-visibility__allowlist-row-label">
-                        {(u.name?.trim() || 'Unnamed') + ' — ' + u.email}
-                      </span>
-                    </label>
-                  ))}
-                </div>
+                <>
+                  <div className="bb-menu-visibility__allowlist-search">
+                    <input
+                      type="search"
+                      value={allowlistQuery}
+                      onChange={(e) => setAllowlistQuery(e.target.value)}
+                      placeholder="Search by name or email…"
+                      aria-label="Filter allowlisted users"
+                      autoComplete="off"
+                    />
+                  </div>
+                  <ul className="bb-menu-visibility__allowlist-list" role="list">
+                    {(() => {
+                      const q = allowlistQuery.trim().toLowerCase();
+                      const selected = new Set(settings.menu_visibility.allowlist_user_ids);
+                      const rows = candidates
+                        .filter((u) => {
+                          if (!q) return true;
+                          const name = (u.name ?? '').toLowerCase();
+                          return name.includes(q) || u.email.toLowerCase().includes(q);
+                        })
+                        .sort((a, b) => {
+                          const aOn = selected.has(a.id) ? 0 : 1;
+                          const bOn = selected.has(b.id) ? 0 : 1;
+                          if (aOn !== bOn) return aOn - bOn;
+                          const an = (a.name?.trim() || a.email).toLowerCase();
+                          const bn = (b.name?.trim() || b.email).toLowerCase();
+                          return an.localeCompare(bn);
+                        });
+                      if (rows.length === 0) {
+                        return (
+                          <li className="bb-menu-visibility__allowlist-empty muted">
+                            No users match “{allowlistQuery.trim()}”.
+                          </li>
+                        );
+                      }
+                      return rows.map((u) => {
+                        const checked = selected.has(u.id);
+                        return (
+                          <li key={u.id}>
+                            <label
+                              className={
+                                checked
+                                  ? 'bb-menu-visibility__allowlist-row is-selected'
+                                  : 'bb-menu-visibility__allowlist-row'
+                              }
+                            >
+                              <input
+                                type="checkbox"
+                                checked={checked}
+                                onChange={(e) => toggleAllowlistUser(u.id, e.target.checked)}
+                              />
+                              <span className="bb-menu-visibility__allowlist-row-text">
+                                <span className="bb-menu-visibility__allowlist-row-name">
+                                  {u.name?.trim() || 'Unnamed'}
+                                </span>
+                                <span className="bb-menu-visibility__allowlist-row-email">
+                                  {u.email}
+                                </span>
+                              </span>
+                            </label>
+                          </li>
+                        );
+                      });
+                    })()}
+                  </ul>
+                </>
               )}
-            </fieldset>
+            </div>
           ) : null}
         </section>
 
