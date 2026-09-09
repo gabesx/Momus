@@ -1,6 +1,6 @@
 import { redirect } from 'next/navigation';
-import { getSessionUser } from '@/lib/auth';
 import { loadMenuFlagsForUser } from '@/lib/menu-visibility-gate';
+import { landingPathFor, requirePagePermission } from '@/lib/page-guard';
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -8,12 +8,10 @@ type Props = {
 
 /** Legacy path — analytics lives on the homepage. */
 export default async function AnalyticsRedirectPage({ searchParams }: Props) {
-  const session = await getSessionUser();
-  const userId =
-    !('error' in session) && session.access === 'ok' ? session.user.id : 0;
-  const flags = await loadMenuFlagsForUser(userId);
+  const user = await requirePagePermission('view_analytics');
+  const flags = await loadMenuFlagsForUser(user.id);
   if (!flags.show_defect_analytics) {
-    redirect('/bug-budget');
+    redirect(landingPathFor(user.permissions, { flags }));
   }
 
   const params = await searchParams;
