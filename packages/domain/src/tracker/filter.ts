@@ -40,6 +40,45 @@ export function trackerEngineerKey(row: TrackerIssueRow): string {
   return firstNonEmpty(row.engineer_assignee, row.test_engineer_assignee) ?? 'Unassigned';
 }
 
+/** Ownership cell key: owner, else tester_assignee, else Unassigned. */
+export function trackerOwnerKey(row: TrackerIssueRow): string {
+  return firstNonEmpty(row.owner, row.tester_assignee) ?? 'Unassigned';
+}
+
+export function extractTrackerPeopleOptions(rows: TrackerIssueRow[]): {
+  reporters: string[];
+  creators: string[];
+  owners: string[];
+} {
+  const uniq = (values: Array<string | null | undefined>) =>
+    [...new Set(values.filter((v): v is string => Boolean(v && v.trim())))].sort((a, b) =>
+      a.localeCompare(b),
+    );
+  return {
+    reporters: uniq(rows.map((r) => r.reporter)),
+    creators: uniq(rows.map((r) => r.creator)),
+    owners: uniq(
+      rows.map((r) => {
+        const k = trackerOwnerKey(r);
+        return k === 'Unassigned' ? null : k;
+      }),
+    ),
+  };
+}
+
+function matchPeople(
+  resolved: string | null | undefined,
+  param: string,
+  exactOptions: Set<string>,
+): boolean {
+  const needle = param.trim();
+  if (!needle) return true;
+  const value = resolved?.trim() ? resolved.trim() : 'Unassigned';
+  if (needle === 'Unassigned') return value === 'Unassigned';
+  if (exactOptions.has(needle)) return value === needle;
+  return value.toLowerCase().includes(needle.toLowerCase());
+}
+
 export function applyTrackerFilters(
   rows: TrackerIssueRow[],
   params: TrackerFilterParams,
@@ -47,6 +86,10 @@ export function applyTrackerFilters(
   let out = rows;
   const tab = params.tab ?? 'all';
   const excluded = params.excluded_fields ?? [];
+  const people = extractTrackerPeopleOptions(rows);
+  const reporterOpts = new Set(people.reporters);
+  const creatorOpts = new Set(people.creators);
+  const ownerOpts = new Set(people.owners);
 
   if (tab === 'no_linked_test') {
     out = out.filter(hasNoLinkedTest);
@@ -66,8 +109,8 @@ export function applyTrackerFilters(
 
   const excludedProjects = params.exclude_projects ?? [];
   if (excludedProjects.length) {
-    const excluded = new Set(excludedProjects);
-    out = out.filter((row) => !excluded.has(row.project || '—'));
+    const excludedSet = new Set(excludedProjects);
+    out = out.filter((row) => !excludedSet.has(row.project || '—'));
   }
 
   if (params.issue_type === 'bugs') {
@@ -100,6 +143,16 @@ export function applyTrackerFilters(
   if (missingField && missingField !== 'all') {
     if (excluded.includes(missingField)) return [];
     out = out.filter((row) => getMissingFields(row, excluded).includes(missingField));
+  }
+
+  if (params.reporter?.trim()) {
+    out = out.filter((row) => matchPeople(row.reporter, params.reporter!, reporterOpts));
+  }
+  if (params.creator?.trim()) {
+    out = out.filter((row) => matchPeople(row.creator, params.creator!, creatorOpts));
+  }
+  if (params.owner?.trim()) {
+    out = out.filter((row) => matchPeople(trackerOwnerKey(row), params.owner!, ownerOpts));
   }
 
   return out;
