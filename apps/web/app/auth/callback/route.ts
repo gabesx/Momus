@@ -3,6 +3,8 @@ import { UsersRepository, createServerClient } from '@momus/infra';
 import { createServerClient as createSupabaseServerClient, type CookieOptions } from '@supabase/ssr';
 import { NextResponse, type NextRequest } from 'next/server';
 
+import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
+import { landingPathFor } from '@/lib/landing-path';
 import { getSupabasePublicEnv } from '@/lib/supabase/env';
 
 type CookieToSet = { name: string; value: string; options: CookieOptions };
@@ -60,7 +62,7 @@ export async function GET(request: NextRequest) {
     return redirectToSignIn(request, 'auth');
   }
 
-  const redirectPath = safeRedirectPath(next);
+  const explicitNext = next ? safeRedirectPath(next) : null;
   const cookiesToSet: CookieToSet[] = [];
 
   const { url, anonKey } = getSupabasePublicEnv();
@@ -120,6 +122,12 @@ export async function GET(request: NextRequest) {
         cookiesToSet,
       );
     }
+
+    const redirectPath =
+      explicitNext ??
+      landingPathFor(result.user.permissions, {
+        showDefectAnalytics: await loadShowDefectAnalytics(),
+      });
 
     return redirectWithCookies(new URL(redirectPath, request.url), cookiesToSet);
   } catch {

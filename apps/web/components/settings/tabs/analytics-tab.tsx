@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ANALYTICS_KPI_THRESHOLDS, BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
+import { reloadMe } from '@/lib/use-me';
 
 type EscapeMode = 'labels' | 'issue_type';
 type DigestProvider = 'slack' | 'google_chat';
@@ -45,6 +46,7 @@ type KpiThresholdKey =
   | 'escape_rate_warning_pct';
 
 type AnalyticsSettings = {
+  show_defect_analytics: boolean;
   sla_first_response_days: number;
   sla_critical_resolution_days: number;
   sla_major_resolution_days: number;
@@ -122,6 +124,7 @@ export function AnalyticsTab({ onAlert }: Props) {
       if (res.success && res.settings) {
         setSettings(res.settings);
         setProdLabelsText(res.settings.prod_labels.join(', '));
+        await reloadMe();
         onAlert('success', 'Analytics settings saved');
       } else {
         onAlert('error', res.message ?? 'Failed to save analytics settings');
@@ -158,6 +161,27 @@ export function AnalyticsTab({ onAlert }: Props) {
   return (
     <div className="bb-layout">
       <div className="bb-main">
+        <section className="settings-card">
+          <h2>Menu visibility</h2>
+          <p className="muted">
+            When off, Defect Analytics is removed from navigation, home redirects to Bug Budget,
+            and dashboard APIs return 403. This settings tab stays available so you can turn it
+            back on.
+          </p>
+          <label className="field">
+            <span>
+              <input
+                type="checkbox"
+                checked={settings.show_defect_analytics}
+                onChange={(e) =>
+                  setSettings({ ...settings, show_defect_analytics: e.target.checked })
+                }
+              />{' '}
+              Show Defect Analytics in navigation
+            </span>
+          </label>
+        </section>
+
         <section className="settings-card">
           <h2>SLA thresholds</h2>
           <p className="muted">

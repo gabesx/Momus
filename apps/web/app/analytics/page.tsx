@@ -1,4 +1,5 @@
 import { redirect } from 'next/navigation';
+import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -6,6 +7,10 @@ type Props = {
 
 /** Legacy path — analytics lives on the homepage. */
 export default async function AnalyticsRedirectPage({ searchParams }: Props) {
+  if (!(await loadShowDefectAnalytics())) {
+    redirect('/bug-budget');
+  }
+
   const params = await searchParams;
   const sp = new URLSearchParams();
   for (const [key, value] of Object.entries(params)) {
