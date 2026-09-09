@@ -5,6 +5,7 @@ import {
 } from '@momus/infra';
 import { buildOpenDefectSummary } from '@momus/domain';
 import { requireViewAnalytics } from '@/lib/auth';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 function parseSummaryYear(yearParam: string | null): number | null | { error: string } {
@@ -19,6 +20,8 @@ function parseSummaryYear(yearParam: string | null): number | null | { error: st
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('bug_budget', auth.user.id);
+  if (denied) return denied;
 
   try {
     const yearParam = new URL(request.url).searchParams.get('year');

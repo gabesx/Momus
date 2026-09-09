@@ -6,6 +6,7 @@ import {
   TrackerRepository,
 } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 const FIELD_MAP = {
@@ -23,6 +24,8 @@ function isOptionField(value: string | null): value is TrackerOptionField {
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('defect_tracker', auth.user.id);
+  if (denied) return denied;
 
   try {
     const url = new URL(request.url);

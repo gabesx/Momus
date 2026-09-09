@@ -1,12 +1,12 @@
 import { getSessionUser } from '@/lib/auth';
-import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
+import { loadMenuFlagsForUser } from '@/lib/menu-visibility-gate';
 import { jsonOk } from '@/lib/sync-params';
 
 export async function GET() {
   const auth = await getSessionUser();
   if ('error' in auth) return auth.error;
 
-  const showDefectAnalytics = await loadShowDefectAnalytics();
+  const flags = await loadMenuFlagsForUser(auth.user.id);
 
   return jsonOk({
     user: {
@@ -15,6 +15,6 @@ export async function GET() {
       name: auth.user.name,
       permissions: auth.user.permissions,
     },
-    flags: { show_defect_analytics: showDefectAnalytics },
+    flags,
   });
 }

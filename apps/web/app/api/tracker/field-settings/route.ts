@@ -8,12 +8,15 @@ import {
   saveTrackerExcludedFields,
 } from '@momus/infra';
 import { assertCsrf, requireViewAnalytics } from '@/lib/auth';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 /** Load Incomplete Field Settings (which fields count as missing). */
 export async function GET() {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('defect_tracker', auth.user.id);
+  if (denied) return denied;
 
   try {
     const excluded_fields = await getTrackerExcludedFields();
@@ -35,6 +38,8 @@ export async function POST(request: Request) {
 
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('defect_tracker', auth.user.id);
+  if (denied) return denied;
 
   try {
     const body = (await request.json()) as { excluded_fields?: unknown };

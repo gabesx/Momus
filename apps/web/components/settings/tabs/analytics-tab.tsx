@@ -2,6 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { ANALYTICS_KPI_THRESHOLDS, BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '@momus/domain';
+import type { MenuVisibility } from '@momus/infra';
 import { apiJson } from '@/lib/api-client';
 import { reloadMe } from '@/lib/use-me';
 
@@ -32,6 +33,16 @@ const DIGEST_PROVIDERS: Array<{ value: DigestProvider; label: string; placeholde
   },
 ];
 
+const MENU_VISIBILITY_TOGGLES: Array<{
+  key: keyof Omit<MenuVisibility, 'allowlist_user_ids'>;
+  label: string;
+}> = [
+  { key: 'defect_analytics', label: 'Show Defect Analytics in navigation' },
+  { key: 'defect_tracker', label: 'Show Defect Tracker in navigation' },
+  { key: 'leaderboard', label: 'Show Leaderboard in navigation' },
+  { key: 'bug_budget', label: 'Show Bug Budget in navigation' },
+];
+
 /** Canonical Jira issue types (default sync scope) offered for issue-type escape mode. */
 const ESCAPE_TYPE_OPTIONS: string[] = [...BUG_GROUP_TYPES, ...DEFECT_GROUP_TYPES];
 
@@ -45,8 +56,14 @@ type KpiThresholdKey =
   | 'sla_compliance_healthy_pct'
   | 'escape_rate_warning_pct';
 
+type AllowlistCandidate = {
+  id: number;
+  name: string | null;
+  email: string;
+};
+
 type AnalyticsSettings = {
-  show_defect_analytics: boolean;
+  menu_visibility: MenuVisibility;
   sla_first_response_days: number;
   sla_critical_resolution_days: number;
   sla_major_resolution_days: number;
@@ -60,6 +77,14 @@ type AnalyticsSettings = {
   digest_hour: number;
 } & Record<KpiThresholdKey, number>;
 
+function anyModuleHidden(menu: MenuVisibility): boolean {
+  return (
+    !menu.defect_analytics ||
+    !menu.defect_tracker ||
+    !menu.leaderboard ||
+    !menu.bug_budget
+  );
+}
 /** Mirrors infra KPI_THRESHOLD_BOUNDS; drives the inputs + client-side validation. */
 const KPI_FIELDS: Array<{ key: KpiThresholdKey; label: string; min: number; max: number }> = [
   { key: 'open_warning', label: 'Open backlog warning (count)', min: 1, max: 100000 },
@@ -84,6 +109,7 @@ type Props = {
 export function AnalyticsTab({ onAlert }: Props) {
   const [settings, setSettings] = useState<AnalyticsSettings | null>(null);
   const [prodLabelsText, setProdLabelsText] = useState('');
+  const [candidates, setCandidates] = useState<AllowlistCandidate[] | null>(null);
   const [saving, setSaving] = useState(false);
   const [sending, setSending] = useState(false);
   const sendingRef = useRef(false);
@@ -100,12 +126,50 @@ export function AnalyticsTab({ onAlert }: Props) {
     })();
   }, [onAlert]);
 
+  useEffect(() => {
+    if (!settings || !anyModuleHidden(settings.menu_visibility) || candidates !== null) return;
+    void (async () => {
+      const res = await apiJson<{ users?: AllowlistCandidate[] }>(
+        '/api/settings/analytics/allowlist-candidates',
+      );
+      if (res.success && res.users) {
+        setCandidates(res.users);
+      } else {
+        setCandidates([]);
+        onAlert('error', res.message ?? 'Failed to load allowlist candidates');
+      }
+    })();
+  }, [settings, candidates, onAlert]);
+
   if (!settings) {
     return <div className="bb-skeleton" style={{ minHeight: 200 }} />;
   }
 
   const setNum = (key: keyof AnalyticsSettings) => (e: React.ChangeEvent<HTMLInputElement>) =>
     setSettings({ ...settings, [key]: Number(e.target.value) });
+
+  const setMenuFlag =
+    (key: keyof Omit<MenuVisibility, 'allowlist_user_ids'>) =>
+    (e: React.ChangeEvent<HTMLInputElement>) =>
+      setSettings({
+        ...settings,
+        menu_visibility: { ...settings.menu_visibility, [key]: e.target.checked },
+      });
+
+  const toggleAllowlistUser = (userId: number, checked: boolean) => {
+    const ids = settings.menu_visibility.allowlist_user_ids;
+    setSettings({
+      ...settings,
+      menu_visibility: {
+        ...settings.menu_visibility,
+        allowlist_user_ids: checked
+          ? ids.includes(userId)
+            ? ids
+            : [...ids, userId]
+          : ids.filter((id) => id !== userId),
+      },
+    });
+  };
 
   const save = async () => {
     setSaving(true);
@@ -164,22 +228,59 @@ export function AnalyticsTab({ onAlert }: Props) {
         <section className="settings-card">
           <h2>Menu visibility</h2>
           <p className="muted">
-            When off, Defect Analytics is removed from navigation, home redirects to Bug Budget,
-            and dashboard APIs return 403. This settings tab stays available so you can turn it
+            When a module is off, it is removed from navigation and its pages/APIs return 403 for
+            everyone except allowlisted users. Settings stays available so you can turn modules
             back on.
           </p>
-          <label className="field">
-            <span>
-              <input
-                type="checkbox"
-                checked={settings.show_defect_analytics}
-                onChange={(e) =>
-                  setSettings({ ...settings, show_defect_analytics: e.target.checked })
-                }
-              />{' '}
-              Show Defect Analytics in navigation
-            </span>
-          </label>
+          {MENU_VISIBILITY_TOGGLES.map(({ key, label }) => (
+            <label className="field" key={key}>
+              <span>
+                <input
+                  type="checkbox"
+                  checked={settings.menu_visibility[key]}
+                  onChange={setMenuFlag(key)}
+                />{' '}
+                {label}
+              </span>
+            </label>
+          ))}
+          {anyModuleHidden(settings.menu_visibility) ? (
+            <fieldset className="field" style={{ border: 0, padding: 0, margin: '0.75rem 0 0' }}>
+              <legend>Allowlisted users</legend>
+              <p className="muted" style={{ fontSize: '0.75rem', marginTop: 0 }}>
+                Selected approved users still see hidden modules.
+              </p>
+              {candidates === null ? (
+                <span className="muted">Loading users…</span>
+              ) : candidates.length === 0 ? (
+                <span className="muted">No approved users available.</span>
+              ) : (
+                <div
+                  style={{
+                    maxHeight: 220,
+                    overflowY: 'auto',
+                    display: 'flex',
+                    flexDirection: 'column',
+                    gap: '0.35rem',
+                  }}
+                >
+                  {candidates.map((u) => (
+                    <label
+                      key={u.id}
+                      style={{ display: 'inline-flex', alignItems: 'center', gap: 6 }}
+                    >
+                      <input
+                        type="checkbox"
+                        checked={settings.menu_visibility.allowlist_user_ids.includes(u.id)}
+                        onChange={(e) => toggleAllowlistUser(u.id, e.target.checked)}
+                      />
+                      {(u.name?.trim() || 'Unnamed') + ' — ' + u.email}
+                    </label>
+                  ))}
+                </div>
+              )}
+            </fieldset>
+          ) : null}
         </section>
 
         <section className="settings-card">

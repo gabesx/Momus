@@ -11,11 +11,14 @@ import { requireViewLeaderboard } from '@/lib/auth';
 import { mapBugBudgetToLeaderboardRow } from '@/lib/leaderboard-map';
 import { leaderboardParamsFromUrl } from '@/lib/leaderboard-params';
 import { leaderboardSqlRange } from '@/lib/load-leaderboard';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 export async function GET(request: Request) {
   const auth = await requireViewLeaderboard();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('leaderboard', auth.user.id);
+  if (denied) return denied;
   try {
     const url = new URL(request.url);
     const reporter = url.searchParams.get('reporter')?.trim();
