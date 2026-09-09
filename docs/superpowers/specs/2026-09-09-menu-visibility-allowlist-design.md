@@ -1,7 +1,7 @@
 # Menu visibility (multi-module + allowlist) — Design Spec
 
 **Date:** 2026-09-09  
-**Status:** Draft for review (awaiting user sign-off)  
+**Status:** Approved for planning  
 **Depends on:** PR #50 / `show_defect_analytics` hard-hide for Defect Analytics  
 **Scope:** Extend Menu visibility to Defect Analytics, Defect Tracker, Leaderboard, and Bug Budget, with a shared user allowlist exception
 
