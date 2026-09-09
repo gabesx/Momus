@@ -1,5 +1,6 @@
 import { redirect } from 'next/navigation';
-import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
+import { getSessionUser } from '@/lib/auth';
+import { loadMenuFlagsForUser } from '@/lib/menu-visibility-gate';
 
 type Props = {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
@@ -7,7 +8,11 @@ type Props = {
 
 /** Legacy path — analytics lives on the homepage. */
 export default async function AnalyticsRedirectPage({ searchParams }: Props) {
-  if (!(await loadShowDefectAnalytics())) {
+  const session = await getSessionUser();
+  const userId =
+    !('error' in session) && session.access === 'ok' ? session.user.id : 0;
+  const flags = await loadMenuFlagsForUser(userId);
+  if (!flags.show_defect_analytics) {
     redirect('/bug-budget');
   }
 

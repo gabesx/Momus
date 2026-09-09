@@ -1,8 +1,8 @@
 import { redirect } from 'next/navigation';
 import type { UserPermission } from '@momus/shared';
 import { getSessionUser } from '@/lib/auth';
-import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
 import { landingPathFor } from '@/lib/landing-path';
+import { loadMenuFlagsForUser } from '@/lib/menu-visibility-gate';
 
 export { landingPathFor };
 
@@ -18,12 +18,8 @@ export async function requirePagePermission(permission: UserPermission) {
 
   const { permissions } = session.user;
   if (!permissions.includes(permission)) {
-    const showDefectAnalytics = await loadShowDefectAnalytics();
-    redirect(
-      landingPathFor(permissions, {
-        flags: { show_defect_analytics: showDefectAnalytics },
-      }),
-    );
+    const flags = await loadMenuFlagsForUser(session.user.id);
+    redirect(landingPathFor(permissions, { flags }));
   }
 
   return session.user;

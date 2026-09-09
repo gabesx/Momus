@@ -21,10 +21,7 @@ import {
   setCachedAnalytics,
 } from '@/lib/analytics-cache';
 import { analyticsDefaultYear, analyticsParamsFromUrl } from '@/lib/analytics-params';
-import {
-  defectAnalyticsDisabledResponse,
-  loadShowDefectAnalytics,
-} from '@/lib/defect-analytics-gate';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 function cacheKeyFromUrl(url: URL): string {
@@ -35,8 +32,8 @@ function cacheKeyFromUrl(url: URL): string {
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
-  const show = await loadShowDefectAnalytics();
-  if (!show) return defectAnalyticsDisabledResponse();
+  const denied = await assertModuleVisible('defect_analytics', auth.user.id);
+  if (denied) return denied;
   try {
     const url = new URL(request.url);
     const params = analyticsParamsFromUrl(url);

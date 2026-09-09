@@ -2,7 +2,7 @@ import { redirect } from 'next/navigation';
 import { LeaderboardDashboard } from '@/components/leaderboard/leaderboard-dashboard';
 import { leaderboardParamsFromUrl } from '@/lib/leaderboard-params';
 import { loadLeaderboard } from '@/lib/load-leaderboard';
-import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
+import { loadMenuFlagsForUser } from '@/lib/menu-visibility-gate';
 import { landingPathFor, requirePagePermission } from '@/lib/page-guard';
 
 type Props = {
@@ -33,7 +33,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
     }
     redirect(
       landingPathFor(user.permissions, {
-        flags: { show_defect_analytics: await loadShowDefectAnalytics() },
+        flags: await loadMenuFlagsForUser(user.id),
       }),
     );
   }
