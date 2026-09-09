@@ -22,6 +22,9 @@ type Props = {
   excludedFields?: string[];
   severityOptions?: FieldOption[];
   serviceFeatureOptions?: FieldOption[];
+  sort?: string | null;
+  direction?: 'asc' | 'desc' | null;
+  onSortChange: (column: string) => void;
   onPageChange: (page: number) => void;
   onPageSizeChange: (pageSize: number) => void;
   onPatchField: (
@@ -30,6 +33,33 @@ type Props = {
     value: unknown,
   ) => Promise<{ ok: true; row: TrackerIssueRow } | { ok: false; message: string }>;
 };
+
+function SortableTh({
+  column,
+  label,
+  sort,
+  direction,
+  onSortChange,
+}: {
+  column: string;
+  label: string;
+  sort?: string | null;
+  direction?: 'asc' | 'desc' | null;
+  onSortChange: (column: string) => void;
+}) {
+  const active = sort === column;
+  const ariaSort = !active ? 'none' : direction === 'desc' ? 'descending' : 'ascending';
+  return (
+    <th aria-sort={ariaSort}>
+      <button type="button" className="bb-tracker-sort-th" onClick={() => onSortChange(column)}>
+        {label}
+        <span className="bb-tracker-sort-th__ind" aria-hidden>
+          {active ? (direction === 'desc' ? '▼' : '▲') : '↕'}
+        </span>
+      </button>
+    </th>
+  );
+}
 
 function jiraUrl(base: string, key: string): string | null {
   if (!base || !key) return null;
@@ -434,6 +464,9 @@ export function TrackerTable({
   excludedFields = [],
   severityOptions = [],
   serviceFeatureOptions = [],
+  sort,
+  direction,
+  onSortChange,
   onPageChange,
   onPageSizeChange,
   onPatchField,
@@ -533,33 +566,43 @@ export function TrackerTable({
                 <tr>
                   {showNoLinkedTest ? (
                     <>
-                      <th>Issue Type</th>
-                      <th>JIRA Key</th>
-                      <th>Summary</th>
-                      <th>Reporter</th>
-                      <th>Project</th>
-                      <th>Status</th>
-                      <th>Description</th>
-                      <th>Linked Issues</th>
-                      <th>Parent</th>
+                      <SortableTh column="issue_type" label="Issue Type" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="jira_key" label="JIRA Key" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="summary" label="Summary" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="reporter" label="Reporter" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="project" label="Project" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="status" label="Status" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="description" label="Description" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="linked_issues" label="Linked Issues" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="parent" label="Parent" sort={sort} direction={direction} onSortChange={onSortChange} />
                     </>
                   ) : (
                     <>
-                      <th>Issue Type</th>
-                      <th>JIRA Key</th>
-                      <th>Summary</th>
-                      {showMissingBadges ? <th>Missing Fields</th> : null}
-                      <th>Reporter</th>
-                      <th>Creator</th>
-                      <th>Owner/Ownership</th>
-                      <th>Created Date</th>
-                      <th>End Date</th>
-                      <th>Parent</th>
-                      <th>Description</th>
-                      <th>Labels</th>
-                      <th>Severity</th>
-                      <th>Service/Feature</th>
-                      {showMissingBadges ? <th>Missing Description Fields</th> : null}
+                      <SortableTh column="issue_type" label="Issue Type" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="jira_key" label="JIRA Key" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="summary" label="Summary" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      {showMissingBadges ? (
+                        <SortableTh column="missing_fields" label="Missing Fields" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      ) : null}
+                      <SortableTh column="reporter" label="Reporter" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="creator" label="Creator" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="owner" label="Owner/Ownership" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="created_date" label="Created Date" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="end_date" label="End Date" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="parent" label="Parent" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="description" label="Description" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="labels" label="Labels" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="severity_issue" label="Severity" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      <SortableTh column="service_feature" label="Service/Feature" sort={sort} direction={direction} onSortChange={onSortChange} />
+                      {showMissingBadges ? (
+                        <SortableTh
+                          column="missing_description_fields"
+                          label="Missing Description Fields"
+                          sort={sort}
+                          direction={direction}
+                          onSortChange={onSortChange}
+                        />
+                      ) : null}
                     </>
                   )}
                 </tr>
