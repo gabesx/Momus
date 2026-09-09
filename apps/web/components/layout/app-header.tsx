@@ -75,10 +75,12 @@ export function AppHeader() {
       )
     : [];
 
-  const brandHref =
-    links.find((l) => PRODUCT_HREFS.has(l.href))?.href ??
-    links.find((l) => l.href.startsWith('/settings'))?.href ??
-    '/no-access';
+  // Fail-open while /api/me loads: empty `links` would otherwise land on /no-access.
+  const brandHref = !loaded
+    ? '/'
+    : (links.find((l) => PRODUCT_HREFS.has(l.href))?.href ??
+      links.find((l) => l.href.startsWith('/settings'))?.href ??
+      '/no-access');
 
 
   return (
