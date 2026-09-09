@@ -2,6 +2,7 @@ import { redirect } from 'next/navigation';
 import { LeaderboardDashboard } from '@/components/leaderboard/leaderboard-dashboard';
 import { leaderboardParamsFromUrl } from '@/lib/leaderboard-params';
 import { loadLeaderboard } from '@/lib/load-leaderboard';
+import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
 import { landingPathFor, requirePagePermission } from '@/lib/page-guard';
 
 type Props = {
@@ -30,7 +31,11 @@ export default async function LeaderboardPage({ searchParams }: Props) {
       const next = encodeURIComponent(`/leaderboard${url.search}`);
       redirect(`/sign-in?next=${next}`);
     }
-    redirect(landingPathFor(user.permissions));
+    redirect(
+      landingPathFor(user.permissions, {
+        showDefectAnalytics: await loadShowDefectAnalytics(),
+      }),
+    );
   }
 
   return <LeaderboardDashboard initialData={result.data} initialParams={params} />;
