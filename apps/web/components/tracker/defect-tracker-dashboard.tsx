@@ -39,6 +39,9 @@ type TrackerResponse = {
     projects: string[];
     years: number[];
     missing_fields?: MissingFieldOption[];
+    reporters?: string[];
+    creators?: string[];
+    owners?: string[];
   };
   excluded_fields?: string[];
   jira_browse_base: string;
@@ -88,10 +91,16 @@ export function DefectTrackerDashboard() {
     projects: string[];
     years: number[];
     missing_fields?: MissingFieldOption[];
+    reporters?: string[];
+    creators?: string[];
+    owners?: string[];
   }>({
     projects: [],
     years: [],
     missing_fields: [],
+    reporters: [],
+    creators: [],
+    owners: [],
   });
   const [excludedFields, setExcludedFields] = useState<string[]>([]);
   const [fieldSettingsOpen, setFieldSettingsOpen] = useState(false);
@@ -227,6 +236,11 @@ export function DefectTrackerDashboard() {
       page_size: state.page_size ?? 50,
       exclude_projects: undefined,
       project: undefined,
+      reporter: undefined,
+      creator: undefined,
+      owner: undefined,
+      sort: undefined,
+      direction: undefined,
     };
     setFilterDraft(next);
     replaceState(next);
@@ -244,6 +258,15 @@ export function DefectTrackerDashboard() {
     replaceState({ ...state, page_size, page: 1 });
   };
 
+  const onSortChange = (column: string) => {
+    replaceState({
+      ...state,
+      sort: column,
+      direction: state.sort === column && state.direction === 'asc' ? 'desc' : 'asc',
+      page: 1,
+    });
+  };
+
   const removeChip = (
     key:
       | 'year'
@@ -254,7 +277,10 @@ export function DefectTrackerDashboard() {
       | 'exclude_projects'
       | 'squad'
       | 'service'
-      | 'engineer',
+      | 'engineer'
+      | 'reporter'
+      | 'creator'
+      | 'owner',
   ) => {
     if (key === 'year') {
       onFilterChange({ year: 'all', page: 1 });
@@ -309,6 +335,9 @@ export function DefectTrackerDashboard() {
       state.squad ||
       state.service ||
       state.engineer ||
+      state.reporter ||
+      state.creator ||
+      state.owner ||
       (state.exclude_projects && state.exclude_projects.length > 0),
   );
 
@@ -401,6 +430,9 @@ export function DefectTrackerDashboard() {
         excludedFields={excludedFields}
         severityOptions={severityOptions}
         serviceFeatureOptions={serviceFeatureOptions}
+        sort={state.sort}
+        direction={state.direction}
+        onSortChange={onSortChange}
         onPageChange={onPageChange}
         onPageSizeChange={onPageSizeChange}
         onPatchField={patchField}
