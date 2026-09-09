@@ -7,12 +7,15 @@ import { computeStats } from '@momus/domain';
 import { MESSAGES } from '@momus/shared';
 import { requireViewAnalytics } from '@/lib/auth';
 import { bugBudgetParamsFromUrl } from '@/lib/bug-budget-params';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 /** Dashboard JSON data: filtered rows + stats (BB-API-03/04). */
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('bug_budget', auth.user.id);
+  if (denied) return denied;
 
   try {
     const url = new URL(request.url);

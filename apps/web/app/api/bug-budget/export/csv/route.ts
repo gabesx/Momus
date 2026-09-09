@@ -13,11 +13,14 @@ import {
 import { requireViewAnalytics } from '@/lib/auth';
 import { jsonFail } from '@/lib/sync-params';
 import { bugBudgetParamsFromUrl } from '@/lib/bug-budget-params';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 
 /** Streaming CSV export — D-1 fixed (aligned headers + computed cost). */
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('bug_budget', auth.user.id);
+  if (denied) return denied;
 
   try {
     const url = new URL(request.url);

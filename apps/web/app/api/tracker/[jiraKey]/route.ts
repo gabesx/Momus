@@ -1,6 +1,7 @@
 import { parseTrackerPatch } from '@momus/domain';
 import { TrackerRepository, createServerClient } from '@momus/infra';
 import { assertCsrf, requireViewAnalytics } from '@/lib/auth';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 type RouteContext = { params: Promise<{ jiraKey: string }> };
@@ -12,6 +13,8 @@ export async function PATCH(request: Request, context: RouteContext) {
 
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
+  const denied = await assertModuleVisible('defect_tracker', auth.user.id);
+  if (denied) return denied;
 
   try {
     const { jiraKey } = await context.params;
