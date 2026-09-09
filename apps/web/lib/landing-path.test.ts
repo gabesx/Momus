@@ -42,6 +42,22 @@ describe('landingPathFor', () => {
       expect(landingPathFor([permission])).not.toBe('/no-access');
     }
   });
+
+  it('skips Defect Analytics home when showDefectAnalytics is false', () => {
+    expect(landingPathFor(['view_analytics'], { showDefectAnalytics: false })).toBe('/bug-budget');
+  });
+
+  it('still prefers executive reports over bug-budget when that permission is held', () => {
+    expect(
+      landingPathFor(['view_executive_reports', 'view_analytics'], {
+        showDefectAnalytics: false,
+      }),
+    ).toBe('/reports/executive');
+  });
+
+  it('defaults to / when showDefectAnalytics is omitted', () => {
+    expect(landingPathFor(['view_analytics'])).toBe('/');
+  });
 });
 
 /**
