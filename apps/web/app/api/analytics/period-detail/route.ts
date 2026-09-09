@@ -6,17 +6,14 @@ import {
 import { BugBudgetQueryRepository, createServerClient } from '@momus/infra';
 import { requireViewAnalytics } from '@/lib/auth';
 import { analyticsParamsFromUrl } from '@/lib/analytics-params';
-import {
-  defectAnalyticsDisabledResponse,
-  loadShowDefectAnalytics,
-} from '@/lib/defect-analytics-gate';
+import { assertModuleVisible } from '@/lib/menu-visibility-gate';
 import { jsonFail, jsonOk } from '@/lib/sync-params';
 
 export async function GET(request: Request) {
   const auth = await requireViewAnalytics();
   if ('error' in auth) return auth.error;
-  const show = await loadShowDefectAnalytics();
-  if (!show) return defectAnalyticsDisabledResponse();
+  const denied = await assertModuleVisible('defect_analytics', auth.user.id);
+  if (denied) return denied;
   try {
     const url = new URL(request.url);
     const period = url.searchParams.get('period');

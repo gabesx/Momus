@@ -1,11 +1,12 @@
 import { redirect } from 'next/navigation';
 import { DefectAnalyticsDashboard } from '@/components/analytics/defect-analytics-dashboard';
-import { loadShowDefectAnalytics } from '@/lib/defect-analytics-gate';
+import { loadMenuFlagsForUser } from '@/lib/menu-visibility-gate';
 import { requirePagePermission } from '@/lib/page-guard';
 
 export default async function HomePage() {
-  await requirePagePermission('view_analytics');
-  if (!(await loadShowDefectAnalytics())) {
+  const user = await requirePagePermission('view_analytics');
+  const flags = await loadMenuFlagsForUser(user.id);
+  if (!flags.show_defect_analytics) {
     redirect('/bug-budget');
   }
   return <DefectAnalyticsDashboard />;
