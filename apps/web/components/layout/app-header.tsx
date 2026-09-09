@@ -49,8 +49,6 @@ export function AppHeader() {
     return null;
   }
 
-  // Gated links stay out until permissions are known, so the nav renders once
-  // rather than popping extra items in when /api/me lands.
   // Nothing gated renders until permissions are known, so the nav appears once
   // in its final state rather than popping items in when /api/me lands.
   const links = loaded
