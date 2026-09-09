@@ -126,7 +126,7 @@ export async function GET(request: NextRequest) {
     const redirectPath =
       explicitNext ??
       landingPathFor(result.user.permissions, {
-        showDefectAnalytics: await loadShowDefectAnalytics(),
+        flags: { show_defect_analytics: await loadShowDefectAnalytics() },
       });
 
     return redirectWithCookies(new URL(redirectPath, request.url), cookiesToSet);

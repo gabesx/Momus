@@ -33,7 +33,7 @@ export default async function LeaderboardPage({ searchParams }: Props) {
     }
     redirect(
       landingPathFor(user.permissions, {
-        showDefectAnalytics: await loadShowDefectAnalytics(),
+        flags: { show_defect_analytics: await loadShowDefectAnalytics() },
       }),
     );
   }

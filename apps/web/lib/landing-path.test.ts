@@ -43,20 +43,48 @@ describe('landingPathFor', () => {
     }
   });
 
-  it('skips Defect Analytics home when showDefectAnalytics is false', () => {
-    expect(landingPathFor(['view_analytics'], { showDefectAnalytics: false })).toBe('/bug-budget');
+  it('skips Defect Analytics home when show_defect_analytics is false', () => {
+    expect(
+      landingPathFor(['view_analytics'], { flags: { show_defect_analytics: false } }),
+    ).toBe('/tracker');
   });
 
   it('still prefers executive reports over bug-budget when that permission is held', () => {
     expect(
       landingPathFor(['view_executive_reports', 'view_analytics'], {
-        showDefectAnalytics: false,
+        flags: { show_defect_analytics: false },
       }),
     ).toBe('/reports/executive');
   });
 
-  it('defaults to / when showDefectAnalytics is omitted', () => {
+  it('defaults to / when flags are omitted', () => {
     expect(landingPathFor(['view_analytics'])).toBe('/');
+  });
+
+  it('skips hidden tracker and lands on bug-budget', () => {
+    expect(
+      landingPathFor(['view_analytics'], {
+        flags: {
+          show_defect_analytics: false,
+          show_defect_tracker: false,
+          show_leaderboard: true,
+          show_bug_budget: true,
+        },
+      }),
+    ).toBe('/bug-budget');
+  });
+
+  it('falls through to settings when all product menus hidden', () => {
+    expect(
+      landingPathFor(['view_analytics', 'access_settings'], {
+        flags: {
+          show_defect_analytics: false,
+          show_defect_tracker: false,
+          show_leaderboard: false,
+          show_bug_budget: false,
+        },
+      }),
+    ).toBe('/settings/atlassian');
   });
 });
 
