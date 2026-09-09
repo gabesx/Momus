@@ -32,6 +32,13 @@ type MeSnapshot = { user: MeUser | null; flags: AppFlags };
 /** Shared across components so mounting several never refetches /api/me. */
 let pending: Promise<MeSnapshot> | null = null;
 let snapshot: MeSnapshot | null = null;
+const listeners = new Set<(me: MeSnapshot) => void>();
+
+function notify(me: MeSnapshot): void {
+  for (const listener of listeners) {
+    listener(me);
+  }
+}
 
 function loadMe(): Promise<MeSnapshot> {
   pending ??= apiJson<{ user?: MeUser; flags?: Partial<AppFlags> }>('/api/me')
@@ -59,6 +66,17 @@ export function clearMeCache(): void {
   snapshot = null;
 }
 
+/**
+ * Clear cache, refetch /api/me, update the shared snapshot, and notify every
+ * mounted useMe subscriber (e.g. after analytics settings save flips a flag).
+ */
+export async function reloadMe(): Promise<MeSnapshot> {
+  clearMeCache();
+  const me = await loadMe();
+  notify(me);
+  return me;
+}
+
 export function useMe(): MeState {
   const [state, setState] = useState<MeState>(() =>
     snapshot
@@ -67,15 +85,19 @@ export function useMe(): MeState {
   );
 
   useEffect(() => {
-    if (state.loaded) return;
     let active = true;
-    void loadMe().then((me) => {
+    const onUpdate = (me: MeSnapshot) => {
       if (active) setState({ user: me.user, flags: me.flags, loaded: true });
-    });
+    };
+    listeners.add(onUpdate);
+
+    void loadMe().then(onUpdate);
+
     return () => {
       active = false;
+      listeners.delete(onUpdate);
     };
-  }, [state.loaded]);
+  }, []);
 
   return state;
 }

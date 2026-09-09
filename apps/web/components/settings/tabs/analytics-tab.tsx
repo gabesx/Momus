@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { ANALYTICS_KPI_THRESHOLDS, BUG_GROUP_TYPES, DEFECT_GROUP_TYPES } from '@momus/domain';
 import { apiJson } from '@/lib/api-client';
+import { reloadMe } from '@/lib/use-me';
 
 type EscapeMode = 'labels' | 'issue_type';
 type DigestProvider = 'slack' | 'google_chat';
@@ -123,6 +124,7 @@ export function AnalyticsTab({ onAlert }: Props) {
       if (res.success && res.settings) {
         setSettings(res.settings);
         setProdLabelsText(res.settings.prod_labels.join(', '));
+        await reloadMe();
         onAlert('success', 'Analytics settings saved');
       } else {
         onAlert('error', res.message ?? 'Failed to save analytics settings');
