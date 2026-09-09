@@ -431,51 +431,305 @@ a {
 
 .bb-layout {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 280px;
-  gap: 1rem;
+  grid-template-columns: minmax(0, 1fr) 260px;
+  gap: 1.25rem;
   align-items: start;
 }
 
-.bb-ops-card .btn-row {
-  margin-top: 0.35rem;
+.bb-main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  min-width: 0;
+}
+
+.bb-main > .settings-card,
+.bb-main > .bb-setup-group {
+  margin-bottom: 0;
+}
+
+.bb-ops-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.bb-ops-card__head {
+  padding: 1.15rem 1.25rem 0.85rem;
+  border-bottom: 1px solid var(--bb-border);
+  background: linear-gradient(180deg, #fbfcfd 0%, var(--bb-white) 100%);
+}
+
+.bb-ops-card__eyebrow {
+  margin: 0 0 0.2rem;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--bb-primary);
+}
+
+.bb-ops-card__head h2 {
+  margin: 0 0 0.35rem;
+  font-size: 1.2rem;
+}
+
+.bb-ops-card__head .muted {
+  margin: 0;
+}
+
+.bb-ops-card > .field,
+.bb-ops-card > .jql-examples,
+.bb-ops-card > .field-row {
+  margin-left: 1.25rem;
+  margin-right: 1.25rem;
+}
+
+.bb-ops-card > .field:first-of-type {
+  margin-top: 1rem;
+}
+
+.bb-ops-card__jql {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85rem;
+  line-height: 1.45;
+  min-height: 5.5rem;
+  resize: vertical;
+}
+
+.bb-ops-card__params {
+  margin-bottom: 0.25rem;
+}
+
+.bb-ops-card__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 0.65rem;
+  margin-top: 0.75rem;
+  padding: 0.9rem 1.25rem;
+  border-top: 1px solid var(--bb-border);
+  background: #f8f9fb;
+}
+
+.bb-ops-card__actions-primary,
+.bb-ops-card__actions-secondary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.bb-progress-card.is-live {
+  border-color: color-mix(in srgb, var(--bb-primary) 35%, var(--bb-border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--bb-primary) 12%, transparent);
+}
+
+.bb-progress-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-bottom: 0.35rem;
+}
+
+.bb-progress-card__head h2 {
+  margin: 0;
+  font-size: 1.05rem;
+}
+
+.bb-progress-card__meta {
+  margin: 0 0 0.55rem;
+}
+
+.bb-progress-card__counts {
+  margin: 0.45rem 0 0;
+}
+
+.bb-activity-card__head {
+  margin-bottom: 0.65rem;
+}
+
+.bb-activity-card__head h2 {
+  margin: 0 0 0.2rem;
+  font-size: 1.05rem;
+}
+
+.bb-activity-card__head .muted {
+  margin: 0;
+}
+
+.bb-activity-card__empty {
+  margin: 0;
+  color: var(--bb-secondary);
+}
+
+.bb-activity-card__list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.bb-activity-card__item {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 0.85rem;
+  padding: 0.7rem 0;
+  border-bottom: 1px solid var(--bb-border);
+}
+
+.bb-activity-card__item:last-child {
+  border-bottom: 0;
+  padding-bottom: 0;
+}
+
+.bb-activity-card__main {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+  min-width: 0;
+}
+
+.bb-activity-card__main strong {
+  font-size: 0.95rem;
+}
+
+.bb-activity-card__time {
+  font-size: 0.8rem;
+}
+
+.bb-health-card {
+  padding: 1rem;
+}
+
+.bb-health-card__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.bb-health-card__head h3 {
+  margin: 0;
+  font-size: 0.95rem;
+}
+
+.bb-health-card__refresh {
+  padding: 0.3rem 0.55rem;
+  font-size: 0.8rem;
+}
+
+.bb-health-card__grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.55rem;
+}
+
+.bb-health-card__stat {
+  border: 1px solid var(--bb-border);
+  border-radius: 8px;
+  padding: 0.65rem 0.7rem;
+  background: #fafbfc;
+}
+
+.bb-health-card__stat--wide {
+  grid-column: 1 / -1;
+}
+
+.bb-health-card__stat span {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  color: var(--bb-secondary);
+  margin-bottom: 0.2rem;
+}
+
+.bb-health-card__stat strong {
+  font-size: 1.25rem;
+  font-variant-numeric: tabular-nums;
 }
 
 .bb-setup-group {
-  margin-top: 0.5rem;
+  margin-top: 0.35rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.55rem;
 }
 
 .bb-setup-group__title {
-  margin: 0 0 0.5rem;
-  font-size: 0.8rem;
+  margin: 0.35rem 0 0;
+  font-size: 0.75rem;
   font-weight: 700;
-  letter-spacing: 0.04em;
+  letter-spacing: 0.06em;
   text-transform: uppercase;
   color: var(--bb-secondary);
 }
 
 .bb-setup-section {
   padding: 0;
+  margin-bottom: 0;
+  transition: border-color 0.15s ease;
+}
+
+.bb-setup-section[open] {
+  border-color: color-mix(in srgb, var(--bb-primary) 28%, var(--bb-border));
 }
 
 .bb-setup-section__summary {
   list-style: none;
   cursor: pointer;
-  font-weight: 700;
-  padding: 1rem 1.25rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  grid-template-rows: auto auto;
+  column-gap: 0.65rem;
+  align-items: center;
+  padding: 0.95rem 1.15rem;
 }
 
 .bb-setup-section__summary::-webkit-details-marker {
   display: none;
 }
 
+.bb-setup-section__summary::before {
+  content: '';
+  grid-row: 1 / span 2;
+  width: 0.45rem;
+  height: 0.45rem;
+  border-right: 2px solid var(--bb-secondary);
+  border-bottom: 2px solid var(--bb-secondary);
+  transform: rotate(-45deg);
+  transition: transform 0.15s ease;
+  margin-top: 0.1rem;
+}
+
+.bb-setup-section[open] > .bb-setup-section__summary::before {
+  transform: rotate(45deg);
+}
+
+.bb-setup-section__title {
+  font-weight: 700;
+  font-size: 0.98rem;
+}
+
+.bb-setup-section__hint {
+  grid-column: 2;
+  color: var(--bb-secondary);
+  font-size: 0.82rem;
+  font-weight: 400;
+}
+
 .bb-setup-section__body {
-  padding: 0 1.25rem 1.25rem;
+  padding: 0 1.15rem 1.15rem;
+  border-top: 1px solid var(--bb-border);
+  padding-top: 1rem;
 }
 
 .bb-conn-banner {
-  margin: 0 0 0.75rem;
-  padding: 0.65rem 0.85rem;
-  border-radius: 6px;
+  margin: 0;
+  padding: 0.7rem 0.95rem;
+  border-radius: 8px;
   border: 1px solid var(--bb-border);
   background: #f8f9fa;
   font-size: 0.9rem;
@@ -847,6 +1101,21 @@ button.linkish {
 
   .settings-header {
     flex-direction: column;
+  }
+
+  .bb-ops-card__actions {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .bb-ops-card__actions-primary,
+  .bb-ops-card__actions-secondary {
+    width: 100%;
+  }
+
+  .bb-ops-card__actions-primary .btn,
+  .bb-ops-card__actions-secondary .btn {
+    flex: 1 1 auto;
   }
 }
 

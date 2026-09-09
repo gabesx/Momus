@@ -579,11 +579,15 @@ export function BugBudgetTab({ connection, onAlert, onOpenConnection }: Props) {
   return (
     <div className="bb-layout">
       <div className="bb-main">
-        <p className={`bb-conn-banner ${connection?.configured && connection.enabled ? 'ok' : 'bad'}`}>
+        <p
+          className={`bb-conn-banner ${connection?.configured && connection.enabled ? 'ok' : 'bad'}`}
+        >
           Jira:{' '}
           {connection?.configured && connection.enabled
             ? `Connected (${connection.site_url || 'configured'})`
-            : 'Not ready — set credentials under Atlassian'}
+            : connection?.configured
+              ? 'Disabled — turn on Enable Jira Integration under Atlassian, then Save'
+              : 'Not ready — set credentials under Atlassian'}
           {onOpenConnection ? (
             <>
               {' · '}
@@ -634,6 +638,7 @@ export function BugBudgetTab({ connection, onAlert, onOpenConnection }: Props) {
           <SetupSection
             id="bb-setup-projects"
             title="Project Budget & Mapping"
+            hint="Squad budgets and Jira display names"
             open={setupOpen.has('projects')}
             onOpenChange={(open) => onSetupOpenChange('projects', open)}
           >
@@ -816,6 +821,7 @@ export function BugBudgetTab({ connection, onAlert, onOpenConnection }: Props) {
           <SetupSection
             id="bb-setup-multipliers"
             title="Bug Cost Multiplier Settings"
+            hint="Priority and severity cost weights"
             open={setupOpen.has('multipliers')}
             onOpenChange={(open) => onSetupOpenChange('multipliers', open)}
           >
@@ -898,6 +904,7 @@ export function BugBudgetTab({ connection, onAlert, onOpenConnection }: Props) {
           <SetupSection
             id="bb-setup-cron"
             title="Automated Sync Schedule"
+            hint="Daily / weekly / monthly automation"
             open={setupOpen.has('cron')}
             onOpenChange={(open) => onSetupOpenChange('cron', open)}
           >

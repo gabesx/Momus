@@ -8,20 +8,28 @@ type Props = {
 };
 
 export function SyncProgressCard({ syncRun, pollHint }: Props) {
+  const running = syncRun.status === 'running' || syncRun.status === 'queued';
+
   return (
-    <section className="settings-card">
-      <h2>Sync Progress</h2>
-      <p>
-        <strong>{syncRun.status}</strong>
-        {pollHint ? ` — ${pollHint}` : ''}
-        {syncRun.status === 'running' ? ` — Batch ${syncRun.current_batch}` : ''}
+    <section className={`settings-card bb-progress-card${running ? ' is-live' : ''}`}>
+      <header className="bb-progress-card__head">
+        <h2>Sync progress</h2>
+        <span className={`status-pill ${syncRun.status === 'completed' ? 'ok' : syncRun.status === 'failed' ? 'bad' : ''}`}>
+          {syncRun.status}
+        </span>
+      </header>
+      <p className="muted bb-progress-card__meta">
+        {pollHint || (syncRun.status === 'running' ? `Batch ${syncRun.current_batch}` : '—')}
       </p>
       <div className="progress">
         <div className="progress__bar" style={{ width: `${syncRun.percentage}%` }} />
       </div>
-      <p className="muted">
-        {syncRun.percentage}% · Processed {syncRun.processed}
-        {syncRun.total_issues ? ` / ${syncRun.total_issues}` : ''}
+      <p className="bb-progress-card__counts">
+        <strong>{syncRun.percentage}%</strong>
+        <span className="muted">
+          · {syncRun.processed}
+          {syncRun.total_issues ? ` / ${syncRun.total_issues}` : ''} processed
+        </span>
       </p>
       {syncRun.result && (
         <pre className="result-box">{JSON.stringify(syncRun.result, null, 2)}</pre>

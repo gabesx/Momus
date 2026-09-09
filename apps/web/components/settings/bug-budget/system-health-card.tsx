@@ -7,25 +7,27 @@ type Props = {
 
 export function SystemHealthCard({ stats, onRefresh }: Props) {
   return (
-    <section className="settings-card settings-card--side">
-      <h3>System Health</h3>
-      <div className="health-grid">
-        <div>
-          <span>Total Issues</span>
+    <section className="settings-card settings-card--side bb-health-card">
+      <header className="bb-health-card__head">
+        <h3>System Health</h3>
+        <button type="button" className="btn btn-ghost bb-health-card__refresh" onClick={onRefresh}>
+          Refresh
+        </button>
+      </header>
+      <div className="bb-health-card__grid">
+        <div className="bb-health-card__stat">
+          <span>Total issues</span>
           <strong>{stats?.total ?? '—'}</strong>
         </div>
-        <div>
+        <div className="bb-health-card__stat">
           <span>Bugs</span>
           <strong>{stats?.bugs ?? '—'}</strong>
         </div>
-        <div>
+        <div className="bb-health-card__stat bb-health-card__stat--wide">
           <span>Open</span>
           <strong>{stats?.open ?? '—'}</strong>
         </div>
       </div>
-      <button type="button" className="btn btn-outline" onClick={onRefresh}>
-        Refresh
-      </button>
     </section>
   );
 }
