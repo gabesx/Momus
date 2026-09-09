@@ -2,6 +2,8 @@ import {
   applyTrackerFilters,
   countTrackerProjects,
   extractFilterOptions,
+  extractTrackerPeopleOptions,
+  sortTrackerRows,
   TRACKER_MISSING_FIELD_KEYS,
   TRACKER_MISSING_FIELD_LABELS,
   type TrackerMissingFieldKey,
@@ -76,10 +78,14 @@ export async function GET(request: Request) {
       label: TRACKER_MISSING_FIELD_LABELS[key as TrackerMissingFieldKey],
     }));
 
+    const people = extractTrackerPeopleOptions(all);
     const filter_options = {
       projects: opts.projects,
       years: yearsDesc,
       missing_fields: missing_field_options,
+      reporters: people.reporters,
+      creators: people.creators,
+      owners: people.owners,
     };
 
     const baseParams = { ...withExcluded, tab: undefined as TrackerTab | undefined };
@@ -91,9 +97,10 @@ export async function GET(request: Request) {
     ) as Record<TrackerTab, number>;
 
     const filtered = applyTrackerFilters(all, withExcluded);
-    const total = filtered.length;
+    const sorted = sortTrackerRows(filtered, params.sort, params.direction);
+    const total = sorted.length;
     const start = (page - 1) * pageSize;
-    const rows = filtered.slice(start, start + pageSize);
+    const rows = sorted.slice(start, start + pageSize);
     // Project chips always show Incomplete Fields counts (legacy parity).
     const project_counts = countTrackerProjects(all, {
       ...withExcluded,
