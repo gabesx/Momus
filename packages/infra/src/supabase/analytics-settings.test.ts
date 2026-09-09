@@ -203,3 +203,33 @@ describe('effectiveThresholds', () => {
     expect(t.escape_rate_warning_pct).toBe(3);
   });
 });
+
+describe('normalizeAnalyticsSettings — show_defect_analytics', () => {
+  it('defaults to true when omitted', () => {
+    expect(normalizeAnalyticsSettings({}).show_defect_analytics).toBe(true);
+  });
+
+  it('keeps explicit false', () => {
+    expect(normalizeAnalyticsSettings({ show_defect_analytics: false }).show_defect_analytics).toBe(
+      false,
+    );
+  });
+
+  it('keeps explicit true', () => {
+    expect(normalizeAnalyticsSettings({ show_defect_analytics: true }).show_defect_analytics).toBe(
+      true,
+    );
+  });
+});
+
+describe('parseAnalyticsSettings — show_defect_analytics', () => {
+  it('round-trips false with valid SLA payload', () => {
+    const s = parseAnalyticsSettings({
+      sla_first_response_days: 2,
+      sla_critical_resolution_days: 3,
+      sla_major_resolution_days: 7,
+      show_defect_analytics: false,
+    });
+    expect(s.show_defect_analytics).toBe(false);
+  });
+});

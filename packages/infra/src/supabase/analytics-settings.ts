@@ -50,6 +50,8 @@ export type AnalyticsSettings = {
   digest_day: DigestDay;
   /** Hour-of-day the digest is sent, 0–23 (Asia/Jakarta). */
   digest_hour: number;
+  /** When false, Defect Analytics nav/routes are hidden. Missing defaults to true. */
+  show_defect_analytics: boolean;
 } & Record<KpiThresholdKey, number>;
 
 export const DEFAULT_ANALYTICS_SETTINGS: AnalyticsSettings = {
@@ -64,6 +66,7 @@ export const DEFAULT_ANALYTICS_SETTINGS: AnalyticsSettings = {
   digest_webhook_url: '',
   digest_day: 'mon',
   digest_hour: 8,
+  show_defect_analytics: true,
   open_warning: ANALYTICS_KPI_THRESHOLDS.open_warning,
   avg_age_warning_days: ANALYTICS_KPI_THRESHOLDS.avg_age_warning_days,
   resolution_rate_healthy_pct: ANALYTICS_KPI_THRESHOLDS.resolution_rate_healthy_pct,
@@ -137,6 +140,7 @@ export function normalizeAnalyticsSettings(raw: unknown): AnalyticsSettings {
       ? (value.digest_day as DigestDay)
       : d.digest_day,
     digest_hour: boundedNumber(value.digest_hour, d.digest_hour, 0, 23),
+    show_defect_analytics: value.show_defect_analytics === false ? false : true,
     ...kpi,
   };
 }
